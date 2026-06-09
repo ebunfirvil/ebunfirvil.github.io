@@ -1,0 +1,8 @@
+version: '3'
+services:
+  epark:
+    build: .
+    container_name: epark-bundang
+    ports:
+      - "6443:80"
+    restart: unless-stopped

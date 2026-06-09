@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e편한세상 분당 퍼스트빌리지 입주예정자 협의회</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 상단 헤더 - 오렌지 톤 */
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+
+      /* 히어로/블록 - 남색 계열 */
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+
+      /* 블록 배경 - 베이지 계열 */
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --beige-warm: #f0e6d8;
+
+      /* 텍스트 */
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+
+      /* 그림자 */
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.7;
+      background: var(--beige);
+    }
+
+    /* ===== HEADER / NAV ===== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--orange-warm);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: linear-gradient(135deg, var(--orange-dark), #a03e15);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .logo-icon {
+      width: 84px;
+      height: 42px;
+      background: var(--white);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-icon img {
+      width: 80%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .logo-text span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 5px;
+    }
+
+    nav ul li a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--white);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-links a {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .social-links a:hover {
+      color: var(--white);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* ===== HERO - 남색 계열 ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--orange-warm);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { top: 60%; left: 20%; animation-delay: 2s; }
+    .particle:nth-child(3) { top: 30%; left: 70%; animation-delay: 4s; }
+    .particle:nth-child(4) { top: 80%; left: 80%; animation-delay: 6s; }
+    .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: 8s; }
+    .particle:nth-child(6) { top: 50%; left: 90%; animation-delay: 10s; }
+    .particle:nth-child(7) { top: 70%; left: 40%; animation-delay: 12s; }
+    .particle:nth-child(8) { top: 40%; left: 60%; animation-delay: 14s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+      25% { transform: translateY(-30px) translateX(15px); opacity: 0.6; }
+      50% { transform: translateY(-15px) translateX(-10px); opacity: 0.4; }
+      75% { transform: translateY(-40px) translateX(20px); opacity: 0.5; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+      max-width: 900px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(232, 98, 46, 0.2);
+      border: 1px solid var(--orange);
+      color: var(--orange-warm);
+      padding: 6px 20px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    .hero h1 .highlight {
+      color: var(--orange-warm);
+      position: relative;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 300;
+      margin-bottom: 30px;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 650px;
+      margin: 0 auto 40px;
+      line-height: 1.8;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-number {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--orange-warm);
+      display: block;
+    }
+
+    .hero-stat-label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(232, 98, 46, 0.4);
+    }
+
+    .procedure-link {
+      color: var(--orange);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .procedure-link:hover {
+      text-decoration: underline;
+    }
+
+    .floorplan-hint {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .plan-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      border-color: var(--orange);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--white);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+      position: relative;
+      text-align: center;
+    }
+
+    .modal-content h3 {
+      margin: 0 0 15px 0;
+      color: var(--navy);
+    }
+
+    .modal-content img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--navy);
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    .close-btn:hover {
+      color: var(--orange);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--orange);
+      color: var(--orange-warm);
+      transform: translateY(-2px);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.5);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 80px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      background: rgba(232, 98, 46, 0.15);
+      color: var(--orange);
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    .section-header h2 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 15px;
+    }
+
+    .section-header p {
+      color: var(--gray);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 1rem;
+    }
+
+    /* ===== ABOUT - 베이지 배경 ===== */
+    #about {
+      background: var(--white);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .about-image {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .about-image-placeholder {
+      width: 100%;
+      height: 400px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+    }
+
+    .about-image img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .about-image-placeholder i {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      color: var(--orange-warm);
+    }
+
+    .about-image-placeholder span {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .about-text h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 20px;
+    }
+
+    .about-text p {
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.8;
+    }
+
+    .about-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    .about-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      background: var(--beige);
+      border-radius: 8px;
+      border-left: 3px solid var(--orange);
+    }
+
+    .about-feature i {
+      color: var(--orange);
+      font-size: 1.1rem;
+    }
+
+    .about-feature span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--navy);
+    }
+
+    /* ===== INFO CARDS - 남색 카드 ===== */
+    #info {
+      background: var(--beige);
+    }
+
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .info-card {
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 35px 30px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      color: var(--white);
+    }
+
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--orange);
+    }
+
+    .info-card-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .info-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .info-card p {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .info-card .value {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--orange-warm);
+      display: block;
+      margin-top: 5px;
+    }
+
+    /* ===== FLOOR PLANS - 베이지 배경, 남색 카드 ===== */
+    #plans {
+      background: var(--beige);
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .plan-card {
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 30px 25px;
+      text-align: center;
+      color: var(--white);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--orange);
+      box-shadow: 0 10px 30px rgba(26, 58, 92, 0.4);
+    }
+
+    .plan-card .type {
+      font-size: 0.8rem;
+      color: var(--orange-warm);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .plan-card .area {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--white);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .plan-card .area span {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--orange-warm);
+    }
+
+    .plan-card .units {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 10px;
+    }
+
+    .plan-card .price {
+      font-size: 0.9rem;
+      color: var(--orange-light);
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .plan-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .plan-card.has-image img {
+      opacity: 1;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .plan-card.has-image:hover img {
+      opacity: 0.85;
+    }
+
+    /* ===== TIMELINE - 베이지 배경 ===== */
+    #timeline {
+      background: var(--beige);
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--orange), var(--navy));
+      border-radius: 3px;
+    }
+
+    .timeline-item {
+      position: relative;
+      width: 50%;
+      padding: 20px 40px;
+    }
+
+    .timeline-item:nth-child(odd) {
+      left: 0;
+      text-align: right;
+    }
+
+    .timeline-item:nth-child(even) {
+      left: 50%;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      top: 30px;
+      width: 16px;
+      height: 16px;
+      background: var(--orange);
+      border-radius: 50%;
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 3px var(--orange);
+    }
+
+    .timeline-item:nth-child(odd)::before {
+      right: -8px;
+    }
+
+    .timeline-item:nth-child(even)::before {
+      left: -8px;
+    }
+
+    .timeline-content {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      border-top: 3px solid var(--orange);
+    }
+
+    .timeline-date {
+      display: inline-block;
+      background: var(--navy);
+      color: var(--orange-warm);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .timeline-content h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .timeline-content p {
+      font-size: 0.85rem;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ===== NEWS - 베이지 배경 ===== */
+    #news {
+      background: var(--white);
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .news-item {
+      display: flex;
+      gap: 25px;
+      padding: 25px;
+      background: var(--beige);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border-left: 4px solid var(--orange);
+    }
+
+    .news-item:hover {
+      box-shadow: var(--shadow);
+      transform: translateX(5px);
+    }
+
+    .news-date {
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .news-date .day {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--navy);
+      display: block;
+      line-height: 1;
+    }
+
+    .news-date .period {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    .news-body h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .news-body p {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    .news-tag {
+      display: inline-block;
+      background: rgba(232, 98, 46, 0.15);
+      color: var(--orange);
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* ===== PROCEDURES - 남색 배경 ===== */
+    #procedures {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      color: var(--white);
+    }
+
+    #procedures .section-header h2 {
+      color: var(--white);
+    }
+
+    #procedures .section-header p {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .procedure-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+
+    .procedure-step {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 30px 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .procedure-step:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-3px);
+    }
+
+    .step-number {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--white);
+      margin: 0 auto 20px;
+    }
+
+    .procedure-step h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--white);
+    }
+
+    .procedure-step p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+
+    /* ===== GALLERY - 베이지 배경 ===== */
+    #gallery {
+      background: var(--beige);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .gallery-item {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .gallery-placeholder {
+      width: 100%;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .gallery-placeholder i {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      opacity: 0.8;
+    }
+
+    .gallery-placeholder span {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .gallery-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gp-1 { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+    .gp-2 { background: linear-gradient(135deg, var(--navy-light), #3a7abd); }
+    .gp-3 { background: linear-gradient(135deg, var(--navy-dark), var(--navy)); }
+    .gp-4 { background: linear-gradient(135deg, var(--navy), var(--orange)); }
+    .gp-5 { background: linear-gradient(135deg, var(--navy-light), var(--navy)); }
+    .gp-6 { background: linear-gradient(135deg, var(--orange), var(--navy)); }
+
+    /* ===== COMMUNITY - 베이지 배경 ===== */
+    #community {
+      background: var(--white);
+    }
+
+    .community-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .community-card {
+      background: var(--beige);
+      border-radius: 16px;
+      padding: 35px 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .community-card:hover {
+      border-color: var(--orange);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .community-card-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 20px;
+    }
+
+    .cc-cafe { background: linear-gradient(135deg, #f7ce00, #e6b800); color: #fff; }
+    .cc-kakao { background: linear-gradient(135deg, #fee500, #e6d100); color: #3c1e1e; }
+
+    .community-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .community-card p {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .community-card .btn {
+      font-size: 0.9rem;
+      padding: 10px 24px;
+    }
+
+    /* ===== GALLERY MODAL ===== */
+    .gallery-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .gallery-modal.active {
+      display: flex;
+    }
+
+    .gallery-modal-content {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .gallery-modal-close {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2.5rem;
+      cursor: pointer;
+      padding: 5px 10px;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+
+    .gallery-modal-close:hover {
+      color: var(--orange);
+    }
+
+    .gallery-modal-content img {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .gallery-modal-caption {
+      color: #fff;
+      font-size: 1.1rem;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* ===== CONTACT - 베이지 배경 ===== */
+    #contact {
+      background: var(--beige);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .contact-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      border-bottom: 3px solid var(--orange);
+    }
+
+    .contact-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .contact-card i {
+      font-size: 2rem;
+      color: var(--orange);
+      margin-bottom: 15px;
+    }
+
+    .contact-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .contact-card p {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .contact-card a {
+      color: var(--navy);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .contact-card a:hover {
+      color: var(--orange);
+    }
+
+    /* ===== FOOTER - 남색 배경 ===== */
+    footer {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      color: rgba(255,255,255,0.6);
+      padding: 50px 20px 30px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .footer-brand {
+      max-width: 350px;
+    }
+
+    .footer-brand h3 {
+      color: var(--white);
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .footer-brand p {
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 50px;
+    }
+
+    .footer-links h4 {
+      color: var(--white);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer-links ul li a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links ul li a:hover {
+      color: var(--orange-warm);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 25px;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 992px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .hero h1 {
+        font-size: 2.4rem;
+      }
+
+      .timeline::before {
+        left: 20px;
+      }
+
+      .timeline-item {
+        width: 100%;
+        left: 0 !important;
+        text-align: left !important;
+        padding-left: 50px;
+        padding-right: 20px;
+      }
+
+      .timeline-item::before {
+        left: 12px !important;
+        right: auto !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-inner {
+        height: 60px;
+      }
+
+      nav {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, var(--orange-dark), #a03e15);
+        padding: 20px;
+      }
+
+      nav.active {
+        display: block;
+      }
+
+      nav ul {
+        flex-direction: column;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 12px 16px;
+      }
+
+      .mobile-toggle {
+        display: block;
+      }
+
+      .social-links {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .hero-stats {
+        gap: 20px;
+      }
+
+      .hero-stat-number {
+        font-size: 1.6rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.6rem;
+      }
+
+      section {
+        padding: 60px 15px;
+      }
+
+      .about-features {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-top {
+        flex-direction: column;
+      }
+
+      .footer-links {
+        flex-direction: column;
+        gap: 25px;
+      }
+    }
+
+    /* ===== ANIMATIONS ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header id="header">
+    <div class="header-inner">
+      <a href="#main" class="logo">
+        <div class="logo-icon"><img src="img/elife_logo.svg" alt="e-life 로고"></div>
+        <div class="logo-text">
+          e편한세상 분당 퍼스트빌리지
+          <span>입주예정자 협의회</span>
+        </div>
+      </a>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="#main" class="active">메인</a></li>
+          <li><a href="#about">개요</a></li>
+          <li><a href="#plans">평형</a></li>
+          <li><a href="#timeline">일정</a></li>
+          <li><a href="#news">뉴스</a></li>
+          <li><a href="#procedures">가입</a></li>
+          <li><a href="#gallery">갤러리</a></li>
+          <li><a href="#contact">문의</a></li>
+        </ul>
+      </nav>
+      <div class="social-links">
+        <a href="#" title="네이버 카페"><i class="fab fa-naver"></i></a>
+        <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" title="카카오톡"><i class="fab fa-kakao"></i></a>
+        <a href="#" title="이메일"><i class="fas fa-envelope"></i></a>
+      </div>
+      <button class="mobile-toggle" onclick="document.getElementById('mainNav').classList.toggle('active')">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="main">
+    <div class="hero-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">HOMETOWN OF LIFESTYLE</div>
+      <h1>
+        <span class="highlight">e편한세상</span><br>
+        분당 퍼스트빌리지<br>
+        입주예정자 협의회
+      </h1>
+      <p class="hero-subtitle">이웃 간 정보공유 &amp; 소통의 시작</p>
+      <p class="hero-desc">
+        e편한세상 분당 퍼스트빌리지 입주예정자 협의회는<br>
+        이웃 간 정보공유 및 소통을 위해 다양한 활동을 전개하고 있습니다.<br><br>
+        안전하고 완벽한 입주를 위해 함께 준비합니다.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday1">--</span>
+          <span class="hero-stat-label">모델하우스 D-Day</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.03</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday2">--</span>
+          <span class="hero-stat-label">본청약 D-Day</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.20</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday3">--</span>
+          <span class="hero-stat-label">입주 D-Day</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2029.02</span>
+        </div>
+      </div>
+      <div class="hero-buttons">
+        <a href="#procedures" class="btn btn-primary"><i class="fas fa-user-plus"></i> 가입 절차</a>
+        <a href="#about" class="btn btn-outline"><i class="fas fa-info-circle"></i> 단지 개요</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">ABOUT PROJECT</div>
+        <h2>단지 개요</h2>
+        <p>e편한세상 분당 퍼스트빌리지의 기본 정보를 확인하세요</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-image fade-in">
+          <img src="img/perspective.png" alt="e편한세상 분당 퍼스트빌리지 투시도">
+        </div>
+        <div class="about-text fade-in">
+          <h3>성남낙생지구 A-1블록</h3>
+          <p>
+            e편한세상 분당 퍼스트빌리지는 경기도 성남시 분당구 동막로 245 일원에 위치한
+            대규모 공공주택 단지입니다. LH 한국토지주택공사에서 시행하고 DL이앤씨, 극동건설,
+            고덕종합건설, 금성백조건설이 공동 시공하는 프로젝트입니다.
+          </p>
+          <p>
+            신혼희망타운 공공분양 933세대와 행복주택 467세도를 포함하여 총 1,400세대의
+            주거공간이 조성되며, 2029년 2월 입주를 목표로 하고 있습니다.
+          </p>
+          <div class="about-features">
+            <div class="about-feature">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>성남시 분당구 동막로 245 일원</span>
+            </div>
+            <div class="about-feature">
+              <i class="fas fa-building"></i>
+              <span>지하 4층 ~ 지상 25층 / 15개동</span>
+            </div>
+            <div class="about-feature">
+              <i class="fas fa-users"></i>
+              <span>총 1,400세대</span>
+            </div>
+            <div class="about-feature">
+              <i class="fas fa-car"></i>
+              <span>주차 1,776대 (공동 1,768 / 근린 8)</span>
+            </div>
+            <div class="about-feature">
+              <i class="fas fa-calendar-alt"></i>
+              <span>입주 예정: 2029년 02월</span>
+            </div>
+            <div class="about-feature">
+              <i class="fas fa-store"></i>
+              <span>주택전시관 2026년 07월 예정</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INFO CARDS ===== -->
+  <section id="info">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">PROJECT INFO</div>
+        <h2>주요 정보</h2>
+        <p>사업주체, 위치, 시설 등 핵심 정보를 한눈에</p>
+      </div>
+      <div class="info-cards">
+        <div class="info-card fade-in">
+          <div class="info-card-icon"><i class="fas fa-user-tie"></i></div>
+          <h3>시행사</h3>
+          <p>한국토지주택공사 (LH)</p>
+          <span class="value">LH Corporation</span>
+        </div>
+        <div class="info-card fade-in">
+          <div class="info-card-icon"><i class="fas fa-hard-hat"></i></div>
+          <h3>시공사 (공동시공)</h3>
+          <p>DL이앤씨 · 극동건설 · 고덕종합건설 · 금성백조건설</p>
+          <span class="value">4개사 공동시공</span>
+        </div>
+        <div class="info-card fade-in">
+          <div class="info-card-icon"><i class="fas fa-map-pin"></i></div>
+          <h3>현장 위치</h3>
+          <p>경기도 성남시 분당구 동막로 245 일원<br>(성남낙생지구 A-1블록)</p>
+        </div>
+        <div class="info-card fade-in">
+          <div class="info-card-icon"><i class="fas fa-showcase"></i></div>
+          <h3>주택전시관</h3>
+          <p>경기도 용인시 수지구 동천동 855-2</p>
+          <span class="value">2026년 07월 오픈 예정</span>
+        </div>
+        <div class="info-card fade-in">
+          <div class="info-card-icon"><i class="fas fa-phone"></i></div>
+          <h3>문의 전화</h3>
+          <p>031-538-1777</p>
+        </div>
+        <div class="info-card fade-in">
+          <div class="info-card-icon"><i class="fas fa-home"></i></div>
+          <h3>주택유형</h3>
+          <p>국민주택 (전용 85㎡ 이하)<br>분양가상한제 적용 · 지역난방</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FLOOR PLANS ===== -->
+  <section id="plans">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">FLOOR PLANS</div>
+        <h2>평형 정보</h2>
+        <p>다양한 주택형과 분양가격을 확인하세요</p>
+      </div>
+      <div class="plans-grid">
+        <div class="plan-card fade-in" onclick="openFloorPlan('51A')">
+          <div class="type">Type 51A</div>
+          <div class="area">51<span>㎡</span></div>
+          <div class="units">413호</div>
+          <div class="price">약 5.55억 ~ 5.91억 원</div>
+          <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
+        </div>
+        <div class="plan-card fade-in" onclick="openFloorPlan('55A')">
+          <div class="type">Type 55A</div>
+          <div class="area">55<span>㎡</span></div>
+          <div class="units">468호</div>
+          <div class="price">약 5.98억 ~ 6.37억 원</div>
+          <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
+        </div>
+        <div class="plan-card fade-in" onclick="openFloorPlan('55B')">
+          <div class="type">Type 55B</div>
+          <div class="area">55<span>㎡</span></div>
+          <div class="units">254호</div>
+          <div class="price">약 5.98억 ~ 6.36억 원</div>
+          <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
+        </div>
+        <div class="plan-card fade-in" onclick="openFloorPlan('59A')">
+          <div class="type">Type 59A</div>
+          <div class="area">59<span>㎡</span></div>
+          <div class="units">255세대</div>
+          <div class="price">약 6.4억 ~ 6.8억 원</div>
+          <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
+        </div>
+        <div class="plan-card fade-in" onclick="openFloorPlan('59T')">
+          <div class="type">Type 59T</div>
+          <div class="area">59<span>㎡</span></div>
+          <div class="units">10세대</div>
+          <div class="price">약 6.7억 ~ 6.8억 원</div>
+          <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TIMELINE ===== -->
+  <section id="timeline">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">KEY SCHEDULE</div>
+        <h2>주요 일정</h2>
+        <p>2026년 기준 주요 청약 및 계약 일정</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">2026.05.29</div>
+            <h3>입주자 모집 공고</h3>
+            <p>자격·소득·자산·거주기간 판단 기준일</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">2026.07.03</div>
+            <h3>주택전시관 개관</h3>
+            <p>경기도 용인시 수지구 동천동 855-2 / 오전 10시</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">07.13 ~ 07.14</div>
+            <h3>사전청약 당첨자 신청</h3>
+            <p>LH 청약플러스 / 모바일앱 / 10:00 ~ 17:00</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">07.20 ~ 07.21</div>
+            <h3>본청약 (신혼부부 등)</h3>
+            <p>LH 청약플러스 / 모바일앱 / 10:00 ~ 17:00</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">07.31</div>
+            <h3>당첨자 발표</h3>
+            <p>오후 14:00 이후 / SMS, LH 청약플러스, ARS(1661-7700)</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">08.07 ~ 08.17</div>
+            <h3>당첨자 서류 제출</h3>
+            <p>방문 제출 / 10:00 ~ 16:00 (공고일 이후 발급분만 인정)</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">11.07 ~ 11.13</div>
+            <h3>계약 체결</h3>
+            <p>현장계약 (주택전시관 내) / 10:00 ~ 16:00</p>
+          </div>
+        </div>
+        <div class="timeline-item fade-in">
+          <div class="timeline-content">
+            <div class="timeline-date">2029.02</div>
+            <h3>입주 예정</h3>
+            <p>택지조성 및 송전탑 지중화 공사 상황에 따라 지연 가능</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NEWS ===== -->
+  <section id="news">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">NEWS & UPDATES</div>
+        <h2>뉴스 & 소식</h2>
+        <p>단지 관련 최신 뉴스를 확인하세요</p>
+      </div>
+      <div class="news-list">
+        <div class="news-item fade-in">
+          <div class="news-date">
+            <span class="day">29</span>
+            <span class="period">2026.05</span>
+          </div>
+          <div class="news-body">
+            <div class="news-tag">입주자모집공고</div>
+            <h3>입주자 모집공고 발표 — 청약 일정 확정</h3>
+            <p>e편한세상 분당 퍼스트빌리지(성남낙생지구 A-1블록)의 입주자 모집공고가 2026년 5월 29일 공고되었습니다. 사전청약은 7월 13일~14일, 본청약은 7월 20일~21일 진행됩니다.</p>
+          </div>
+        </div>
+        <div class="news-item fade-in">
+          <div class="news-date">
+            <span class="day">03</span>
+            <span class="period">2026.07</span>
+          </div>
+          <div class="news-body">
+            <div class="news-tag">전시관</div>
+            <h3>주택전시관 개관 예정 — 평면도 및 상세 견적 확인</h3>
+            <p>경기도 용인시 수지구 동천동 855-2에 주택전시관이 2026년 7월 3일 개관 예정입니다. 내방 시 상세 평면도 및 견적을 제공받을 수 있습니다.</p>
+          </div>
+        </div>
+        <div class="news-item fade-in">
+          <div class="news-date">
+            <span class="day">--</span>
+            <span class="period">2026</span>
+          </div>
+          <div class="news-body">
+            <div class="news-tag">공사</div>
+            <h3>택지조성 및 송전탑 지중화 공사 진행 중</h3>
+            <p>입주 예정일(2029년 2월)은 택지조성 및 송전탑 지중화 공사 상황에 따라 지연될 수 있습니다. 최신 공사 진척 소식은 협의회에서 안내해 드립니다.</p>
+          </div>
+        </div>
+        <div class="news-item fade-in">
+          <div class="news-date">
+            <span class="day">--</span>
+            <span class="period">2026</span>
+          </div>
+          <div class="news-body">
+            <div class="news-tag">입예협</div>
+            <h3>입주예정자 협의회 설립 준비</h3>
+            <p>2023년 10월 5일 설립된 사전청약 입주예정자 협의회가 설립되었고, 본청약 당첨자와 함께 입예협을 설립 예정입니다. 이웃 간 정보공유 및 소통을 위한 다양한 활동을 계획 중이며, 가입 절차는 아래에서 확인하세요.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROCEDURES ===== -->
+  <section id="procedures">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag" style="background: rgba(232,98,46,0.3);">JOIN US</div>
+        <h2>가입 절차</h2>
+        <p>입주예정자 협의회에 가입하는 방법을 안내해 드립니다</p>
+      </div>
+      <div class="procedure-steps">
+        <div class="procedure-step fade-in">
+          <div class="step-number">1</div>
+          <h3>입주자 카페 가입</h3>
+          <p><a href="https://cafe.naver.com/naksangheemang" target="_blank" class="procedure-link">네이버 카페 가입하기 →</a></p>
+        </div>
+        <div class="procedure-step fade-in">
+          <div class="step-number">2</div>
+          <h3>단체 대화방 가입</h3>
+          <p>카카오톡 단체 대화방에 참여하여 실시간 소통하세요</p>
+          <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" class="procedure-link">카카오톡 단체 대화방 입장 →</a>
+        </div>
+        <div class="procedure-step fade-in">
+          <div class="step-number">3</div>
+          <h3>회칙 전문 확인</h3>
+          <p><a href="https://cafe.naver.com/f-e/cafes/30587172/articles/432?menuid=21&referrerAllArticles=false" target="_blank" class="procedure-link">회칙 전문 보기 →</a></p>
+        </div>
+        <div class="procedure-step fade-in">
+          <div class="step-number">4</div>
+          <h3>운영위원 윤리서약서 확인</h3>
+          <p>협의회 운영위원의 이력 및 윤리서약서를 확인하세요</p>
+        </div>
+        <div class="procedure-step fade-in">
+          <div class="step-number">5</div>
+          <h3>위임동의서 제출</h3>
+          <p>입주예정자 협의회 위임동의서를 제출하여 정식 회원이 되세요</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GALLERY ===== -->
+  <section id="gallery">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">GALLERY</div>
+        <h2>갤러리</h2>
+        <p>단지 조감도 및 관련 이미지를 확인하세요</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item fade-in" onclick="openGalleryModal('img/perspective.png', '단지 투시도')">
+          <div class="gallery-placeholder gp-1">
+            <img src="img/perspective.png" alt="단지 투시도">
+          </div>
+        </div>
+        <div class="gallery-item fade-in" onclick="openGalleryModal('img/aerial.png', '단지 조감도')">
+          <div class="gallery-placeholder gp-2">
+            <img src="img/aerial.png" alt="단지 조감도">
+          </div>
+        </div>
+        <div class="gallery-item fade-in" onclick="openGalleryModal('img/siteplan.png', '단지 배치도')">
+          <div class="gallery-placeholder gp-3">
+            <img src="img/siteplan.png" alt="단지 배치도">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GALLERY MODAL ===== -->
+  <div id="galleryModal" class="gallery-modal" onclick="closeGalleryModal()">
+    <div class="gallery-modal-content" onclick="event.stopPropagation()">
+      <button class="gallery-modal-close" onclick="closeGalleryModal()">&times;</button>
+      <img id="galleryModalImg" src="" alt="">
+      <div id="galleryModalCaption" class="gallery-modal-caption"></div>
+    </div>
+  </div>
+
+  <!-- ===== COMMUNITY ===== -->
+  <section id="community">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">COMMUNITY</div>
+        <h2>커뮤니티</h2>
+        <p>다양한 채널에서 이웃과 소통하세요</p>
+      </div>
+      <div class="community-grid">
+        <div class="community-card fade-in">
+          <div class="community-card-icon cc-cafe"><i class="fab fa-naver"></i></div>
+          <h3>네이버 카페</h3>
+          <p>최신 단지 소식, 분양 정보, 공사 진척 등<br>다양한 정보를 공유하는 공간</p>
+          <a href="https://cafe.naver.com/naksangheemang" target="_blank" class="btn btn-primary">카페 가입하기</a>
+        </div>
+        <div class="community-card fade-in">
+          <div class="community-card-icon cc-kakao"><i class="fab fa-kakao"></i></div>
+          <h3>카카오톡 대화방</h3>
+          <p>실시간으로 소통하고<br>즉각적인 정보를 나누는 공간</p>
+          <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" class="btn btn-primary">대화방 참여</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">CONTACT</div>
+        <h2>문의 & 연락처</h2>
+        <p>궁금한 점이 있으시면 언제든지 문의하세요</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-card fade-in">
+          <i class="fas fa-phone-alt"></i>
+          <h3>주택전시관 문의</h3>
+          <p><a href="tel:031-538-1777">031-538-1777</a></p>
+        </div>
+        <div class="contact-card fade-in">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>주택전시관 위치</h3>
+          <p>경기도 용인시 수지구 동천동 855-2</p>
+        </div>
+        <div class="contact-card fade-in">
+          <i class="fas fa-building"></i>
+          <h3>현장 위치</h3>
+          <p>경기도 성남시 분당구 동막로 245 일원</p>
+        </div>
+        <div class="contact-card fade-in">
+          <i class="fas fa-university"></i>
+          <h3>대출문의</h3>
+          <p>우리은행 1599-0800<br>국민은행 1599-1771<br>신한은행 1599-8000</p>
+        </div>
+        <div class="contact-card fade-in">
+          <i class="fas fa-mobile-alt"></i>
+          <h3>청약 플랫폼</h3>
+          <p>LH 청약플러스<br>모바일앱 · KB부동산</p>
+        </div>
+        <div class="contact-card fade-in">
+          <i class="fas fa-globe"></i>
+          <h3>공식 홈페이지</h3>
+          <p><a href="https://www.elife.co.kr/Posm_list01.action?commonMap.CD_BIZ_LND=210114" target="_blank">www.elife.co.kr</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <h3>e편한세상 분당 퍼스트빌리지 입주예정자 협의회</h3>
+          <p>
+            이웃 간 정보공유 및 소통을 위해 활동하는 입주예정자 협의회입니다.
+            안전하고 완벽한 입주를 위해 함께 노력합니다.
+          </p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>바로가기</h4>
+            <ul>
+              <li><a href="#main">메인</a></li>
+              <li><a href="#about">단지 개요</a></li>
+              <li><a href="#plans">평형 정보</a></li>
+              <li><a href="#timeline">주요 일정</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>커뮤니티</h4>
+            <ul>
+              <li><a href="https://cafe.naver.com/naksangheemang" target="_blank">네이버 카페</a></li>
+              <li><a href="https://open.kakao.com/o/g3bb1i9d" target="_blank">카카오톡 대화방</a></li>
+              <li><a href="#contact">문의하기</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>참고 링크</h4>
+            <ul>
+              <li><a href="https://www.elife.co.kr/Posm_list01.action?commonMap.CD_BIZ_LND=210114" target="_blank">공식 홈페이지</a></li>
+              <li><a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_02_260529.pdf" target="_blank">입주자모집공고 (전문)</a></li>
+              <li><a href="https://apply.lh.or.kr" target="_blank">LH 청약플러스</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 e편한세상 분당 퍼스트빌리지 입주예정자 협의회. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Active nav link
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav ul li a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        if (window.scrollY >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Fade-in animation on scroll
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    fadeElements.forEach(el => observer.observe(el));
+
+    // Close mobile nav on link click
+    document.querySelectorAll('#mainNav a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('mainNav').classList.remove('active');
+      });
+    });
+
+    // D-Day Countdown
+    function updateDDay() {
+      const now = new Date();
+
+      const dday1Target = new Date('2026-07-03T00:00:00+09:00');
+      const dday2Target = new Date('2026-07-20T00:00:00+09:00');
+      const dday3Target = new Date('2029-02-01T00:00:00+09:00');
+
+      function calcDDay(target) {
+        const diff = target - now;
+        if (diff <= 0) return 'D-Day';
+        return Math.ceil(diff / (1000 * 60 * 60 * 24)) + '일';
+      }
+
+      const el1 = document.getElementById('dday1');
+      const el2 = document.getElementById('dday2');
+      const el3 = document.getElementById('dday3');
+      if (el1) el1.textContent = calcDDay(dday1Target);
+      if (el2) el2.textContent = calcDDay(dday2Target);
+      if (el3) el3.textContent = calcDDay(dday3Target);
+    }
+
+    updateDDay();
+    setInterval(updateDDay, 60000); // 매분 업데이트
+
+    // Floor Plan Modal
+    function openFloorPlan(type) {
+      const modal = document.getElementById('floorplanModal');
+      const modalImg = document.getElementById('floorplanImg');
+      const modalType = document.getElementById('floorplanType');
+      
+      const images = {
+        '51A': '51A.png',
+        '55A': '55A.png',
+        '55B': '55B.png',
+        '59A': '59A.png',
+        '59T': '59T.png'
+      };
+      
+      modalType.textContent = 'Type ' + type;
+      modalImg.src = 'img/' + images[type];
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFloorPlan() {
+      document.getElementById('floorplanModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('floorplanModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.getElementById('floorplanModal').style.display = 'none';
+        document.body.style.overflow = '';
+        closeGalleryModal();
+      }
+    });
+
+    // Gallery Modal
+    function openGalleryModal(src, caption) {
+      const modal = document.getElementById('galleryModal');
+      const modalImg = document.getElementById('galleryModalImg');
+      const modalCaption = document.getElementById('galleryModalCaption');
+      
+      modalImg.src = src;
+      modalCaption.textContent = caption;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGalleryModal() {
+      document.getElementById('galleryModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  </script>
+
+  <!-- Floor Plan Modal -->
+  <div id="floorplanModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeFloorPlan()">&times;</span>
+      <h3 id="floorplanType">Type</h3>
+      <img id="floorplanImg" src="" alt="평면도">
+    </div>
+  </div>
+</body>
+</html>
