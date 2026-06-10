@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>낙생지구 A-1블록 신혼희망타운 공공분양 계산기</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 상단 헤더 - 오렌지 톤 */
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+
+      /* 히어로/블록 - 남색 계열 */
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+
+      /* 블록 배경 - 베이지 계열 */
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --beige-warm: #f0e6d8;
+
+      /* 텍스트 */
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+
+      /* 그림자 */
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.7;
+      background: var(--beige);
+    }
+
+    /* ===== HEADER / NAV ===== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid var(--orange-warm);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: linear-gradient(135deg, var(--orange-dark), #a03e15);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .logo-icon {
+      width: 84px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-icon img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .logo-text span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 5px;
+    }
+
+    nav ul li a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--white);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-links a {
+      color: rgba(255,255,255,0.8);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .social-links a:hover {
+      color: var(--white);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* ===== HERO - 남색 계열 ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-light) 100%);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .hero-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--orange-warm);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { top: 60%; left: 20%; animation-delay: 2s; }
+    .particle:nth-child(3) { top: 30%; left: 70%; animation-delay: 4s; }
+    .particle:nth-child(4) { top: 80%; left: 80%; animation-delay: 6s; }
+    .particle:nth-child(5) { top: 10%; left: 50%; animation-delay: 8s; }
+    .particle:nth-child(6) { top: 50%; left: 90%; animation-delay: 10s; }
+    .particle:nth-child(7) { top: 70%; left: 40%; animation-delay: 12s; }
+    .particle:nth-child(8) { top: 40%; left: 60%; animation-delay: 14s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+      25% { transform: translateY(-30px) translateX(15px); opacity: 0.6; }
+      50% { transform: translateY(-15px) translateX(-10px); opacity: 0.4; }
+      75% { transform: translateY(-40px) translateX(20px); opacity: 0.5; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+      max-width: 900px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(232, 98, 46, 0.2);
+      border: 1px solid var(--orange);
+      color: var(--orange-warm);
+      padding: 6px 20px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      margin-bottom: 25px;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    .hero h1 .highlight {
+      color: var(--orange-warm);
+      position: relative;
+    }
+
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 300;
+      margin-bottom: 30px;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 650px;
+      margin: 0 auto 40px;
+      line-height: 1.8;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat-number {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--orange-warm);
+      display: block;
+    }
+
+    .hero-stat-label {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(232, 98, 46, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--orange);
+      color: var(--orange-warm);
+      transform: translateY(-2px);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.5);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 60px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      background: rgba(232, 98, 46, 0.15);
+      color: var(--orange);
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+
+    .section-header p {
+      color: var(--gray);
+      max-width: 600px;
+      margin: 0 auto;
+      font-size: 0.95rem;
+    }
+
+    /* ===== CALCULATOR SECTION ===== */
+    #calculator {
+      background: var(--beige);
+    }
+
+    .calc-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    /* 탭 네비게이션 */
+    .calc-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+
+    .calc-tab-btn {
+      padding: 12px 30px;
+      border: 2px solid var(--navy);
+      background: var(--white);
+      color: var(--navy);
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .calc-tab-btn:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .calc-tab-btn.active {
+      background: var(--navy);
+      color: var(--white);
+      border-color: var(--navy);
+    }
+
+    /* 입력 폼 */
+    .calc-form {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .calc-form h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--beige-warm);
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .form-group select,
+    .form-group input[type="number"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--beige-warm);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--dark);
+      background: var(--white);
+      transition: border-color 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b5b52' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .form-group select:focus,
+    .form-group input[type="number"]:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    /* 커스텀 슬라이더 */
+    .slider-group {
+      margin-bottom: 22px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .slider-header label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin: 0;
+    }
+
+    .slider-value {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--orange);
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-top: 6px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(to right, var(--beige-warm), var(--orange));
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--orange);
+      cursor: pointer;
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 8px rgba(232, 98, 46, 0.4);
+      transition: transform 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--orange);
+      cursor: pointer;
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 8px rgba(232, 98, 46, 0.4);
+    }
+
+    /* 토글 버튼 */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .toggle-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .toggle-btn {
+      position: relative;
+      width: 56px;
+      height: 30px;
+      border-radius: 15px;
+      background: var(--beige-warm);
+      border: 2px solid var(--beige-warm);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .toggle-btn.active {
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .toggle-btn::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--white);
+      transition: transform 0.3s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle-btn.active::after {
+      transform: translateX(26px);
+    }
+
+    /* 결과 카드 */
+    .calc-results {
+      position: sticky;
+      top: 90px;
+    }
+
+    .result-card {
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 30px;
+      color: var(--white);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .result-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(255,255,255,0.15);
+      color: var(--orange-warm);
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-item .label {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .result-item .value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .result-item.highlight {
+      background: rgba(232, 98, 46, 0.15);
+      margin: 15px -30px;
+      padding: 15px 30px;
+      border-radius: 8px;
+      border-bottom: none;
+    }
+
+    .result-item.highlight .label {
+      color: var(--orange-warm);
+      font-weight: 600;
+    }
+
+    .result-item.highlight .value {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--orange-warm);
+    }
+
+    .result-item.success .value {
+      color: #4ade80;
+    }
+
+    .result-item.danger .value {
+      color: #f87171;
+    }
+
+    .result-placeholder {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .result-placeholder i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .result-placeholder p {
+      font-size: 0.9rem;
+    }
+
+    /* 정산표 미리보기 */
+    .settlement-table-wrapper {
+      margin-top: 25px;
+      overflow-x: auto;
+    }
+
+    .settlement-table-wrapper h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--orange-warm);
+      margin-bottom: 12px;
+    }
+
+    .settlement-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .settlement-table th {
+      background: rgba(255,255,255,0.1);
+      color: var(--orange-warm);
+      padding: 8px 10px;
+      text-align: center;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .settlement-table td {
+      padding: 8px 10px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.8);
+    }
+
+    .settlement-table tr:hover td {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+      color: rgba(255,255,255,0.6);
+      padding: 40px 20px 25px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .footer-brand {
+      max-width: 350px;
+    }
+
+    .footer-brand h3 {
+      color: var(--white);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .footer-brand p {
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 50px;
+    }
+
+    .footer-links h4 {
+      color: var(--white);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer-links ul li a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links ul li a:hover {
+      color: var(--orange-warm);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 20px;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 992px) {
+      .calc-container {
+        grid-template-columns: 1fr;
+      }
+
+      .calc-results {
+        position: static;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-inner {
+        height: 60px;
+      }
+
+      nav {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, var(--orange-dark), #a03e15);
+        padding: 20px;
+      }
+
+      nav.active {
+        display: block;
+      }
+
+      nav ul {
+        flex-direction: column;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 12px 16px;
+      }
+
+      .mobile-toggle {
+        display: block;
+      }
+
+      .social-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 100px 20px 40px;
+      }
+
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.5rem;
+      }
+
+      section {
+        padding: 40px 15px;
+      }
+
+      .calc-form {
+        padding: 20px;
+      }
+
+      .result-card {
+        padding: 20px;
+      }
+
+      .result-item.highlight {
+        margin: 10px -20px;
+        padding: 12px 20px;
+      }
+
+      .result-item.highlight .value {
+        font-size: 1.3rem;
+      }
+
+      .calc-tab-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+
+      .footer-top {
+        flex-direction: column;
+      }
+
+      .footer-links {
+        flex-direction: column;
+        gap: 25px;
+      }
+    }
+
+    /* ===== ANIMATIONS ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== NOTICE ===== */
+    .notice-box {
+      background: rgba(243, 156, 18, 0.1);
+      border-left: 4px solid var(--orange-warm);
+      padding: 15px 20px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 25px;
+      font-size: 0.85rem;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    .notice-box strong {
+      color: var(--orange-dark);
+    }
+
+    .loan-amount-display {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .loan-amount-display .amount {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><img src="img/elife_logo.svg" alt="e-life 로고"></div>
+        <div class="logo-text">
+          낙생지구 신혼희망타운
+          <span>공공분양 계산기</span>
+        </div>
+      </a>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="index.html">메인 페이지</a></li>
+          <li><a href="#calculator" class="active">계산기</a></li>
+        </ul>
+      </nav>
+      <div class="social-links">
+        <a href="https://cafe.naver.com/naksangheemang" target="_blank" title="네이버 카페"><i class="fab fa-naver"></i></a>
+        <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" title="카카오톡"><i class="fab fa-kakao"></i></a>
+      </div>
+      <button class="mobile-toggle" onclick="document.getElementById('mainNav').classList.toggle('active')">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="main">
+    <div class="hero-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">NAKSEONG A-1 BLOCK</div>
+      <h1><span class="highlight">낙생지구 A-1블록</span><br>신혼희망타운 공공분양 계산기</h1>
+      <p class="hero-subtitle">입주예정자를 위한 분양가 &amp; 수익공유 계산기</p>
+      <p class="hero-desc">
+        성남시 낙생지구 A-1블록 신혼희망타운 공공분양 관련 분양가 계산과<br>
+        수익공유 정산액을 간편하게 확인하세요.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday">--</span>
+          <span class="hero-stat-label">D-Day</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number">1,400</span>
+          <span class="hero-stat-label">총 세대</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number">25</span>
+          <span class="hero-stat-label">지상 최고층</span>
+        </div>
+      </div>
+      <div class="hero-buttons">
+        <a href="#calculator" class="btn btn-primary"><i class="fas fa-calculator"></i> 계산하기</a>
+        <a href="index.html" class="btn btn-outline"><i class="fas fa-home"></i> 메인 페이지</a>
+      </div>
+      <div class="floorplan-hint">
+        <i class="fas fa-hand-pointer"></i> 아래 계산기를 통해 분양가 및 수익공유를 확인하세요
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <i class="fas fa-chevron-down fa-2x"></i>
+    </div>
+  </section>
+
+  <!-- ===== CALCULATOR ===== -->
+  <section id="calculator">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">CALCULATOR</div>
+        <h2>분양 &amp; 수익공유 계산기</h2>
+        <p>주택형과 조건을 선택하면 실시간으로 계산됩니다</p>
+      </div>
+
+      <!-- 탭 네비게이션 -->
+      <div class="calc-tabs">
+        <button class="calc-tab-btn active" onclick="switchTab(event, 'priceTab')">
+          <i class="fas fa-calculator"></i> 분양 계산기
+        </button>
+        <button class="calc-tab-btn" onclick="switchTab(event, 'shareTab')">
+          <i class="fas fa-chart-line"></i> 수익공유 계산기
+        </button>
+      </div>
+
+      <div class="calc-container">
+        <!-- 왼쪽: 입력 폼 -->
+        <div>
+          <!-- Tab 1: 분양 계산기 -->
+          <div id="priceTab" class="tab-content active">
+            <div class="calc-form">
+              <h3><i class="fas fa-home"></i> 분양가 계산</h3>
+
+              <!-- 주택형 -->
+              <div class="form-group">
+                <label for="priceHousing">주택형</label>
+                <select id="priceHousing" onchange="updateFloorOptions(); calculatePrice();">
+                  <option value="">주택형 선택</option>
+                  <option value="51A">51A형 (51㎡) — 413호</option>
+                  <option value="55A">55A형 (55㎡) — 468호</option>
+                  <option value="55B">55B형 (55㎡) — 254호</option>
+                  <option value="59A">59A형 (59㎡) — 255세대</option>
+                  <option value="59T">59T형 (59㎡) — 10세대</option>
+                </select>
+              </div>
+
+              <!-- 층 -->
+              <div class="form-group">
+                <label for="priceFloor">층 선택</label>
+                <select id="priceFloor" onchange="calculatePrice()">
+                  <option value="">먼저 주택형을 선택하세요</option>
+                </select>
+              </div>
+
+              <!-- 대출금액 슬라이더 -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="priceLoanRange"><i class="fas fa-percentage"></i> 대출금액</label>
+                  <span class="slider-value" id="priceLoanValue">50%</span>
+                </div>
+                <input type="range" id="priceLoanRange" min="30" max="70" step="10" value="50"
+                       oninput="updateCalcLoan(); calculatePrice();">
+                <div class="slider-labels">
+                  <span>30%</span>
+                  <span>50%</span>
+                  <span>70%</span>
+                </div>
+                <div class="loan-amount-display">
+                  예상 대출금액: <span class="amount" id="priceLoanAmount">—</span>
+                </div>
+              </div>
+
+              <!-- 추가선택품목 -->
+              <div class="form-group">
+                <label for="priceOption">추가선택품목</label>
+                <select id="priceOption" onchange="calculatePrice()">
+                  <option value="0">선택 안함 (0원)</option>
+                  <option value="300">약 300만원</option>
+                  <option value="500">약 500만원</option>
+                  <option value="700">약 700만원</option>
+                  <option value="1000">약 1,000만원</option>
+                  <option value="1500">약 1,500만원</option>
+                </select>
+              </div>
+
+              <!-- 마이너스 옵션 토글 -->
+              <div class="toggle-group">
+                <span class="toggle-label">마이너스 옵션 적용</span>
+                <div class="toggle-btn" id="minusToggle" onclick="toggleMinusOption()"></div>
+              </div>
+
+              <div class="notice-box">
+                <strong>참고:</strong> 취득세는 전국 평균 5%로 계산됩니다. 실제 가격은 공시가격과 청약 유형에 따라 변동될 수 있습니다. 마이너스 옵션은 계약 시에만 선택 가능하며, 이후 취소가 불가합니다.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: 수익공유 계산기 -->
+          <div id="shareTab" class="tab-content">
+            <div class="calc-form">
+              <h3><i class="fas fa-chart-pie"></i> 수익공유 정산 계산</h3>
+
+              <!-- 주택형 -->
+              <div class="form-group">
+                <label for="shareHousing">주택형</label>
+                <select id="shareHousing" onchange="calculateShare()">
+                  <option value="">주택형 선택</option>
+                  <option value="51A">51A형 (51㎡)</option>
+                  <option value="55A">55A형 (55㎡)</option>
+                  <option value="55B">55B형 (55㎡)</option>
+                  <option value="59A">59A형 (59㎡)</option>
+                  <option value="59T">59T형 (59㎡)</option>
+                </select>
+              </div>
+
+              <!-- 대출금액 슬라이더 -->
+              <div class="slider-group">
+                <div class="slider-header">
+                  <label for="shareLoanRange"><i class="fas fa-percentage"></i> 대출금액</label>
+                  <span class="slider-value" id="shareLoanValue">50%</span>
+                </div>
+                <input type="range" id="shareLoanRange" min="30" max="70" step="10" value="50"
+                       oninput="updateShareLoan(); calculateShare();">
+                <div class="slider-labels">
+                  <span>30%</span>
+                  <span>50%</span>
+                  <span>70%</span>
+                </div>
+                <div class="loan-amount-display">
+                  예상 대출금액: <span class="amount" id="shareLoanAmount">—</span>
+                </div>
+              </div>
+
+              <!-- 대출기간 -->
+              <div class="form-group">
+                <label for="sharePeriod">대출기간</label>
+                <select id="sharePeriod" onchange="calculateShare()">
+                  <option value="">대출기간 선택</option>
+                  <option value="1">1년</option>
+                  <option value="5">5년</option>
+                  <option value="10">10년</option>
+                  <option value="15">15년</option>
+                  <option value="20">20년</option>
+                  <option value="25">25년</option>
+                  <option value="30">30년</option>
+                </select>
+              </div>
+
+              <!-- 자녀 수 -->
+              <div class="form-group">
+                <label for="shareChildren">자녀 수</label>
+                <select id="shareChildren" onchange="calculateShare()">
+                  <option value="">자녀 수 선택</option>
+                  <option value="0">자녀 없음 (0명)</option>
+                  <option value="1">자녀 1명</option>
+                  <option value="2">자녀 2명 이상</option>
+                </select>
+              </div>
+
+              <!-- 연평균 상승률 -->
+              <div class="form-group">
+                <label for="shareRate">연평균 상승률</label>
+                <select id="shareRate" onchange="calculateShare()">
+                  <option value="">상승률 선택</option>
+                  <option value="0">0% (보합)</option>
+                  <option value="0.5">0.5% (저성장)</option>
+                  <option value="1">1% (과거 평균 1.51% 미만)</option>
+                  <option value="1.5">1.5% (과거 평균)</option>
+                  <option value="2">2% (중간 성장)</option>
+                  <option value="2.5">2.5% (고성장)</option>
+                  <option value="3">3% (최고 성장)</option>
+                </select>
+              </div>
+
+              <div class="notice-box">
+                <strong>참고:</strong> 정산비율은 정부 기준 정산표를 기반으로 합니다. 연평균 상승률은 과거 실제 상승률(약 1.51%)을 참고하여 선택하세요. 대출기간 중 도상환 시나리오는 지원되지 않습니다.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 오른쪽: 결과 카드 -->
+        <div class="calc-results">
+          <!-- 분양 계산기 결과 -->
+          <div id="priceResult" class="result-card">
+            <h3><i class="fas fa-receipt"></i> 분양가 결과</h3>
+            <div class="result-placeholder">
+              <i class="fas fa-hand-pointer"></i>
+              <p>주택형과 층을 선택하면<br>계산 결과가 표시됩니다</p>
+            </div>
+          </div>
+
+          <!-- 수익공유 계산기 결과 -->
+          <div id="shareResult" class="result-card" style="display:none;">
+            <h3><i class="fas fa-coins"></i> 수익공유 정산 결과</h3>
+            <div class="result-placeholder">
+              <i class="fas fa-hand-pointer"></i>
+              <p>모든 항목을 선택하면<br>정산 결과가 표시됩니다</p>
+            </div>
+            <!-- 정산표 미리보기 -->
+            <div class="settlement-table-wrapper" id="settlementPreview" style="display:none;">
+              <h4><i class="fas fa-table"></i> 정산표 미리보기 (자녀 0명 기준)</h4>
+              <table class="settlement-table" id="settlementTablePreview">
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <h3>e편한세상 분당 퍼스트빌리지 입주예정자 협의회</h3>
+          <p>
+            이웃 간 정보공유 및 소통을 위해 활동하는 입주예정자 협의회입니다.
+            안전하고 완벽한 입주를 위해 함께 노력합니다.
+          </p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>바로가기</h4>
+            <ul>
+              <li><a href="#main">메인</a></li>
+              <li><a href="#calculator">계산기</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>커뮤니티</h4>
+            <ul>
+              <li><a href="https://cafe.naver.com/naksangheemang" target="_blank">네이버 카페</a></li>
+              <li><a href="https://open.kakao.com/o/g3bb1i9d" target="_blank">카카오톡 대화방</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>참고 링크</h4>
+            <ul>
+              <li><a href="https://www.elife.co.kr/Posm_list01.action?commonMap.CD_BIZ_LND=210114" target="_blank">공식 홈페이지</a></li>
+              <li><a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_02_260529.pdf" target="_blank">입주자모집공고 (전문)</a></li>
+              <li><a href="https://apply.lh.or.kr" target="_blank">LH 청약플러스</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 e편한세상 분당 퍼스트빌리지 입주예정자 협의회. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    // ===== 데이터 =====
+
+    // 분양 가격표 (사전청약당첨자 기준)
+    const priceMap = {
+      // 51A형 (51㎡)
+      '51A-1': 555310000,
+      '51A-2': 561220000,
+      '51A-3': 573030000,
+      '51A-4': 584850000,
+      '51A-5': 590760000,
+
+      // 55A형 (55㎡)
+      '55A-1': 597690000,
+      '55A-2': 603600000,
+      '55A-3': 615420000,
+      '55A-4': 627240000,
+      '55A-5': 633150000,
+
+      // 55B형 (55㎡)
+      '55B-1': 597600000,
+      '55B-2': 603510000,
+      '55B-3': 615330000,
+      '55B-4': 627150000,
+      '55B-5': 633060000,
+
+      // 59A형 (59㎡)
+      '59A-1': 640070000,
+      '59A-2': 645980000,
+      '59A-3': 657800000,
+      '59A-4': 669620000,
+      '59A-5': 675530000,
+
+      // 59T형 (59㎡) — 1, 2층만
+      '59T-1': 670120000,
+      '59T-2': 676030000
+    };
+
+    // 마이너스 옵션 가격
+    const minusOptionMap = {
+      '51A': 26440000,
+      '55A': 28490000,
+      '55B': 28480000,
+      '59A': 30550000,
+      '59T': 30100000
+    };
+
+    // 수익공유 정산표
+    const settlementTable = {
+      // 1년
+      1: {
+        70: { 0: 50, 1: 40, 2: 30 },
+        50: { 0: 40, 1: 30, 2: 20 },
+        30: { 0: 30, 1: 20, 2: 15 }
+      },
+      // 5년
+      5: {
+        70: { 0: 50, 1: 40, 2: 30 },
+        50: { 0: 40, 1: 30, 2: 20 },
+        30: { 0: 30, 1: 20, 2: 15 }
+      },
+      // 10년
+      10: {
+        70: { 0: 48, 1: 38, 2: 28 },
+        50: { 0: 38, 1: 28, 2: 18 },
+        30: { 0: 28, 1: 18, 2: 13 }
+      },
+      // 15년
+      15: {
+        70: { 0: 38, 1: 28, 2: 18 },
+        50: { 0: 28, 1: 18, 2: 13 },
+        30: { 0: 20, 1: 15, 2: 10 }
+      },
+      // 20년
+      20: {
+        70: { 0: 28, 1: 18, 2: 10 },
+        50: { 0: 20, 1: 15, 2: 10 },
+        30: { 0: 20, 1: 15, 10: 10 }
+      },
+      // 25년
+      25: {
+        70: { 0: 22, 1: 15, 2: 10 },
+        50: { 0: 20, 1: 15, 2: 10 },
+        30: { 0: 20, 1: 15, 2: 10 }
+      },
+      // 30년
+      30: {
+        70: { 0: 20, 1: 15, 2: 10 },
+        50: { 0: 20, 1: 15, 2: 10 },
+        30: { 0: 20, 1: 15, 2: 10 }
+      }
+    };
+
+    // ===== 상태 =====
+    let minusOptionActive = false;
+
+    // ===== 유틸리티 =====
+    function formatPrice(price) {
+      if (price >= 100000000) {
+        return (price / 100000000).toFixed(2) + '억 원';
+      } else if (price >= 10000000) {
+        return (price / 10000000).toFixed(2) + '천만 원';
+      } else if (price >= 1000000) {
+        return Math.round(price / 1000000) + '백만 원';
+      }
+      return price.toLocaleString() + '원';
+    }
+
+    function formatPriceShort(price) {
+      if (price >= 100000000) {
+        return (price / 100000000).toFixed(2) + '억';
+      } else if (price >= 10000000) {
+        return (price / 10000000).toFixed(2) + '천만';
+      }
+      return price.toLocaleString();
+    }
+
+    // ===== 탭 전환 =====
+    function switchTab(event, tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.calc-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      // 결과 카드 전환
+      if (tabId === 'priceTab') {
+        document.getElementById('priceResult').style.display = 'block';
+        document.getElementById('shareResult').style.display = 'none';
+      } else {
+        document.getElementById('priceResult').style.display = 'none';
+        document.getElementById('shareResult').style.display = 'block';
+      }
+    }
+
+    // ===== 분양 계산기 =====
+    function updateFloorOptions() {
+      const housing = document.getElementById('priceHousing').value;
+      const floorSelect = document.getElementById('priceFloor');
+      floorSelect.innerHTML = '';
+
+      if (!housing) {
+        floorSelect.innerHTML = '<option value="">먼저 주택형을 선택하세요</option>';
+        return;
+      }
+
+      const floors = housing === '59T' ? [1, 2] : [1, 2, 3, 4, 5];
+      floors.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.textContent = f + '층';
+        floorSelect.appendChild(opt);
+      });
+    }
+
+    function updateCalcLoan() {
+      const range = document.getElementById('priceLoanRange');
+      const value = range.value;
+      document.getElementById('priceLoanValue').textContent = value + '%';
+
+      // 대출금액 계산
+      const housing = document.getElementById('priceHousing').value;
+      const floor = document.getElementById('priceFloor').value;
+      if (housing && floor) {
+        const key = housing + '-' + floor;
+        const basePrice = priceMap[key] || 0;
+        const loanAmount = basePrice * (value / 100);
+        document.getElementById('priceLoanAmount').textContent = formatPrice(loanAmount);
+      }
+    }
+
+    function toggleMinusOption() {
+      minusOptionActive = !minusOptionActive;
+      const toggle = document.getElementById('minusToggle');
+      toggle.classList.toggle('active', minusOptionActive);
+      calculatePrice();
+    }
+
+    function calculatePrice() {
+      const housing = document.getElementById('priceHousing').value;
+      const floor = document.getElementById('priceFloor').value;
+
+      if (!housing || !floor) {
+        document.getElementById('priceResult').innerHTML = `
+          <h3><i class="fas fa-receipt"></i> 분양가 결과</h3>
+          <div class="result-placeholder">
+            <i class="fas fa-hand-pointer"></i>
+            <p>주택형과 층을 선택하면<br>계산 결과가 표시됩니다</p>
+          </div>
+        `;
+        return;
+      }
+
+      const key = housing + '-' + floor;
+      const basePrice = priceMap[key] || 0;
+
+      // 마이너스 옵션
+      const minusDiscount = minusOptionActive ? (minusOptionMap[housing] || 0) : 0;
+
+      // 추가선택품목
+      const optionPrice = parseInt(document.getElementById('priceOption').value) * 10000;
+
+      // 총 분양가
+      const totalPrice = basePrice - minusDiscount + optionPrice;
+
+      // 취득세 (5%)
+      const acqTax = Math.round(totalPrice * 0.05);
+
+      // 계약금 (10%)
+      const depositAmount = Math.round(totalPrice * 0.1);
+
+      document.getElementById('priceResult').innerHTML = `
+        <h3><i class="fas fa-receipt"></i> 분양가 결과</h3>
+        <div class="result-item">
+          <span class="label">기본 분양가 (${housing}형 ${floor}층)</span>
+          <span class="value">${formatPrice(basePrice)}</span>
+        </div>
+        <div class="result-item ${minusOptionActive ? 'danger' : ''}">
+          <span class="label">마이너스 옵션 할인</span>
+          <span class="value">${minusOptionActive ? '-' + formatPrice(minusDiscount) : '—'}</span>
+        </div>
+        <div class="result-item">
+          <span class="label">추가선택품목</span>
+          <span class="value">${optionPrice > 0 ? '+' + formatPrice(optionPrice) : '—'}</span>
+        </div>
+        <div class="result-item highlight">
+          <span class="label">총 분양가</span>
+          <span class="value">${formatPrice(totalPrice)}</span>
+        </div>
+        <div class="result-item danger">
+          <span class="label">예상 취득세 (약 5%)</span>
+          <span class="value">${formatPrice(acqTax)}</span>
+        </div>
+        <div class="result-item success">
+          <span class="label">첫 계약금 (10%)</span>
+          <span class="value">${formatPrice(depositAmount)}</span>
+        </div>
+      `;
+    }
+
+    // ===== 수익공유 계산기 =====
+    function updateShareLoan() {
+      const range = document.getElementById('shareLoanRange');
+      const value = range.value;
+      document.getElementById('shareLoanValue').textContent = value + '%';
+
+      const housing = document.getElementById('shareHousing').value;
+      if (!housing) return;
+
+      // 기준 분양가
+      let basePrice;
+      if (housing === '59T') {
+        basePrice = priceMap['59T-1'] || 0;
+      } else {
+        basePrice = priceMap[housing + '-3'] || 0;
+      }
+
+      const loanAmount = basePrice * (value / 100);
+      document.getElementById('shareLoanAmount').textContent = formatPrice(loanAmount);
+    }
+
+    function calculateShare() {
+      const housing = document.getElementById('shareHousing').value;
+      const period = document.getElementById('sharePeriod').value;
+      const children = document.getElementById('shareChildren').value;
+      const rate = document.getElementById('shareRate').value;
+
+      if (!housing || !period || children === '' || rate === '') {
+        document.getElementById('shareResult').innerHTML = `
+          <h3><i class="fas fa-coins"></i> 수익공유 정산 결과</h3>
+          <div class="result-placeholder">
+            <i class="fas fa-hand-pointer"></i>
+            <p>모든 항목을 선택하면<br>정산 결과가 표시됩니다</p>
+          </div>
+          <div class="settlement-table-wrapper" id="settlementPreview" style="display:none;">
+            <h4><i class="fas fa-table"></i> 정산표 미리보기</h4>
+            <table class="settlement-table"><tbody></tbody></table>
+          </div>
+        `;
+        return;
+      }
+
+      // 기준 분양가
+      let basePrice;
+      if (housing === '59T') {
+        basePrice = priceMap['59T-1'] || 0;
+      } else {
+        basePrice = priceMap[housing + '-3'] || 0;
+      }
+
+      // 대출금액%
+      const loanRange = document.getElementById('shareLoanRange').value;
+      const loanPercent = parseInt(loanRange);
+
+      // 정산비율 조회
+      const settlementRate = settlementTable[parseInt(period)]?.[loanPercent]?.[parseInt(children)];
+
+      if (settlementRate === undefined) {
+        document.getElementById('shareResult').innerHTML = `
+          <h3><i class="fas fa-coins"></i> 수익공유 정산 결과</h3>
+          <div class="result-placeholder">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>선택한 조건에 대한<br>정산비율을 찾을 수 없습니다</p>
+          </div>
+        `;
+        return;
+      }
+
+      // 예상 매도가
+      const annualRate = parseFloat(rate) / 100;
+      const sellPrice = Math.round(basePrice * Math.pow(1 + annualRate, parseInt(period)));
+
+      // 수익금
+      const profit = sellPrice - basePrice;
+
+      // 수익공유 정산액
+      const settlement = Math.round(profit * (settlementRate / 100));
+
+      // 실제 수령액
+      const netProfit = profit - settlement;
+
+      document.getElementById('shareResult').innerHTML = `
+        <h3><i class="fas fa-coins"></i> 수익공유 정산 결과</h3>
+        <div class="result-item">
+          <span class="label">정산비율 (정산표 기준)</span>
+          <span class="value">${settlementRate}%</span>
+        </div>
+        <div class="result-item">
+          <span class="label">기준 분양가 (${housing}형 3층)</span>
+          <span class="value">${formatPrice(basePrice)}</span>
+        </div>
+        <div class="result-item">
+          <span class="label">예상 매도가 (${period}년, 연 ${rate}%)</span>
+          <span class="value">${formatPrice(sellPrice)}</span>
+        </div>
+        <div class="result-item success">
+          <span class="label">예상 수익금</span>
+          <span class="value">${formatPrice(profit)}</span>
+        </div>
+        <div class="result-item danger">
+          <span class="label">수익공유 정산액 (${settlementRate}%)</span>
+          <span class="value">${formatPrice(settlement)}</span>
+        </div>
+        <div class="result-item highlight">
+          <span class="label">실제 수령액 (정산 후)</span>
+          <span class="value">${formatPrice(netProfit)}</span>
+        </div>
+      `;
+
+      // 정산표 미리보기 표시
+      showSettlementPreview();
+    }
+
+    function showSettlementPreview() {
+      const preview = document.getElementById('settlementPreview');
+      const table = document.getElementById('settlementTablePreview');
+      preview.style.display = 'block';
+
+      const periods = [1, 5, 10, 15, 20, 25, 30];
+      const loanPercents = [70, 50, 30];
+
+      let html = '<thead><tr><th>대출기간</th>';
+      loanPercents.forEach(lp => {
+        html += `<th>${lp}% (자0)</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      periods.forEach(p => {
+        html += `<tr><td>${p}년</td>`;
+        loanPercents.forEach(lp => {
+          const rate = settlementTable[p]?.[lp]?.[0] ?? '—';
+          html += `<td>${rate}%</td>`;
+        });
+        html += '</tr>';
+      });
+
+      html += '</tbody>';
+      table.innerHTML = html;
+    }
+
+    // ===== 헤더 스크롤 =====
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // ===== 모바일 네비 =====
+    document.querySelectorAll('#mainNav a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('mainNav').classList.remove('active');
+      });
+    });
+
+    // ===== D-Day 카운트다운 =====
+    (function() {
+      const targetDate = new Date('2027-04-12T00:00:00');
+      function updateDDay() {
+        const now = new Date();
+        const diff = targetDate - now;
+        if (diff <= 0) {
+          document.getElementById('dday').textContent = 'D';
+          return;
+        }
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        document.getElementById('dday').textContent = days;
+      }
+      updateDDay();
+      setInterval(updateDDay, 86400000);
+    })();
+
+    // ===== 스크롤 페이드인 =====
+    document.addEventListener('DOMContentLoaded', function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    });
+  </script>
+</body>
+</html>

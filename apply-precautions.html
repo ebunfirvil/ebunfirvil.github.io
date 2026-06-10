@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>청약 신청 시 주의사항 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: var(--beige);
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.15);
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .top-bar-title {
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+      padding: 50px 20px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .page-header h1 {
+      position: relative;
+      color: var(--white);
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .page-header p {
+      position: relative;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+    }
+
+    /* ===== CONTENT ===== */
+    .content-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ===== SECTION BLOCKS ===== */
+    .section-block {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 35px 30px;
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--orange);
+    }
+
+    .section-block h2 {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .section-block h2 .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white);
+      border-radius: 50%;
+      font-size: 0.95rem;
+      font-weight: 900;
+    }
+
+    .section-block h2 .title-text {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    /* ===== LIST ITEMS ===== */
+    .info-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-list li {
+      position: relative;
+      padding: 12px 0 12px 28px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      color: #444;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .info-list li:last-child {
+      border-bottom: none;
+    }
+
+    .info-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      background: var(--orange);
+      border-radius: 50%;
+    }
+
+    .info-list li strong {
+      color: var(--navy);
+    }
+
+    /* ===== WARNING BOX ===== */
+    .warning-box {
+      background: linear-gradient(135deg, #fff5f0, #fff0e6);
+      border: 1px solid var(--orange-light);
+      border-left: 4px solid var(--orange);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin: 15px 0;
+    }
+
+    .warning-box p {
+      color: var(--dark);
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .warning-box .icon {
+      color: var(--orange);
+      margin-right: 6px;
+    }
+
+    /* ===== TABLE ===== */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 0.9rem;
+    }
+
+    .info-table th {
+      background: var(--navy);
+      color: var(--white);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .info-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      color: #444;
+      vertical-align: top;
+    }
+
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .info-table tr:nth-child(even) td {
+      background: var(--beige);
+    }
+
+    /* ===== SUB HEADING ===== */
+    .sub-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 20px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--orange-warm);
+      display: inline-block;
+    }
+
+    .sub-heading:first-child {
+      margin-top: 0;
+    }
+
+    /* ===== LINK ===== */
+    a.link {
+      color: var(--orange);
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px dashed var(--orange);
+    }
+
+    a.link:hover {
+      border-bottom-style: solid;
+    }
+
+    /* ===== BADGE ===== */
+    .badge {
+      display: inline-block;
+      background: rgba(232, 98, 46, 0.12);
+      color: var(--orange);
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-navy {
+      background: rgba(26, 58, 92, 0.1);
+      color: var(--navy);
+    }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--navy-dark);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 25px 20px;
+      font-size: 0.8rem;
+    }
+
+    .page-footer a {
+      color: var(--orange-warm);
+      text-decoration: none;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .section-block { padding: 25px 20px; }
+      .section-block h2 { font-size: 1.05rem; }
+      .info-list li { font-size: 0.9rem; }
+      .info-table { font-size: 0.8rem; }
+      .info-table th, .info-table td { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+      <span class="top-bar-title">청약 신청 시 주의사항</span>
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>신청 시 확인사항</h1>
+    <p>재당첨제한 · 전매제한 · 주택우선매입 등 — 청약 신청 전 반드시 확인하세요</p>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content-wrapper">
+
+    <!-- 1. 청약제한사항 확인방법 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">1</span>
+        <span class="title-text">청약 신청 전 청약제한사항 확인방법</span>
+      </h2>
+      <ul class="info-list">
+        <li>
+          <strong>재당첨제한 적용주택</strong>에 기 당첨되어 재당첨 제한 기간 내에 있거나, 부적격 당첨 후 입주자로 선정될 수 없는 기간 내에 있는 분은 금회 공급하는 주택에 신청할 수 없습니다.<br>
+          <span class="badge">분양가상한제 적용주택</span>
+          <span class="badge">분양전환 임대주택</span>
+          <span class="badge">토지임대부 분양주택</span>
+          <span class="badge">투기과열지구 · 청약과열지역</span>
+        </li>
+        <li>
+          <strong>(예비)배우자의 혼인 전 당첨사실</strong>도 청약신청 시 영향이 있으므로, 이를 감안하여 판단하여야 합니다.
+        </li>
+        <li>
+          신청자, (예비)배우자 및 세대원은 <strong>각자의 인증서</strong>를 이용하여 각각 검색하여야 합니다. 인증서를 발급받지 않은 경우 입주자저축 가입은행에서 당첨사실을 조회하실 수 있습니다.
+        </li>
+      </ul>
+
+      <div class="sub-heading">청약 신청 전 확인 가능한 사항</div>
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th style="width:35%">확인 항목</th>
+            <th>확인 방법</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>세대구성원 청약자격확인</td>
+            <td rowspan="3">
+              <a href="https://www.applyhome.co.kr" target="_blank" class="link">한국부동산원 청약홈</a><br>
+              <span style="color:var(--gray);font-size:0.85rem;">→ 청약자격확인 → 청약제한사항 확인</span>
+            </td>
+          </tr>
+          <tr>
+            <td>신청자 청약제한사항<br><span style="font-size:0.8rem;color:var(--gray);">(재당첨제한, 특별공급제한, 과거당첨사실확인, 부적격당첨제한 등)</span></td>
+          </tr>
+          <tr>
+            <td>주택소유확인</td>
+          </tr>
+          <tr>
+            <td>청약통장순위확인서</td>
+            <td>인증서 인증 → 조회기준일 입력 → 조회</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. 전매제한 및 주택우선매입 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">2</span>
+        <span class="title-text">전매제한 및 주택우선매입 안내</span>
+      </h2>
+      <ul class="info-list">
+        <li>
+          금회 공급되는 주택은 <strong>입주로 선정된 날(2026.07.31.)로부터 3년간 전매가 금지</strong>됩니다.<br>
+          ※ 전매 제한 기간 이내에 해당 주택에 대한 소유권이전등기를 완료한 경우, 완료한 때에 전매행위 제한기간이 지난 것으로 봄
+        </li>
+        <li>
+          전매제한기간 내에 생업상의 사정 등으로 전매가 불가피한 경우 <strong>LH에 주택 매입을 신청</strong>하여야 하며, LH는 입주금 + 1년 만기 정기예금 평균이자율을 적용한 이자를 합산한 금액을 지급하고 주택을 매입합니다.<br>
+          <span style="font-size:0.85rem;color:var(--gray);">(입주자로 선정된 지위 또는 주택의 일부를 배우자에게 증여하는 경우는 제외)</span>
+        </li>
+      </ul>
+
+      <div class="warning-box">
+        <p><i class="fas fa-exclamation-triangle icon"></i>
+          <strong>전매행위 제한 위반 시:</strong> 위반자는 위반 행위 적발일로부터 <strong>10년간 입주자격을 제한</strong>받습니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 3. 거주의무 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">3</span>
+        <span class="title-text">거주의무 안내</span>
+      </h2>
+      <ul class="info-list">
+        <li>
+          <strong>최초 입주가능일부터 3년 이내에 입주</strong>하여야 하고, 해당 거주의무 개시일부터 <strong>5년 동안 계속 거주</strong>해야 합니다.
+        </li>
+        <li>
+          해외 체류 등 부득이한 사유가 있는 때에는 그 기간은 해당 주택에 거주한 것으로 봅니다.
+        </li>
+        <li>
+          부득이한 사유 없이 거주하지 않는 경우 LH에 매입을 신청하여야 하며, LH는 입주금 + 이자를 합산한 금액을 지급하고 주택을 매입합니다.
+        </li>
+      </ul>
+    </div>
+
+    <!-- 4. 재당첨제한 및 당첨자관리 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">4</span>
+        <span class="title-text">재당첨제한 및 당첨자관리</span>
+      </h2>
+      <ul class="info-list">
+        <li>
+          당첨자는 계약체결 여부에 관계없이 당첨자로 전산관리됩니다. 당첨자 본인뿐만 아니라 <strong>배우자 및 세대원</strong>은 당첨일로부터 <strong>향후 10년간</strong> 다른 분양주택의 입주자로 선정될 수 없습니다.<br>
+          <span style="font-size:0.85rem;color:var(--gray);">(세대원: 주민등록표등본상에 등재된 직계존·비속. 주민등록표등본이 분리된 배우자 및 배우자의 직계존·비속 포함)</span>
+        </li>
+      </ul>
+
+      <div class="warning-box">
+        <p><i class="fas fa-exclamation-triangle icon"></i>
+          <strong>향후 5년간</strong> 투기과열지구 및 청약과열지역에서 공급하는 주택의 <strong>1순위 청약접수가 제한</strong>됩니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 5. 최하층 주택 우선배정 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">5</span>
+        <span class="title-text">최하층 주택 우선배정 안내 <span class="badge">노인·장애인·다자녀가구</span></span>
+      </h2>
+      <ul class="info-list">
+        <li>
+          <strong>최하층</strong>이라 함은 <strong>1층</strong>을 말하며, 최하층 주택의 분양금액이 바로 위층보다 높은 경우는 최하층 우선배정하지 않습니다.
+        </li>
+        <li>
+          최하층 주택 우선배정신청자가 각 주택형별 최하층 주택수를 초과할 경우 최하층에 배정되지 않을 수 있습니다.
+        </li>
+        <li>
+          자격입증서류가 사실과 다를 경우 <strong>부적격 당첨</strong>으로 불이익(계약체결 불가, 일정기간 입주자저축 사용 및 입주자선정 제한 등)이 있을 수 있습니다.
+        </li>
+      </ul>
+
+      <div class="sub-heading">신청자격</div>
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th style="width:20%">구분</th>
+            <th>자격 요건</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-navy">①</span></td>
+            <td>입주자모집공고일 현재 <strong>65세 이상</strong>인 분</td>
+          </tr>
+          <tr>
+            <td><span class="badge-navy">②</span></td>
+            <td><strong>장애인등록증</strong>이 발급된 분</td>
+          </tr>
+          <tr>
+            <td><span class="badge-navy">③</span></td>
+            <td>입주자모집공고일 현재 미성년자인 <strong>세 명 이상의 자녀</strong>를 둔 자 (태아 인정하지 않음)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:0.85rem;color:var(--gray);margin-top:8px;">
+        ※ 제1호 또는 제2호에 해당하는 자와 제3호에 해당하는 자 사이에 경쟁이 있을 경우, 해당하는 자에게 우선 배정합니다.
+      </p>
+
+      <div class="sub-heading">신청방법</div>
+      <ol style="padding-left:20px;color:#444;font-size:0.95rem;line-height:1.8;">
+        <li>
+          LH 청약플러스(<a href="https://apply.lh.or.kr" target="_blank" class="link">apply.lh.or.kr</a>) 또는 모바일앱에서 청약 시 <strong>'최하층주택 우선배정'</strong>에 체크
+        </li>
+        <li>
+          당첨 시 자격입증서류 제출:
+          <ul style="margin-top:8px;padding-left:20px;">
+            <li>①번 해당자 — 주민등록표등본</li>
+            <li>②번 해당자 — 장애인등록증 또는 복지카드 사본 등</li>
+            <li>③번 해당자 — 주민등록표등본 또는 가족관계증명서 등</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <!-- 6. 중복청약 및 당첨 시 처리기준 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">6</span>
+        <span class="title-text">중복청약 및 당첨 시 처리기준</span>
+      </h2>
+
+      <div class="sub-heading">공통 적용사항</div>
+      <ul class="info-list">
+        <li>
+          <strong>1세대 내 1인만 신청</strong> 가능하며, 동일한 세대의 세대원 2인 이상이 각각 신청·중복청약하여 한 곳이라도 당첨될 경우 <strong>모두 부적격</strong> 처리됩니다.<br>
+          <span style="font-size:0.85rem;color:var(--gray);">[계약체결 불가, 부적격 당첨자 명단관리(최대 1년간 입주자선정 제한 및 입주자저축 사용 제한), 해당 주택 임의공급 대상자로 선정 불가 등]</span>
+        </li>
+        <li>
+          동일세대 내에서 1인 이상이 당첨자 발표일이 서로 다른 단지에 청약하는 경우 — <strong>당첨자 발표일이 우선인 단지의 당첨만 유효</strong>하며, 후당첨 단지는 부적격 처리됨
+        </li>
+        <li>
+          당첨자 발표일이 동일한 주택 전체에 대하여 <strong>1인 1건만 신청</strong> 가능하며, 1인 2건 이상 청약신청 시 모두 무효 또는 부적격 처리합니다.
+        </li>
+      </ul>
+
+      <div class="warning-box">
+        <p><i class="fas fa-exclamation-triangle icon"></i>
+          <strong>부부(예비신혼부부 제외)</strong>는 당첨자 발표일이 동일한 주택에 대해 각각 청약할 수 있으나, 중복당첨된 경우 청약 접수일(분 단위까지의 접수시간을 포함)이 <strong>빠른 사람의 당첨</strong>만을 인정하며, 후 접수분은 무효처리 합니다.<br>
+          ※ 분 단위 접수시간이 동일한 경우 신청자의 연령(연원일 계산)이 많은 자가 당첨된 주택을 말함
+        </p>
+      </div>
+
+      <div class="sub-heading">사전청약 당첨자</div>
+      <ul class="info-list">
+        <li>
+          사전청약 당첨자가 <strong>사전청약 당첨자 신청일(2026.07.13.(월) ~ 2026.07.14.(화))</strong>에 신청한 경우, 본청약(신규신청자) 신청이 <strong>불가</strong>하며, 중복 신청 시 모두 부적격 당첨으로 당첨이 취소됩니다.
+        </li>
+        <li>
+          사전청약 당첨자가 신청일에 <strong>미신청</strong>한 경우 또는 배정된 주택형 확인 후 본청약 신청을 <strong>취소</strong>한 경우 — 본청약(신규신청자) 신청이 가능합니다. 다만, 본청약(신규신청자) 신청자와 동일하게 경쟁 및 자격심사를 거쳐야 합니다.
+        </li>
+        <li>
+          금회 공급하는 주택에 사전청약 당첨자 및 그 세대원이 각각 신청하여 당첨될 경우 <strong>모두 부적격</strong>으로 당첨이 취소됩니다.
+        </li>
+      </ul>
+    </div>
+
+    <!-- 7. 예비입주자에 대한 사항 -->
+    <div class="section-block">
+      <h2>
+        <span class="num">7</span>
+        <span class="title-text">예비입주자에 대한 사항</span>
+      </h2>
+      <ul class="info-list">
+        <li>
+          주택형별 물량의 <strong>300%까지</strong> 예비입주자를 선정(소수점 이하 올림)하며, 각 주택형별 신청자 수가 금회 공급 물량의 400%에 미달할 경우 낙첨자 전원을 예비입주자로 선정합니다.
+        </li>
+        <li>
+          예비입주자의 지위는 <strong>최초 공급계약 체결일로부터 60일</strong>이며, 해당 기간이 경과하면 예비입주자의 지위는 소멸되고 공사가 보유한 예비입주자 관련 정보는 모두 폐기합니다.
+        </li>
+        <li>
+          당첨자의 미계약, 부적격당첨 및 계약취소·해제 등으로 남는 주택이 발생할 경우 <strong>예비입주자 순번</strong>에 따라 입주자를 선정합니다. 남은 주택이 있는 경우 차후 재공급합니다.
+        </li>
+        <li>
+          최초로 예비입주자를 입주자로 선정하는 경우 미계약 물량 모두를 공개한 후 동·호수 배정의 추첨에 참가한 예비입주자에 대하여 추첨의 방법으로 동·호수를 배정하여 계약 체결합니다.
+        </li>
+        <li>
+          예비입주자는 공급계약을 체결한 경우에만 당첨자로 관리되나, 최초로 예비입주자를 당첨자로 선정하는 경우 동·호수 배정추첨에 참가하여 동·호수를 배정받고 공급계약을 체결하지 아니한 분도 당첨자로 관리됩니다.
+        </li>
+        <li>
+          금회 예비입주자로 선정된 분이 다른 주택의 공급을 신청하여 입주자로 선정된 경우, 금회 예비입주자로서 공급받을 수 없으며 동·호수 추첨에도 참가할 수 없습니다.<br>
+          <span style="font-size:0.85rem;color:var(--gray);">(다만, 금회 예비입주자의 동·호수 배정일이 다른 주택의 입주자 선정일보다 빠른 경우 예비입주자 계약체결은 가능하고 다른 주택의 입주자 선정내역은 무효처리됩니다.)</span>
+        </li>
+        <li>
+          예비입주자 공급일정 등에 대한 안내는 청약 시 기재된 연락처를 기준으로 순번에 따라 별도 안내됩니다. 연락처가 변경되거나 잘못 기재하신 분은 <strong>주택전시관(☎031-538-1777)</strong>을 통해 본인의 연락처를 고지하여야 합니다. 고지하지 않을 경우 주소불명 등의 사유로 예비입주자 공급에서 제외될 수 있으며, 이에 대하여 사업주체에서는 책임지지 않습니다.
+        </li>
+        <li>
+          예비입주자는 청약자수가 공급세대수를 초과한 주택형에 한해 LH에서 당첨자선정 후 주택형별 낙첨자 전원을 대상으로 <strong>주택건설지역(성남시) 2년 이상 거주자</strong>에게 추첨의 방법으로 우선공급합니다. (해당 거주자 미달물량이 발생할 경우 기타지역 거주자에게 추첨의 방법으로 공급)
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
+  </div>
+
+</body>
+</html>
