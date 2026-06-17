@@ -435,8 +435,7 @@
 
         if (!res.ok) throw new Error('서버 오류');
 
-        removeTypingIndicator();
-        const bubble = addBotMessage();
+        let bubble = null;
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let full = '';
@@ -445,8 +444,20 @@
           const { done, value } = await reader.read();
           if (done) break;
           full += decoder.decode(value, { stream: true });
-          bubble.innerHTML = renderAnswer(full);
-          scrollToBottom();
+          // keepalive 문자(zero-width space) 제거 후 실제 내용이 있을 때만 버블 표시
+          const visible = full.replace(/​/g, '').trim();
+          if (!bubble && visible.length > 0) {
+            removeTypingIndicator();
+            bubble = addBotMessage();
+          }
+          if (bubble) {
+            bubble.innerHTML = renderAnswer(full);
+            scrollToBottom();
+          }
+        }
+        if (!bubble) {
+          removeTypingIndicator();
+          bubble = addBotMessage();
         }
 
       } catch (err) {
