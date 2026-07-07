@@ -69,13 +69,15 @@ e-park-hansang-bundang/
 
 ### Hero (`#main`)
 - 배경: `img/aerial.png` (조감도)
-- D-Day 카운트다운 3개:
+- D-Day 카운트다운 5개:
 
 | ID | 목표일 | 의미 |
 |----|--------|------|
-| `dday1` | 2026-07-03 | 주택전시관 개관 |
-| `dday2` | 2026-07-20 | 본청약 시작 |
-| `dday3` | 2029-02-01 | 입주 예정 |
+| `dday1` | 2026-07-13 | 사전청약 당첨자 선호타입선택 |
+| `dday2` | 2026-07-20 | 일반 청약 |
+| `dday3` | 2026-07-31 | 동호수 발표 |
+| `dday4` | 2026-11-04 | 계약 체결 시작 |
+| `dday5` | 2029-02-01 | 입주 예정 |
 
 - 버튼: 청약시 주의사항 / 당첨자 제출 서류 / 계약 구비 서류 (별도 HTML 파일로 연결)
 
@@ -122,6 +124,7 @@ e-park-hansang-bundang/
 
 ### 계산기 (`#calculator`)
 - 외부 링크: `https://spontaneous-semifreddo-d21be3.netlify.app` (로즈님 제공)
+- 외부 링크: `https://joy-papa.github.io/ebundangfirst/` (옵션 계산기)
 
 ### 문의 (`#contact`)
 - 주택전시관 전화: 031-538-1777
@@ -257,10 +260,11 @@ const API_URL = 'https://<고정도메인>/api/chat';
 | 용도 | URL |
 |------|-----|
 | 공식 홈페이지 | https://www.elife.co.kr/Posm_list01.action?commonMap.CD_BIZ_LND=210114 |
-| 입주자모집공고 (전문) | https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_02_260529.pdf |
+| 입주자모집공고 (전문) | https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_260702.pdf |
 | LH 청약플러스 | https://apply.lh.or.kr |
 | 네이버 카페 | https://cafe.naver.com/naksangheemang |
 | 카카오톡 오픈채팅 | https://open.kakao.com/o/g3bb1i9d |
 | 주택전시관 위치 | https://naver.me/FoXz6CAZ |
 | 현장 위치 | https://naver.me/xprK8gSA |
 | 계산기 (로즈님) | https://spontaneous-semifreddo-d21be3.netlify.app |
+| 옵션 계산기 | https://joy-papa.github.io/ebundangfirst/ |

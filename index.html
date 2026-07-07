@@ -1437,17 +1437,27 @@
       <div class="hero-stats">
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday1">--</span>
-          <span class="hero-stat-label">모델하우스 D-Day</span>
-          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.03</span>
+          <span class="hero-stat-label">사전청약 당첨자 선호타입선택</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.13</span>
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday2">--</span>
-          <span class="hero-stat-label">본청약 D-Day</span>
+          <span class="hero-stat-label">일반 청약</span>
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.20</span>
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday3">--</span>
-          <span class="hero-stat-label">입주 D-Day</span>
+          <span class="hero-stat-label">동호수 발표</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.31</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday4">--</span>
+          <span class="hero-stat-label">계약</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.11.04</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday5">--</span>
+          <span class="hero-stat-label">입주</span>
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2029.02</span>
         </div>
       </div>
@@ -1803,13 +1813,20 @@
     <div class="container">
       <div class="section-header fade-in">
         <div class="section-tag">CALCULATOR</div>
-        <h2>분양가/수익공유 계산기</h2>
-        <p>로즈님 제공 — 분양가와 수익공유를 계산해보세요</p>
+        <h2>아파트 관련 계산기</h2>
       </div>
-      <div style="text-align:center;" class="fade-in">
-        <a href="https://spontaneous-semifreddo-d21be3.netlify.app" target="_blank" class="btn btn-primary" style="font-size:1.1rem;padding:16px 40px;">
-          <i class="fas fa-calculator"></i> 계산기 바로가기
-        </a>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;" class="fade-in">
+        <div style="text-align:center;">
+          <a href="https://spontaneous-semifreddo-d21be3.netlify.app" target="_blank" class="btn btn-primary" style="font-size:1.1rem;padding:16px 40px;">
+            <i class="fas fa-calculator"></i> 분양가/수익공유 계산기
+          </a>
+          <p style="margin-top:10px;font-size:0.85rem;">로즈님 제공</p>
+        </div>
+        <div style="text-align:center;">
+          <a href="https://joy-papa.github.io/ebundangfirst/" target="_blank" class="btn btn-primary" style="font-size:1.1rem;padding:16px 40px;">
+            <i class="fas fa-calculator"></i> 옵션 계산기
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -1876,7 +1893,8 @@
               <li><a href="#about">단지 개요</a></li>
               <li><a href="#plans">평형 정보</a></li>
               <li><a href="#timeline">주요 일정</a></li>
-              <li><a href="#calculator">분양가/수익공유 계산기</a></li>
+              <li><a href="https://spontaneous-semifreddo-d21be3.netlify.app" target="_blank">분양가/수익공유 계산기</a></li>
+              <li><a href="https://joy-papa.github.io/ebundangfirst/" target="_blank">옵션 계산기</a></li>
               <li><a href="chat.html">AI 질문하기</a></li>
             </ul>
           </div>
@@ -1892,7 +1910,7 @@
             <h4>참고 링크</h4>
             <ul>
               <li><a href="https://www.elife.co.kr/Posm_list01.action?commonMap.CD_BIZ_LND=210114" target="_blank">공식 홈페이지</a></li>
-              <li><a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_02_260529.pdf" target="_blank">입주자모집공고 (전문)</a></li>
+              <li><a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_260702.pdf" target="_blank">입주자모집공고 (전문)</a></li>
               <li><a href="https://apply.lh.or.kr" target="_blank">LH 청약플러스</a></li>
             </ul>
           </div>
@@ -1959,9 +1977,11 @@
     function updateDDay() {
       const now = new Date();
 
-      const dday1Target = new Date('2026-07-03T00:00:00+09:00');
+      const dday1Target = new Date('2026-07-13T00:00:00+09:00');
       const dday2Target = new Date('2026-07-20T00:00:00+09:00');
-      const dday3Target = new Date('2029-02-01T00:00:00+09:00');
+      const dday3Target = new Date('2026-07-31T00:00:00+09:00');
+      const dday4Target = new Date('2026-11-04T00:00:00+09:00');
+      const dday5Target = new Date('2029-02-01T00:00:00+09:00');
 
       function calcDDay(target) {
         const diff = target - now;
@@ -1972,9 +1992,13 @@
       const el1 = document.getElementById('dday1');
       const el2 = document.getElementById('dday2');
       const el3 = document.getElementById('dday3');
+      const el4 = document.getElementById('dday4');
+      const el5 = document.getElementById('dday5');
       if (el1) el1.textContent = calcDDay(dday1Target);
       if (el2) el2.textContent = calcDDay(dday2Target);
       if (el3) el3.textContent = calcDDay(dday3Target);
+      if (el4) el4.textContent = calcDDay(dday4Target);
+      if (el5) el5.textContent = calcDDay(dday5Target);
     }
 
     updateDDay();
