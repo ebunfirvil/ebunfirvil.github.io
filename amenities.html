@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>편의시설 안내 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: var(--beige);
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 15px; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 6px; background: rgba(255,255,255,0.15);
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .top-bar-title { color: var(--white); font-size: 1rem; font-weight: 700; }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+      padding: 50px 20px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-header h1 {
+      position: relative; color: var(--white); font-size: 2rem; font-weight: 900; margin-bottom: 10px;
+    }
+    .page-header p {
+      position: relative; color: rgba(255,255,255,0.7); font-size: 0.95rem;
+    }
+
+    /* ===== CONTENT ===== */
+    .content-area {
+      max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px;
+    }
+
+    .siteplan-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .siteplan-hint {
+      text-align: center; color: var(--gray); font-size: 0.85rem; margin-bottom: 14px;
+    }
+    .siteplan-hint i { color: var(--orange); margin-right: 5px; }
+
+    .siteplan-wrap {
+      position: relative;
+      width: 100%;
+      line-height: 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .siteplan-wrap img {
+      width: 100%;
+      display: block;
+    }
+
+    .hotspot {
+      position: absolute;
+      width: 30px; height: 30px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: var(--orange);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 3px var(--orange);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white);
+      font-size: 0.75rem;
+      animation: hotspotPulse 2s ease-out infinite;
+      transition: transform 0.2s ease;
+    }
+    .hotspot:hover { transform: translate(-50%, -50%) scale(1.15); }
+
+    @keyframes hotspotPulse {
+      0% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 3px rgba(232,98,46,0.5); }
+      70% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 14px rgba(232,98,46,0); }
+      100% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 14px rgba(232,98,46,0); }
+    }
+
+    .hotspot-label {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--navy-dark);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .hotspot:hover .hotspot-label { opacity: 1; }
+
+    @media (max-width: 640px) {
+      .hotspot { width: 22px; height: 22px; }
+      .hotspot-label { display: none; }
+    }
+
+    .photo-hotspot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      background: rgba(13,27,40,0.85);
+      border: 2px solid var(--orange-warm);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+    .photo-hotspot:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+      border-color: var(--white);
+    }
+    .photo-hotspot img {
+      width: 100%; height: 56px; object-fit: cover; display: block;
+    }
+    .photo-hotspot span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--white);
+      text-align: center;
+      padding: 4px 2px;
+    }
+    @media (max-width: 640px) {
+      .photo-hotspot { width: 68px; }
+      .photo-hotspot img { height: 38px; }
+      .photo-hotspot span { font-size: 0.6rem; padding: 2px; }
+    }
+
+    /* ===== AMENITY LIST ===== */
+    .amenity-list-title {
+      font-size: 1.1rem; font-weight: 900; color: var(--navy);
+      margin-bottom: 14px;
+    }
+    .amenity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .amenity-card {
+      background: var(--white);
+      border: 1px solid var(--beige-dark);
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.25s ease;
+    }
+    .amenity-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--orange-light);
+    }
+    .amenity-card i {
+      display: block; font-size: 1.4rem; color: var(--orange); margin-bottom: 8px;
+    }
+    .amenity-card span {
+      display: block; font-size: 0.88rem; font-weight: 700; color: var(--navy);
+    }
+
+    /* ===== PHOTO GALLERY ===== */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .photo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .photo-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-card-label {
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--white);
+    }
+
+    /* ===== AMENITY MODAL ===== */
+    .amenity-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(13,27,40,0.92);
+      z-index: 1000;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .amenity-modal.active { display: flex; }
+    .amenity-modal-inner {
+      max-width: 900px; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .amenity-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; margin-bottom: 14px;
+    }
+    .amenity-modal-title {
+      color: var(--white); font-size: 1.2rem; font-weight: 900;
+    }
+    .amenity-modal-close {
+      background: rgba(255,255,255,0.12); border: none; color: var(--white);
+      width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem;
+      cursor: pointer; transition: background 0.2s ease;
+    }
+    .amenity-modal-close:hover { background: rgba(255,255,255,0.25); }
+
+    .amenity-modal-imgwrap {
+      position: relative; width: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .amenity-modal-imgwrap img {
+      max-width: 100%; max-height: 70vh;
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+    }
+    .amenity-nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.15); border: none; color: var(--white);
+      width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem;
+      cursor: pointer; transition: background 0.2s ease;
+    }
+    .amenity-nav-btn:hover { background: rgba(255,255,255,0.3); }
+    .amenity-nav-btn.prev { left: -10px; }
+    .amenity-nav-btn.next { right: -10px; }
+    @media (max-width: 768px) {
+      .amenity-nav-btn.prev { left: 4px; }
+      .amenity-nav-btn.next { right: 4px; }
+    }
+
+    .amenity-modal-desc {
+      color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 14px; text-align: center;
+    }
+    .amenity-modal-counter {
+      color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 8px;
+    }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--navy-dark); color: rgba(255,255,255,0.5);
+      text-align: center; padding: 25px 20px; font-size: 0.8rem;
+    }
+    .page-footer a { color: var(--orange-warm); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .siteplan-card { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+      <span class="top-bar-title">편의시설 안내</span>
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>편의시설 안내</h1>
+    <p>단지 배치도에서 주황색 점을 클릭하면 해당 시설 사진을 볼 수 있습니다</p>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content-area">
+    <div class="siteplan-card">
+      <div class="siteplan-hint"><i class="fas fa-hand-pointer"></i> 배치도 위 점을 클릭해보세요 (PC/모바일 모두 가능)</div>
+      <div class="siteplan-wrap" id="siteplanWrap">
+        <img src="img/amenities/site-plan.png" alt="단지 배치도">
+        <!-- hotspots injected by JS -->
+      </div>
+    </div>
+
+    <div class="siteplan-card">
+      <div class="amenity-list-title">편의시설 목록</div>
+      <div class="amenity-grid" id="amenityGrid"></div>
+    </div>
+
+    <div class="siteplan-card">
+      <div class="amenity-list-title">단지 전경 갤러리</div>
+      <div class="photo-grid" id="photoGrid"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
+  </div>
+
+  <!-- AMENITY MODAL -->
+  <div class="amenity-modal" id="amenityModal">
+    <div class="amenity-modal-inner">
+      <div class="amenity-modal-header">
+        <div class="amenity-modal-title" id="amenityModalTitle">시설명</div>
+        <button class="amenity-modal-close" onclick="closeAmenityModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="amenity-modal-imgwrap">
+        <button class="amenity-nav-btn prev" onclick="navAmenityImage(-1)"><i class="fas fa-chevron-left"></i></button>
+        <img id="amenityModalImg" src="" alt="">
+        <button class="amenity-nav-btn next" onclick="navAmenityImage(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="amenity-modal-desc" id="amenityModalDesc"></div>
+      <div class="amenity-modal-counter" id="amenityModalCounter"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    const amenities = [
+      {
+        name: '드포엠플레이',
+        icon: 'fa-water-ladder',
+        top: 38.1, left: 63.2,
+        images: ['img/amenities/community-center1-exterior.png']
+      },
+      {
+        name: '드포엠플레이 (111동측)',
+        icon: 'fa-water-ladder',
+        top: 69.8, left: 14.9,
+        images: ['img/amenities/dpoem-play.png']
+      },
+      {
+        name: '드포엠파크',
+        icon: 'fa-tree',
+        top: 37.8, left: 73.2,
+        images: ['img/amenities/dpoem-park.png']
+      },
+      {
+        name: '드포엠카페',
+        icon: 'fa-mug-hot',
+        top: 39.6, left: 72.9,
+        images: ['img/amenities/dpoem-cafe-exterior.png', 'img/amenities/dpoem-cafe-interior.png']
+      },
+      {
+        name: '어린이집 (1, 2F)',
+        icon: 'fa-child',
+        top: 56.2, left: 53.7,
+        images: ['img/amenities/daycare-interior.png', 'img/amenities/daycare-exterior.png']
+      },
+      {
+        name: '커뮤니티센터 Ⅰ (B1)',
+        icon: 'fa-dumbbell',
+        top: 44.0, left: 62.1,
+        images: ['img/amenities/community-center1.png', 'img/amenities/community-lounge.png', 'img/amenities/gx-room.png'],
+        desc: '피트니스 · G.X룸 · 커뮤니티라운지 · 라운지카페(작은도서관) · 샤워룸(남/여) · 미니짐 · 실내골프연습장 · 멀티룸(주민회의실)'
+      },
+      {
+        name: '커뮤니티센터 Ⅱ (B1)',
+        icon: 'fa-child-reaching',
+        top: 71.9, left: 45.8,
+        images: ['img/amenities/community-center2.png', 'img/amenities/indoor-sports-court.png'],
+        desc: '키즈라운지(공동육아공간) · 스포츠코트 · 다함께돌봄센터 · 프라이빗오피스룸 · 멀티룸'
+      },
+      {
+        name: '근린생활시설 (101동측)',
+        icon: 'fa-store',
+        top: 37.5, left: 92.2,
+        images: ['img/amenities/neighborhood-facility.png']
+      }
+    ];
+
+    const galleryPhotos = [
+      { name: '단지 투시도', images: ['img/perspective.png'], top: 26, left: 18 },
+      { name: '단지 조감도', images: ['img/aerial.png'], top: 46, left: 18 }
+    ];
+
+    const wrap = document.getElementById('siteplanWrap');
+    const grid = document.getElementById('amenityGrid');
+    const photoGrid = document.getElementById('photoGrid');
+
+    amenities.forEach((a, idx) => {
+      const dot = document.createElement('div');
+      dot.className = 'hotspot';
+      dot.style.top = a.top + '%';
+      dot.style.left = a.left + '%';
+      dot.innerHTML = '<i class="fas ' + a.icon + '"></i><span class="hotspot-label">' + a.name + '</span>';
+      dot.onclick = () => openAmenityModal(idx);
+      wrap.appendChild(dot);
+
+      const card = document.createElement('div');
+      card.className = 'amenity-card';
+      card.innerHTML = '<i class="fas ' + a.icon + '"></i><span>' + a.name + '</span>';
+      card.onclick = () => openAmenityModal(idx);
+      grid.appendChild(card);
+    });
+
+    galleryPhotos.forEach((p, idx) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'photo-hotspot';
+      thumb.style.top = p.top + '%';
+      thumb.style.left = p.left + '%';
+      thumb.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><span>' + p.name + '</span>';
+      thumb.onclick = () => openGalleryPhoto(idx);
+      wrap.appendChild(thumb);
+    });
+
+    galleryPhotos.forEach((p, idx) => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><div class="photo-card-label">' + p.name + '</div>';
+      card.onclick = () => openGalleryPhoto(idx);
+      photoGrid.appendChild(card);
+    });
+
+    let currentAmenity = null;
+    let currentImageIndex = 0;
+
+    function openAmenityModal(idx) {
+      currentAmenity = amenities[idx];
+      currentImageIndex = 0;
+      renderAmenityModal();
+      document.getElementById('amenityModal').classList.add('active');
+    }
+
+    function openGalleryPhoto(idx) {
+      currentAmenity = galleryPhotos[idx];
+      currentImageIndex = 0;
+      renderAmenityModal();
+      document.getElementById('amenityModal').classList.add('active');
+    }
+
+    function renderAmenityModal() {
+      if (!currentAmenity) return;
+      document.getElementById('amenityModalTitle').textContent = currentAmenity.name;
+      document.getElementById('amenityModalImg').src = currentAmenity.images[currentImageIndex];
+      document.getElementById('amenityModalDesc').textContent = currentAmenity.desc || '';
+      const multi = currentAmenity.images.length > 1;
+      document.getElementById('amenityModalCounter').textContent = multi
+        ? (currentImageIndex + 1) + ' / ' + currentAmenity.images.length
+        : '';
+      document.querySelectorAll('.amenity-nav-btn').forEach(btn => {
+        btn.style.display = multi ? 'flex' : 'none';
+      });
+    }
+
+    function navAmenityImage(dir) {
+      if (!currentAmenity) return;
+      const len = currentAmenity.images.length;
+      currentImageIndex = (currentImageIndex + dir + len) % len;
+      renderAmenityModal();
+    }
+
+    function closeAmenityModal() {
+      document.getElementById('amenityModal').classList.remove('active');
+      currentAmenity = null;
+    }
+
+    document.getElementById('amenityModal').addEventListener('click', function (e) {
+      if (e.target === this) closeAmenityModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!document.getElementById('amenityModal').classList.contains('active')) return;
+      if (e.key === 'Escape') closeAmenityModal();
+      if (e.key === 'ArrowLeft') navAmenityImage(-1);
+      if (e.key === 'ArrowRight') navAmenityImage(1);
+    });
+  </script>
+
+</body>
+</html>

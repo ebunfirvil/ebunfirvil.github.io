@@ -722,6 +722,232 @@
       opacity: 0.85;
     }
 
+    /* ===== SITE INFO (단지안내) ===== */
+    #siteinfo {
+      background: var(--white);
+    }
+
+    .siteplan-card {
+      background: var(--beige);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .siteplan-hint {
+      text-align: center; color: var(--gray); font-size: 0.85rem; margin-bottom: 14px;
+    }
+    .siteplan-hint i { color: var(--orange); margin-right: 5px; }
+
+    .siteplan-wrap {
+      position: relative;
+      width: 100%;
+      line-height: 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .siteplan-wrap img {
+      width: 100%;
+      display: block;
+    }
+
+    .hotspot {
+      position: absolute;
+      width: 30px; height: 30px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: var(--orange);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 3px var(--orange);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white);
+      font-size: 0.75rem;
+      animation: hotspotPulse 2s ease-out infinite;
+      transition: transform 0.2s ease;
+    }
+    .hotspot:hover { transform: translate(-50%, -50%) scale(1.15); }
+
+    @keyframes hotspotPulse {
+      0% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 3px rgba(232,98,46,0.5); }
+      70% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 14px rgba(232,98,46,0); }
+      100% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 14px rgba(232,98,46,0); }
+    }
+
+    .hotspot-label {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--navy-dark);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .hotspot:hover .hotspot-label { opacity: 1; }
+
+    @media (max-width: 640px) {
+      .hotspot { width: 22px; height: 22px; }
+      .hotspot-label { display: none; }
+    }
+
+    .photo-hotspot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      background: rgba(13,27,40,0.85);
+      border: 2px solid var(--orange-warm);
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+    .photo-hotspot:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+      border-color: var(--white);
+    }
+    .photo-hotspot img {
+      width: 100%; height: 56px; object-fit: cover; display: block;
+    }
+    .photo-hotspot span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--white);
+      text-align: center;
+      padding: 4px 2px;
+    }
+    @media (max-width: 640px) {
+      .photo-hotspot { width: 68px; }
+      .photo-hotspot img { height: 38px; }
+      .photo-hotspot span { font-size: 0.6rem; padding: 2px; }
+    }
+
+    .amenity-list-title {
+      font-size: 1.1rem; font-weight: 900; color: var(--navy);
+      margin-bottom: 14px;
+    }
+    .amenity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .amenity-card {
+      background: var(--white);
+      border: 1px solid var(--beige-dark);
+      border-radius: 12px;
+      padding: 16px 14px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.25s ease;
+    }
+    .amenity-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--orange-light);
+    }
+    .amenity-card i {
+      display: block; font-size: 1.4rem; color: var(--orange); margin-bottom: 8px;
+    }
+    .amenity-card span {
+      display: block; font-size: 0.88rem; font-weight: 700; color: var(--navy);
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .photo-card {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .photo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+    }
+    .photo-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-card-label {
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--white);
+    }
+
+    .amenity-modal {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(13,27,40,0.92);
+      z-index: 1000;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .amenity-modal.active { display: flex; }
+    .amenity-modal-inner {
+      max-width: 900px; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .amenity-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; margin-bottom: 14px;
+    }
+    .amenity-modal-title {
+      color: var(--white); font-size: 1.2rem; font-weight: 900;
+    }
+    .amenity-modal-close {
+      background: rgba(255,255,255,0.12); border: none; color: var(--white);
+      width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem;
+      cursor: pointer; transition: background 0.2s ease;
+    }
+    .amenity-modal-close:hover { background: rgba(255,255,255,0.25); }
+
+    .amenity-modal-imgwrap {
+      position: relative; width: 100%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .amenity-modal-imgwrap img {
+      max-width: 100%; max-height: 70vh;
+      border-radius: 10px;
+      box-shadow: var(--shadow-lg);
+    }
+    .amenity-nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.15); border: none; color: var(--white);
+      width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem;
+      cursor: pointer; transition: background 0.2s ease;
+    }
+    .amenity-nav-btn:hover { background: rgba(255,255,255,0.3); }
+    .amenity-nav-btn.prev { left: -10px; }
+    .amenity-nav-btn.next { right: -10px; }
+    @media (max-width: 768px) {
+      .amenity-nav-btn.prev { left: 4px; }
+      .amenity-nav-btn.next { right: 4px; }
+    }
+
+    .amenity-modal-desc {
+      color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 14px; text-align: center;
+    }
+    .amenity-modal-counter {
+      color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 8px;
+    }
+
     /* ===== TIMELINE - 베이지 배경 ===== */
     #timeline {
       background: var(--beige);
@@ -984,66 +1210,6 @@
       line-height: 1.6;
     }
 
-    /* ===== GALLERY - 베이지 배경 ===== */
-    #gallery {
-      background: var(--beige);
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-    }
-
-    .gallery-item {
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .gallery-item:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .gallery-placeholder {
-      width: 100%;
-      height: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--white);
-      font-weight: 600;
-    }
-
-    .gallery-placeholder i {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      opacity: 0.8;
-    }
-
-    .gallery-placeholder span {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    .gallery-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .gp-1 { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
-    .gp-2 { background: linear-gradient(135deg, var(--navy-light), #3a7abd); }
-    .gp-3 { background: linear-gradient(135deg, var(--navy-dark), var(--navy)); }
-    .gp-4 { background: linear-gradient(135deg, var(--navy), var(--orange)); }
-    .gp-5 { background: linear-gradient(135deg, var(--navy-light), var(--navy)); }
-    .gp-6 { background: linear-gradient(135deg, var(--orange), var(--navy)); }
-
     /* ===== COMMUNITY - 베이지 배경 ===== */
     #community {
       background: var(--white);
@@ -1100,69 +1266,6 @@
     .community-card .btn {
       font-size: 0.9rem;
       padding: 10px 24px;
-    }
-
-    /* ===== GALLERY MODAL ===== */
-    .gallery-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 2000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .gallery-modal.active {
-      display: flex;
-    }
-
-    .gallery-modal-content {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .gallery-modal-close {
-      position: absolute;
-      top: -40px;
-      right: 0;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 2.5rem;
-      cursor: pointer;
-      padding: 5px 10px;
-      line-height: 1;
-      transition: color 0.3s;
-    }
-
-    .gallery-modal-close:hover {
-      color: var(--orange);
-    }
-
-    .gallery-modal-content img {
-      max-width: 100%;
-      max-height: 85vh;
-      object-fit: contain;
-      border-radius: 8px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    .gallery-modal-caption {
-      color: #fff;
-      font-size: 1.1rem;
-      margin-top: 15px;
-      text-align: center;
-      font-weight: 600;
     }
 
     /* ===== CONTACT - 베이지 배경 ===== */
@@ -1437,9 +1540,9 @@
           <li><a href="#main" class="active">메인</a></li>
           <li><a href="#about">개요</a></li>
           <li><a href="#plans">평형</a></li>
+          <li><a href="#siteinfo">단지안내</a></li>
           <li><a href="#timeline">일정</a></li>
           <li><a href="#news">뉴스</a></li>
-          <li><a href="#gallery">갤러리</a></li>
           <li><a href="#calculator">계산기</a></li>
           <li><a href="#contact">문의</a></li>
           <li><a href="chat.html" style="color:#fff;background:rgba(232,98,46,0.35);border-radius:6px;"><i class="fas fa-robot"></i> AI 질문</a></li>
@@ -1509,6 +1612,7 @@
         <a href="apply-precautions.html" class="btn btn-outline" target="_blank"><i class="fas fa-info-circle"></i> 청약시 주의사항</a>
         <a href="apply-documents.html" class="btn btn-outline" target="_blank"><i class="fas fa-info-circle"></i> 당첨자 제출 서류</a>
         <a href="contract-documents.html" class="btn btn-outline" target="_blank"><i class="fas fa-file-alt"></i> 계약 구비 서류</a>
+        <a href="amenities.html" class="btn btn-outline" target="_blank"><i class="fas fa-map-marked-alt"></i> 편의시설 안내</a>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -1664,6 +1768,61 @@
     </div>
   </section>
 
+  <!-- ===== SITE INFO (단지안내) ===== -->
+  <section id="siteinfo">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">SITE INFO</div>
+        <h2>단지안내</h2>
+        <p>단지 배치도에서 주황색 점을 클릭하면 해당 시설 사진을 볼 수 있습니다</p>
+      </div>
+
+      <div class="siteplan-card fade-in">
+        <div class="siteplan-hint"><i class="fas fa-hand-pointer"></i> 배치도 위 점을 클릭해보세요 (PC/모바일 모두 가능)</div>
+        <div class="siteplan-wrap" id="siteplanWrap">
+          <img src="img/amenities/site-plan.png" alt="단지 배치도">
+          <!-- hotspots injected by JS -->
+        </div>
+      </div>
+
+      <div class="siteplan-card fade-in">
+        <div class="amenity-list-title">편의시설 목록</div>
+        <div class="amenity-grid" id="amenityGrid"></div>
+      </div>
+
+      <div class="siteplan-card fade-in">
+        <div class="amenity-list-title">단지 전경 갤러리</div>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SITE INFO MODAL ===== -->
+  <!-- Floor Plan Modal -->
+  <div id="floorplanModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeFloorPlan()">&times;</span>
+      <h3 id="floorplanType">Type</h3>
+      <img id="floorplanImg" src="" alt="평면도">
+    </div>
+  </div>
+
+  <div class="amenity-modal" id="amenityModal">
+    <div class="amenity-modal-inner">
+      <div class="amenity-modal-header">
+        <div class="amenity-modal-title" id="amenityModalTitle">시설명</div>
+        <button class="amenity-modal-close" onclick="closeAmenityModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="amenity-modal-imgwrap">
+        <button class="amenity-nav-btn prev" onclick="navAmenityImage(-1)"><i class="fas fa-chevron-left"></i></button>
+        <img id="amenityModalImg" src="" alt="">
+        <button class="amenity-nav-btn next" onclick="navAmenityImage(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="amenity-modal-desc" id="amenityModalDesc"></div>
+      <div class="amenity-modal-counter" id="amenityModalCounter"></div>
+    </div>
+  </div>
+
   <!-- ===== TIMELINE ===== -->
   <section id="timeline">
     <div class="container">
@@ -1790,43 +1949,6 @@
     </div>
   </section>
 
-  <!-- ===== GALLERY ===== -->
-  <section id="gallery">
-    <div class="container">
-      <div class="section-header fade-in">
-        <div class="section-tag">GALLERY</div>
-        <h2>갤러리</h2>
-        <p>단지 조감도 및 관련 이미지를 확인하세요</p>
-      </div>
-      <div class="gallery-grid">
-        <div class="gallery-item fade-in" onclick="openGalleryModal('img/perspective.png', '단지 투시도')">
-          <div class="gallery-placeholder gp-1">
-            <img src="img/perspective.png" alt="단지 투시도">
-          </div>
-        </div>
-        <div class="gallery-item fade-in" onclick="openGalleryModal('img/aerial.png', '단지 조감도')">
-          <div class="gallery-placeholder gp-2">
-            <img src="img/aerial.png" alt="단지 조감도">
-          </div>
-        </div>
-        <div class="gallery-item fade-in" onclick="openGalleryModal('img/siteplan.png', '단지 배치도')">
-          <div class="gallery-placeholder gp-3">
-            <img src="img/siteplan.png" alt="단지 배치도">
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== GALLERY MODAL ===== -->
-  <div id="galleryModal" class="gallery-modal" onclick="closeGalleryModal()">
-    <div class="gallery-modal-content" onclick="event.stopPropagation()">
-      <button class="gallery-modal-close" onclick="closeGalleryModal()">&times;</button>
-      <img id="galleryModalImg" src="" alt="">
-      <div id="galleryModalCaption" class="gallery-modal-caption"></div>
-    </div>
-  </div>
-
   <!-- ===== COMMUNITY ===== -->
   <section id="community">
     <div class="container">
@@ -1936,7 +2058,9 @@
               <li><a href="#main">메인</a></li>
               <li><a href="#about">단지 개요</a></li>
               <li><a href="#plans">평형 정보</a></li>
+              <li><a href="#siteinfo">단지안내</a></li>
               <li><a href="#timeline">주요 일정</a></li>
+              <li><a href="amenities.html" target="_blank">편의시설 안내</a></li>
               <li><a href="https://spontaneous-semifreddo-d21be3.netlify.app" target="_blank">분양가/수익공유 계산기</a></li>
               <li><a href="https://joy-papa.github.io/ebundangfirst/" target="_blank">옵션 계산기</a></li>
               <li><a href="chat.html">AI 질문하기</a></li>
@@ -2092,6 +2216,157 @@
     updateTimelineProgress();
     setInterval(updateTimelineProgress, 3600000); // 매시간 재확인 (자정 넘어가는 경우 대비)
 
+    // ===== SITE INFO (단지안내) =====
+    const amenities = [
+      {
+        name: '드포엠플레이',
+        icon: 'fa-water-ladder',
+        top: 38.1, left: 63.2,
+        images: ['img/amenities/community-center1-exterior.png']
+      },
+      {
+        name: '드포엠플레이 (111동측)',
+        icon: 'fa-water-ladder',
+        top: 69.8, left: 14.9,
+        images: ['img/amenities/dpoem-play.png']
+      },
+      {
+        name: '드포엠파크',
+        icon: 'fa-tree',
+        top: 37.8, left: 73.2,
+        images: ['img/amenities/dpoem-park.png']
+      },
+      {
+        name: '드포엠카페',
+        icon: 'fa-mug-hot',
+        top: 39.6, left: 72.9,
+        images: ['img/amenities/dpoem-cafe-exterior.png', 'img/amenities/dpoem-cafe-interior.png']
+      },
+      {
+        name: '어린이집 (1, 2F)',
+        icon: 'fa-child',
+        top: 56.2, left: 53.7,
+        images: ['img/amenities/daycare-interior.png', 'img/amenities/daycare-exterior.png']
+      },
+      {
+        name: '커뮤니티센터 Ⅰ (B1)',
+        icon: 'fa-dumbbell',
+        top: 44.0, left: 62.1,
+        images: ['img/amenities/community-center1.png', 'img/amenities/community-lounge.png', 'img/amenities/gx-room.png'],
+        desc: '피트니스 · G.X룸 · 커뮤니티라운지 · 라운지카페(작은도서관) · 샤워룸(남/여) · 미니짐 · 실내골프연습장 · 멀티룸(주민회의실)'
+      },
+      {
+        name: '커뮤니티센터 Ⅱ (B1)',
+        icon: 'fa-child-reaching',
+        top: 71.9, left: 45.8,
+        images: ['img/amenities/community-center2.png', 'img/amenities/indoor-sports-court.png'],
+        desc: '키즈라운지(공동육아공간) · 스포츠코트 · 다함께돌봄센터 · 프라이빗오피스룸 · 멀티룸'
+      },
+      {
+        name: '근린생활시설 (101동측)',
+        icon: 'fa-store',
+        top: 37.5, left: 92.2,
+        images: ['img/amenities/neighborhood-facility.png']
+      }
+    ];
+
+    const galleryPhotos = [
+      { name: '단지 투시도', images: ['img/perspective.png'], top: 26, left: 18 },
+      { name: '단지 조감도', images: ['img/aerial.png'], top: 46, left: 18 }
+    ];
+
+    const siteplanWrap = document.getElementById('siteplanWrap');
+    const amenityGrid = document.getElementById('amenityGrid');
+    const photoGrid = document.getElementById('photoGrid');
+
+    amenities.forEach((a, idx) => {
+      const dot = document.createElement('div');
+      dot.className = 'hotspot';
+      dot.style.top = a.top + '%';
+      dot.style.left = a.left + '%';
+      dot.innerHTML = '<i class="fas ' + a.icon + '"></i><span class="hotspot-label">' + a.name + '</span>';
+      dot.onclick = () => openAmenityModal(idx);
+      siteplanWrap.appendChild(dot);
+
+      const card = document.createElement('div');
+      card.className = 'amenity-card';
+      card.innerHTML = '<i class="fas ' + a.icon + '"></i><span>' + a.name + '</span>';
+      card.onclick = () => openAmenityModal(idx);
+      amenityGrid.appendChild(card);
+    });
+
+    galleryPhotos.forEach((p, idx) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'photo-hotspot';
+      thumb.style.top = p.top + '%';
+      thumb.style.left = p.left + '%';
+      thumb.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><span>' + p.name + '</span>';
+      thumb.onclick = () => openGalleryPhoto(idx);
+      siteplanWrap.appendChild(thumb);
+    });
+
+    galleryPhotos.forEach((p, idx) => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><div class="photo-card-label">' + p.name + '</div>';
+      card.onclick = () => openGalleryPhoto(idx);
+      photoGrid.appendChild(card);
+    });
+
+    let currentAmenity = null;
+    let currentImageIndex = 0;
+
+    function openAmenityModal(idx) {
+      currentAmenity = amenities[idx];
+      currentImageIndex = 0;
+      renderAmenityModal();
+      document.getElementById('amenityModal').classList.add('active');
+    }
+
+    function openGalleryPhoto(idx) {
+      currentAmenity = galleryPhotos[idx];
+      currentImageIndex = 0;
+      renderAmenityModal();
+      document.getElementById('amenityModal').classList.add('active');
+    }
+
+    function renderAmenityModal() {
+      if (!currentAmenity) return;
+      document.getElementById('amenityModalTitle').textContent = currentAmenity.name;
+      document.getElementById('amenityModalImg').src = currentAmenity.images[currentImageIndex];
+      document.getElementById('amenityModalDesc').textContent = currentAmenity.desc || '';
+      const multi = currentAmenity.images.length > 1;
+      document.getElementById('amenityModalCounter').textContent = multi
+        ? (currentImageIndex + 1) + ' / ' + currentAmenity.images.length
+        : '';
+      document.querySelectorAll('.amenity-nav-btn').forEach(btn => {
+        btn.style.display = multi ? 'flex' : 'none';
+      });
+    }
+
+    function navAmenityImage(dir) {
+      if (!currentAmenity) return;
+      const len = currentAmenity.images.length;
+      currentImageIndex = (currentImageIndex + dir + len) % len;
+      renderAmenityModal();
+    }
+
+    function closeAmenityModal() {
+      document.getElementById('amenityModal').classList.remove('active');
+      currentAmenity = null;
+    }
+
+    document.getElementById('amenityModal').addEventListener('click', function (e) {
+      if (e.target === this) closeAmenityModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!document.getElementById('amenityModal').classList.contains('active')) return;
+      if (e.key === 'Escape') closeAmenityModal();
+      if (e.key === 'ArrowLeft') navAmenityImage(-1);
+      if (e.key === 'ArrowRight') navAmenityImage(1);
+    });
+
     // Floor Plan Modal
     function openFloorPlan(type) {
       const modal = document.getElementById('floorplanModal');
@@ -2128,26 +2403,8 @@
       if (e.key === 'Escape') {
         document.getElementById('floorplanModal').style.display = 'none';
         document.body.style.overflow = '';
-        closeGalleryModal();
       }
     });
-
-    // Gallery Modal
-    function openGalleryModal(src, caption) {
-      const modal = document.getElementById('galleryModal');
-      const modalImg = document.getElementById('galleryModalImg');
-      const modalCaption = document.getElementById('galleryModalCaption');
-      
-      modalImg.src = src;
-      modalCaption.textContent = caption;
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeGalleryModal() {
-      document.getElementById('galleryModal').classList.remove('active');
-      document.body.style.overflow = '';
-    }
 
     // Balance text in a container: insert <br> at evenly-spaced whitespace boundaries
     function balanceText(container, maxLines, highlightIndex) {
@@ -2232,15 +2489,7 @@
       clearTimeout(_resizeTimer);
       _resizeTimer = setTimeout(balanceHeroLines, 150);
     });
-  </script>
 
-  <!-- Floor Plan Modal -->
-  <div id="floorplanModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeFloorPlan()">&times;</span>
-      <h3 id="floorplanType">Type</h3>
-      <img id="floorplanImg" src="" alt="평면도">
-    </div>
-  </div>
+  </script>
 </body>
 </html>

@@ -23,6 +23,7 @@ e-park-hansang-bundang/
 ├── apply-documents.html    # 당첨자 제출 서류
 ├── contract-documents.html # 계약 구비 서류
 ├── nakseong_notice.html    # 낙생지구 공고
+├── amenities.html          # 편의시설 안내 (단지 배치도 클릭 → 모달)
 ├── img/
 │   ├── elife_logo.svg      # 협의회 로고 (흰색 fill, 84×42px)
 │   ├── aerial.png          # 조감도 (2MB)
@@ -32,7 +33,8 @@ e-park-hansang-bundang/
 │   ├── 55A.png             # 55A형 평면도
 │   ├── 55B.png             # 55B형 평면도
 │   ├── 59A.png             # 59A형 평면도
-│   └── 59T.png             # 59T형 평면도
+│   ├── 59T.png             # 59T형 평면도
+│   └── amenities/           # amenities.html에서 사용하는 시설 사진 (영문 파일명)
 └── README.md               # 이 파일
 ```
 
@@ -63,7 +65,7 @@ e-park-hansang-bundang/
 
 ### Header (고정)
 - 로고: `img/elife_logo.svg`
-- 네비게이션: 메인 · 개요 · 평형 · 일정 · 뉴스 · 갤러리 · 계산기 · 문의 · **AI 질문**
+- 네비게이션: 메인 · 개요 · 평형 · 일정 · 뉴스 · 계산기 · 문의 · **AI 질문**
 - 소셜 링크: 네이버 카페 / 카카오톡 / 이메일
 - 모바일 햄버거 메뉴
 
@@ -99,6 +101,11 @@ e-park-hansang-bundang/
 | 59A | 59㎡ | 255호 | — |
 | 59T | 59㎡ | 10호 | — |
 
+### 단지안내 (`#siteinfo`)
+- amenities.html의 배치도 hotspot + 편의시설 목록 + 단지 전경 갤러리를 그대로 index.html 본문에도 삽입한 섹션 (평형 정보 바로 다음, 주요 일정 이전)
+- 별도 페이지(amenities.html)와 별개로 유지·복제됨 — 시설/사진을 추가·수정할 때는 **두 파일 모두** (`index.html`의 `#siteinfo` 블록과 `amenities.html`) 업데이트해야 함
+- 사용 클래스/ID(`siteplanWrap`, `amenityGrid`, `photoGrid`, `amenityModal`, `amenities`, `galleryPhotos` 등)는 amenities.html과 동일하게 재사용
+
 ### 주요 일정 (`#timeline`)
 
 | 일정 | 내용 |
@@ -114,10 +121,6 @@ e-park-hansang-bundang/
 
 ### 뉴스 & 소식 (`#news`)
 정적 뉴스 카드 4개. 업데이트 시 HTML 직접 편집.
-
-### 갤러리 (`#gallery`)
-- 이미지 3개: 부지계획도 / 조감도 / 파사드
-- 클릭 시 모달 확대 + 캡션 표시
 
 ### 커뮤니티 (`#community`)
 - 네이버 카페, 카카오톡 오픈채팅 연결 카드
@@ -162,6 +165,40 @@ Content-Type: application/json
 - 웹 검색 결과 시 🌐 아이콘으로 구분 표시
 - Enter 전송 / Shift+Enter 줄바꿈
 - 모바일 반응형
+
+---
+
+## amenities.html — 편의시설 안내
+
+### 개요
+- 단지 배치도(`img/amenities/site-plan.png`) 위에 시설 위치를 % 좌표로 표시한 hotspot(점) 오버레이
+- 배치도 좌측 빈 공간(숲 텍스처)에는 `단지 투시도`/`단지 조감도`(원래 index.html `#gallery`에 있던 이미지) 썸네일 hotspot도 배치
+- hotspot 클릭 시 모달로 해당 시설 사진 표시 (사진 여러 장인 경우 좌/우 화살표, 키보드 방향키로 이동)
+- 배치도 하단에 동일 목록을 카드 그리드로도 제공 (모바일에서 작은 점을 정확히 누르기 어려운 경우 대비), 그 아래 "단지 전경 갤러리" 그리드에 투시도/조감도 재노출
+
+### 시설 목록 (`amenities` 배열, amenities.html 내 스크립트)
+| 시설 | 사진 |
+|------|------|
+| 드포엠플레이 (101~108동측) | `community-center1-exterior.png` |
+| 드포엠플레이 (111동측) | `dpoem-play.png` |
+| 드포엠파크 | `dpoem-park.png` |
+| 드포엠카페 | `dpoem-cafe-exterior.png`, `dpoem-cafe-interior.png` |
+| 어린이집 (1, 2F) | `daycare-interior.png`, `daycare-exterior.png` |
+| 커뮤니티센터 Ⅰ (B1) | `community-center1.png`(전체 목록), `community-lounge.png`, `gx-room.png` |
+| 커뮤니티센터 Ⅱ (B1) | `community-center2.png`(전체 목록), `indoor-sports-court.png` |
+| 근린생활시설 (101동측) | `neighborhood-facility.png` |
+
+### 단지 전경 갤러리 (`galleryPhotos` 배열)
+| 사진 | 경로 |
+|------|------|
+| 단지 투시도 | `img/perspective.png` |
+| 단지 조감도 | `img/aerial.png` |
+
+- 위 두 이미지는 `index.html`의 `#about` 배경(투시도) 등 다른 곳에서도 쓰이므로 `img/` 루트에 그대로 두고 amenities.html에서는 경로만 참조함 (파일 이동 안 함)
+- `img/siteplan.png`(구 갤러리 배치도)는 amenities.html의 고해상도 배치도와 중복이라 갤러리에서 제외함; 파일 자체는 미사용 상태로 `img/`에 남아있음
+- `img/amenities/`의 파일명은 모두 영문(ASCII)으로 통일되어 있음 — 한글/공백 파일명은 macOS(APFS)에서는 유니코드 정규화(NFC/NFD)로 자동 매칭되어 로컬에서는 문제없이 열리지만, GitHub Pages(Linux)는 바이트 단위로 비교하므로 배포 후 404가 날 수 있어 영문명으로 변경함
+- hotspot 좌표 추가/조정 시: `amenities.html`의 `amenities`/`galleryPhotos` 배열에서 해당 항목의 `top`/`left`(배치도 이미지 기준 %) 값을 수정
+- 새 시설 사진 추가 시: `img/amenities/`에 영문 파일명으로 추가 후 `amenities` 배열에 항목 추가
 
 ---
 
