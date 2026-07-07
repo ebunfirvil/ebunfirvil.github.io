@@ -811,6 +811,50 @@
       line-height: 1.6;
     }
 
+    /* 지난 일정 */
+    .timeline-item.is-done .timeline-content {
+      opacity: 0.55;
+    }
+
+    .timeline-item.is-done .timeline-date {
+      background: var(--gray);
+      color: var(--white);
+    }
+
+    .timeline-item.is-done::before {
+      background: var(--gray);
+      box-shadow: 0 0 0 3px var(--gray);
+    }
+
+    /* 현재 진행 중인 일정 */
+    .timeline-item.is-current .timeline-content {
+      border-top-color: var(--orange);
+      box-shadow: 0 0 0 2px var(--orange-warm), var(--shadow);
+    }
+
+    .timeline-item.is-current::before {
+      background: var(--orange-warm);
+      animation: timelinePulse 1.8s ease-out infinite;
+    }
+
+    @keyframes timelinePulse {
+      0% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 3px rgba(255,154,86,0.5); }
+      70% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 14px rgba(255,154,86,0); }
+      100% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 14px rgba(255,154,86,0); }
+    }
+
+    .timeline-now-badge {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--orange);
+      color: var(--white);
+      font-size: 0.7rem;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+
     /* ===== NEWS - 베이지 배경 ===== */
     #news {
       background: var(--white);
@@ -1629,56 +1673,56 @@
         <p>2026년 기준 주요 청약 및 계약 일정</p>
       </div>
       <div class="timeline">
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-05-29" data-end="2026-05-29">
           <div class="timeline-content">
             <div class="timeline-date">2026.05.29</div>
             <h3>입주자 모집 공고</h3>
             <p>자격·소득·자산·거주기간 판단 기준일</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-07-03" data-end="2026-07-03">
           <div class="timeline-content">
             <div class="timeline-date">2026.07.03</div>
             <h3>주택전시관 개관</h3>
             <p>경기도 용인시 수지구 동천동 855-2 / 오전 10시</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-07-13" data-end="2026-07-14">
           <div class="timeline-content">
             <div class="timeline-date">07.13 ~ 07.14</div>
             <h3>사전청약 당첨자 신청</h3>
             <p>LH 청약플러스 / 모바일앱 / 10:00 ~ 17:00</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-07-20" data-end="2026-07-21">
           <div class="timeline-content">
             <div class="timeline-date">07.20 ~ 07.21</div>
             <h3>본청약 (신혼부부 등)</h3>
             <p>LH 청약플러스 / 모바일앱 / 10:00 ~ 17:00</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-07-31" data-end="2026-07-31">
           <div class="timeline-content">
             <div class="timeline-date">07.31</div>
             <h3>당첨자 발표</h3>
             <p>오후 14:00 이후 / SMS, LH 청약플러스, ARS(1661-7700)</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-08-07" data-end="2026-08-17">
           <div class="timeline-content">
             <div class="timeline-date">08.07 ~ 08.17</div>
             <h3>당첨자 서류 제출</h3>
             <p>방문 제출 / 10:00 ~ 16:00 (공고일 이후 발급분만 인정)</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2026-11-04" data-end="2026-11-13">
           <div class="timeline-content">
             <div class="timeline-date">11.04 ~ 11.13</div>
             <h3>계약 체결</h3>
             <p>현장계약 (주택전시관 내) / 10:00 ~ 16:00</p>
           </div>
         </div>
-        <div class="timeline-item fade-in">
+        <div class="timeline-item fade-in" data-start="2029-02-01" data-end="2029-02-01">
           <div class="timeline-content">
             <div class="timeline-date">2029.02</div>
             <h3>입주 예정</h3>
@@ -2003,6 +2047,50 @@
 
     updateDDay();
     setInterval(updateDDay, 60000); // 매분 업데이트
+
+    // Timeline progress: 오늘 날짜 기준 현재 진행 단계 자동 표시
+    function updateTimelineProgress() {
+      const now = new Date();
+      const items = Array.from(document.querySelectorAll('.timeline-item[data-start]'))
+        .map(item => ({
+          el: item,
+          start: new Date(item.dataset.start + 'T00:00:00+09:00'),
+          end: new Date(item.dataset.end + 'T23:59:59+09:00')
+        }));
+
+      items.forEach(({ el }) => {
+        el.classList.remove('is-done', 'is-current');
+        const badge = el.querySelector('.timeline-now-badge');
+        if (badge) badge.remove();
+      });
+
+      let currentItem = items.find(({ start, end }) => now >= start && now <= end);
+      let badgeText = '진행중';
+
+      if (!currentItem) {
+        currentItem = items.find(({ start }) => start > now);
+        badgeText = '다음 일정';
+      }
+
+      items.forEach(({ el, end }) => {
+        if (currentItem && el === currentItem.el) return;
+        if (end < now) el.classList.add('is-done');
+      });
+
+      if (currentItem) {
+        currentItem.el.classList.add('is-current');
+        const dateEl = currentItem.el.querySelector('.timeline-date');
+        if (dateEl) {
+          const badge = document.createElement('span');
+          badge.className = 'timeline-now-badge';
+          badge.textContent = badgeText;
+          dateEl.appendChild(badge);
+        }
+      }
+    }
+
+    updateTimelineProgress();
+    setInterval(updateTimelineProgress, 3600000); // 매시간 재확인 (자정 넘어가는 경우 대비)
 
     // Floor Plan Modal
     function openFloorPlan(type) {
