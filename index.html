@@ -156,6 +156,19 @@
       background: rgba(255,255,255,0.2);
     }
 
+    .naver-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+    }
+    .naver-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
     .mobile-toggle {
       display: none;
       background: none;
@@ -163,6 +176,35 @@
       color: var(--white);
       font-size: 1.5rem;
       cursor: pointer;
+    }
+
+    /* ===== BACK TO TOP ===== */
+    .back-to-top {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: none;
+      background: var(--orange);
+      color: var(--white);
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+    .back-to-top.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .back-to-top:hover {
+      background: var(--orange-dark);
     }
 
     /* ===== HERO - 남색 계열 ===== */
@@ -1246,7 +1288,8 @@
       margin: 0 auto 20px;
     }
 
-    .cc-cafe { background: linear-gradient(135deg, #f7ce00, #e6b800); color: #fff; }
+    .cc-cafe { background: var(--white); border: 2px solid #03c75a; padding: 12px; }
+    .cc-cafe img { width: 100%; height: 100%; object-fit: contain; }
     .cc-kakao { background: linear-gradient(135deg, #fee500, #e6d100); color: #3c1e1e; }
 
     .community-card h3 {
@@ -1549,9 +1592,8 @@
         </ul>
       </nav>
       <div class="social-links">
-        <a href="#" title="네이버 카페"><i class="fab fa-naver"></i></a>
-        <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" title="카카오톡"><i class="fab fa-kakao"></i></a>
-        <a href="#" title="이메일"><i class="fas fa-envelope"></i></a>
+        <a href="https://cafe.naver.com/naksangheemang" target="_blank" title="네이버 카페"><span class="naver-badge"><img src="img/cafe-logo.png" alt="네이버 카페"></span></a>
+        <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" title="카카오톡"><i class="fas fa-comment"></i></a>
       </div>
       <button class="mobile-toggle" onclick="document.getElementById('mainNav').classList.toggle('active')">
         <i class="fas fa-bars"></i>
@@ -1612,7 +1654,6 @@
         <a href="apply-precautions.html" class="btn btn-outline" target="_blank"><i class="fas fa-info-circle"></i> 청약시 주의사항</a>
         <a href="apply-documents.html" class="btn btn-outline" target="_blank"><i class="fas fa-info-circle"></i> 당첨자 제출 서류</a>
         <a href="contract-documents.html" class="btn btn-outline" target="_blank"><i class="fas fa-file-alt"></i> 계약 구비 서류</a>
-        <a href="amenities.html" class="btn btn-outline" target="_blank"><i class="fas fa-map-marked-alt"></i> 편의시설 안내</a>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -1823,6 +1864,11 @@
     </div>
   </div>
 
+  <!-- ===== BACK TO TOP ===== -->
+  <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="맨 위로">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
   <!-- ===== TIMELINE ===== -->
   <section id="timeline">
     <div class="container">
@@ -1959,13 +2005,13 @@
       </div>
       <div class="community-grid">
         <div class="community-card fade-in">
-          <div class="community-card-icon cc-cafe"><i class="fab fa-naver"></i></div>
+          <div class="community-card-icon cc-cafe"><img src="img/cafe-logo.png" alt="네이버 카페 로고"></div>
           <h3>네이버 카페</h3>
           <p>최신 단지 소식, 분양 정보, 공사 진척 등<br>다양한 정보를 공유하는 공간</p>
           <a href="https://cafe.naver.com/naksangheemang" target="_blank" class="btn btn-primary">카페 가입하기</a>
         </div>
         <div class="community-card fade-in">
-          <div class="community-card-icon cc-kakao"><i class="fab fa-kakao"></i></div>
+          <div class="community-card-icon cc-kakao"><i class="fas fa-comment"></i></div>
           <h3>카카오톡 대화방</h3>
           <p>실시간으로 소통하고<br>즉각적인 정보를 나누는 공간</p>
           <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" class="btn btn-primary">대화방 참여</a>
@@ -2060,7 +2106,6 @@
               <li><a href="#plans">평형 정보</a></li>
               <li><a href="#siteinfo">단지안내</a></li>
               <li><a href="#timeline">주요 일정</a></li>
-              <li><a href="amenities.html" target="_blank">편의시설 안내</a></li>
               <li><a href="https://spontaneous-semifreddo-d21be3.netlify.app" target="_blank">분양가/수익공유 계산기</a></li>
               <li><a href="https://joy-papa.github.io/ebundangfirst/" target="_blank">옵션 계산기</a></li>
               <li><a href="chat.html">AI 질문하기</a></li>
@@ -2099,6 +2144,16 @@
         header.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
+      }
+    });
+
+    // Back to top button
+    window.addEventListener('scroll', () => {
+      const backToTop = document.getElementById('backToTop');
+      if (window.scrollY > 400) {
+        backToTop.classList.add('show');
+      } else {
+        backToTop.classList.remove('show');
       }
     });
 
