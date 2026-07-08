@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e편한세상 스마트 시스템 안내 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: var(--beige);
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 15px; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 6px; background: rgba(255,255,255,0.15);
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .top-bar-title { color: var(--white); font-size: 1rem; font-weight: 700; }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+      padding: 50px 20px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-header h1 {
+      position: relative; color: var(--white); font-size: 2rem; font-weight: 900; margin-bottom: 10px;
+    }
+    .page-header p {
+      position: relative; color: rgba(255,255,255,0.7); font-size: 0.95rem;
+    }
+
+    /* ===== TABS ===== */
+    .tabs-wrapper {
+      max-width: 1080px; margin: 0 auto; padding: 0 20px;
+    }
+    .tab-nav {
+      display: flex; gap: 0; margin-top: -25px; position: relative; z-index: 10;
+      background: var(--white); border-radius: 12px 12px 0 0;
+      box-shadow: var(--shadow); overflow: hidden; flex-wrap: wrap;
+    }
+    .tab-btn {
+      flex: 1; min-width: 110px; padding: 16px 10px; border: none; background: var(--white);
+      font-family: 'Noto Sans KR', sans-serif; font-size: 0.9rem; font-weight: 600;
+      color: var(--gray); cursor: pointer; transition: all 0.3s ease;
+      border-bottom: 3px solid transparent; position: relative;
+    }
+    .tab-btn:hover { background: var(--beige); color: var(--navy); }
+    .tab-btn.active {
+      color: var(--orange); border-bottom-color: var(--orange);
+      background: var(--beige);
+    }
+    .tab-btn .tab-icon {
+      display: block; font-size: 1.3rem; margin-bottom: 4px;
+    }
+    .tab-btn .tab-label {
+      display: block; font-size: 0.82rem; line-height: 1.4;
+    }
+    .tab-btn .tab-count {
+      display: block; font-size: 0.72rem; color: var(--orange-warm); margin-top: 2px;
+    }
+
+    /* ===== TAB CONTENT ===== */
+    .tab-content-area {
+      max-width: 1080px; margin: 0 auto; padding: 0 20px 80px;
+    }
+    .tab-panel {
+      display: none;
+      background: var(--white);
+      border-radius: 0 0 16px 16px;
+      padding: 35px 30px;
+      box-shadow: var(--shadow);
+    }
+    .tab-panel.active { display: block; }
+
+    .section-block h2 {
+      font-size: 1.15rem; font-weight: 900; color: var(--navy);
+      margin-bottom: 22px; display: flex; align-items: center; gap: 12px;
+    }
+    .section-block h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; min-width: 40px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white); border-radius: 12px; font-size: 1.1rem; font-weight: 900;
+    }
+
+    /* ===== SYSTEM CARDS ===== */
+    .system-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .system-card {
+      background: var(--beige);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 3px solid var(--orange);
+      transition: all 0.25s ease;
+    }
+    .system-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    .system-card .icon {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
+      color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem; margin-bottom: 12px;
+    }
+    .system-card-head {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    }
+    .system-card h3 {
+      font-size: 0.98rem; font-weight: 700; color: var(--navy); line-height: 1.5;
+    }
+    .toggle-btn {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: var(--orange);
+      color: var(--white);
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .toggle-btn:hover { background: var(--orange-dark); }
+    .system-card.expanded .toggle-btn { background: var(--navy); }
+    .system-card-desc {
+      display: none;
+      font-size: 0.85rem; color: #555; line-height: 1.7;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--beige-dark);
+    }
+    .system-card.expanded .system-card-desc { display: block; }
+
+    /* ===== NOTE BOX ===== */
+    .note-box {
+      background: var(--beige); border: 1px solid var(--beige-dark);
+      border-radius: 8px; padding: 14px 18px; margin: 0 0 20px;
+      font-size: 0.88rem; color: var(--gray);
+    }
+    .note-box i { color: var(--orange); margin-right: 6px; }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--navy-dark); color: rgba(255,255,255,0.5);
+      text-align: center; padding: 25px 20px; font-size: 0.8rem;
+    }
+    .page-footer a { color: var(--orange-warm); text-decoration: none; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .tab-btn { padding: 12px 6px; flex: 1 1 33%; }
+      .tab-btn .tab-label { font-size: 0.72rem; }
+      .tab-panel { padding: 25px 18px; }
+      .section-block h2 { font-size: 1.05rem; }
+      .system-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+      <span class="top-bar-title">e편한세상 스마트 시스템 안내</span>
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>e편한세상 스마트 시스템 안내</h1>
+    <p>안전 · 에너지 절약 · 건강 · 편의 · 소음저감 5대 시스템, 총 41가지 기능을 확인하세요</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-wrapper">
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab(0)">
+        <span class="tab-icon"><i class="fas fa-shield-alt"></i></span>
+        <span class="tab-label">안전 시스템</span>
+        <span class="tab-count">12</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab(1)">
+        <span class="tab-icon"><i class="fas fa-leaf"></i></span>
+        <span class="tab-label">에너지 절약<br>시스템</span>
+        <span class="tab-count">9</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab(2)">
+        <span class="tab-icon"><i class="fas fa-heartbeat"></i></span>
+        <span class="tab-label">건강 시스템</span>
+        <span class="tab-count">7</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab(3)">
+        <span class="tab-icon"><i class="fas fa-thumbs-up"></i></span>
+        <span class="tab-label">편의 시스템</span>
+        <span class="tab-count">9</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab(4)">
+        <span class="tab-icon"><i class="fas fa-volume-mute"></i></span>
+        <span class="tab-label">소음저감<br>시스템</span>
+        <span class="tab-count">4</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB CONTENT -->
+  <div class="tab-content-area">
+
+    <!-- ==================== TAB 1: 안전 시스템 ==================== -->
+    <div class="tab-panel active" id="tab-0">
+      <div class="section-block">
+        <h2><span class="num"><i class="fas fa-shield-alt"></i></span> 안전 시스템</h2>
+        <div class="system-grid">
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-video"></i></div>
+            <div class="system-card-head">
+              <h3>블랙박스 도어폰</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">부재중 방문자를 스마트폰으로 확인할 수 있으며, 현관문 앞에 수상한 사람이 포착되면 자동으로 녹화하여 범죄를 예방할 수 있습니다. (10초 이상 카메라 앞에 서 있는 경우)</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-car-side"></i></div>
+            <div class="system-card-head">
+              <h3>차량번호인식 주차관제 시스템 (방문예약)</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">차량번호 인식시스템으로 아파트에 출입하는 차량을 효율적으로 통제할 수 있습니다. 불필요한 외부차량의 출입을 통제하여 사전에 보안을 강화하고, 가족, 지인 초청 시 방문차량을 사전 등록하면 번거로운 통화없이 쉽게 주차장으로 진입이 가능하여 편리합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-user-secret"></i></div>
+            <div class="system-card-head">
+              <h3>저층부 및 최상층 방범 감지기</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">동체 감지기를 설치해 외부인의 침입을 사전에 차단하므로 저층/최상층 세대도 안심할 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-camera"></i></div>
+            <div class="system-card-head">
+              <h3>고해상도 CCTV</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">녹화 시스템을 갖춘 고화질 CCTV를 단지 내 설치해 실시간 감시 및 녹화를 통해 입주민의 안전을 지켜줍니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-road"></i></div>
+            <div class="system-card-head">
+              <h3>입출차 관리 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">차량번호 인식시스템을 설치하여 아파트에 출입하는 차량을 효율적으로 통제합니다. 방문차량의 출차 여부, 평균 주차대수 등 확인이 가능한 시스템으로 단지 내 보안 향상 뿐만 아니라 효율적인 주차장 운용이 가능합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-bell"></i></div>
+            <div class="system-card-head">
+              <h3>지하주차장 비상벨</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">지하주차장에 비상 콜버튼을 설치하여 위급상황 발생시 신속하게 대처합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-life-ring"></i></div>
+            <div class="system-card-head">
+              <h3>승강기 자동구출 운전시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">정전, 화재 등 비상 상황이 발생하면 가장 가까운 층에서 승강기가 자동으로 멈춰 안전하게 대피할 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-fingerprint"></i></div>
+            <div class="system-card-head">
+              <h3>지문인식 도어락</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">지문인식 기능이 있는 현관 앞 카메라로 인해 더욱 안전하게 보안을 향상시켜줍니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-bolt"></i></div>
+            <div class="system-card-head">
+              <h3>비상전원 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">정전시에도 보안시설을 감시하는 월패드와 비상등, 온수분배기, 비상용 엘리베이터 등에 전원 공급이 되어 안전합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-fire-extinguisher"></i></div>
+            <div class="system-card-head">
+              <h3>주방 자동식 소화기</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">화재가 감지되면 자동으로 전기와 가스를 차단하는 시스템으로 화재 확산을 사전 예방합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-stream"></i></div>
+            <div class="system-card-head">
+              <h3>하향식 피난사다리</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">화재 및 재난시 발코니의 피난 사다리로 신속하고 안전하게 대피할 수 있도록 합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-door-closed"></i></div>
+            <div class="system-card-head">
+              <h3>주동 프라이빗 게이트</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">외부인의 출입을 엄격하게 통제하기 위해 단계별 보안이 적용되는 주동 출입로비는 조경 등과 연계하여 해당 동 입주민들만 독립적으로 누릴 수 있는 품격있는 공간입니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: 에너지 절약 시스템 ==================== -->
+    <div class="tab-panel" id="tab-1">
+      <div class="section-block">
+        <h2><span class="num"><i class="fas fa-leaf"></i></span> 에너지 절약 시스템</h2>
+        <div class="system-grid">
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-window-maximize"></i></div>
+            <div class="system-card-head">
+              <h3>에너지 고효율 이중창호</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">단열 효과는 물론 방음효과도 뛰어난 이중창 로이 복층유리로 여름에는 외부열을 반사시켜 더 시원하고 겨울에는 내부열을 차단하여 더 따뜻한 환경을 조성합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-layer-group"></i></div>
+            <div class="system-card-head">
+              <h3>끊김없는 단열</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">끊어지지 않는 단열설계로 더욱 따뜻한 집을 만들어 줍니다. 모서리부분까지 끊김없는 단열라인과 디테일한 열교설계가 적용 되어 결로 발생을 획기적으로 차단합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-toggle-off"></i></div>
+            <div class="system-card-head">
+              <h3>일괄소등 스위치 (+세대 내 엘리베이터 호출)</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">세대 내부 전등(센서등 제외)과 가스를 일괄 차단해 주는 스위치가 현관옆에 설치되어 외출 시 발생할 수 있는 에너지 낭비를 예방하고 세대 내 엘리베이터 호출로 생활이 더욱 편리해 집니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="system-card-head">
+              <h3>세대&외부 100% LED 전등</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">일반 등기구보다 수명이 더 길고 밝은 LED 등기구를 세대와 단지 전체에 설치하여 에너지 비용을 절감합니다. (근린생활시설 제외)</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-plug"></i></div>
+            <div class="system-card-head">
+              <h3>대기전력 차단 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">미사용시에도 전력소모가 되는 대기전력을 차단 할 수 있는 스위치와 콘센트를 설치하여 에너지를 절약합니다. (거실 / 침실 / 주방 적용) 외부에서도 스마트폰으로 제어가 가능합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+            <div class="system-card-head">
+              <h3>에너지 매니지먼트 시스템 (EMS)</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">검침원이 집에 들어올 필요 없이 원격검침으로 데이터를 수집하여, 월패드와 스마트폰을 통해 에너지 사용현황을 바로 확인할 수 있습니다. 에너지 절약 프로그램을 통해 에너지를 똑똑하게 절약하는 생활습관을 만들어 줍니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-solar-panel"></i></div>
+            <div class="system-card-head">
+              <h3>태양광 발전 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">태양광 발전설비로 생산한 전력을 공용부 전기로 활용함으로써 관리비 절감이 가능해집니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-sliders-h"></i></div>
+            <div class="system-card-head">
+              <h3>지하주차장 LED 디밍제어</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">수명이 긴 저에너지 LED 조명 시스템을 사용하여, 지하주차장의 차량 및 보행자의 이동 동선에 따라 밝기를 자동으로 제어함으로써 에너지 소비량을 최적화하여 공용관리비 절감에 도움이 됩니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-temperature-half"></i></div>
+            <div class="system-card-head">
+              <h3>실별 온도조절 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">가족 구성원이 실별로 희망온도를 유지할 수 있는 실별 온도조절 기능으로 구성원 각자에게 쾌적함을 제공하고, 사용하지 않는 방의 에너지는 차단해 난방, 가스의 소비를 줄여줍니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: 건강 시스템 ==================== -->
+    <div class="tab-panel" id="tab-2">
+      <div class="section-block">
+        <h2><span class="num"><i class="fas fa-heartbeat"></i></span> 건강 시스템</h2>
+        <div class="system-grid">
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-wind"></i></div>
+            <div class="system-card-head">
+              <h3>렌지후드 연동 환기 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">미세먼지를 마시며 요리하던 생활은 끝. 기존의 렌지후드와 달리 미세먼지는 빨아들이고 맑은 공기는 채워주는 자동 환기를 통해 주방 공기를 건강하게 지켜줍니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-broom"></i></div>
+            <div class="system-card-head">
+              <h3>새집증후군 걱정 제로 (플러쉬아웃)</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">새집 증후군 걱정이 없습니다. 입주 전 미리 환기를 통한 플러시 아웃을 실시하여 혹시라도 있을지 모르는 유해 물질을 배출하여 실내공기를 청정하게 만듭니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-fan"></i></div>
+            <div class="system-card-head">
+              <h3>지하주차장 자동환기 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">지하주차장의 일산화탄소 농도를 측정하여 목표 농도보다 높을 경우 자동으로 환기팬이 작동하고 배출시켜 언제나 청정한 상태를 유지합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-tint-slash"></i></div>
+            <div class="system-card-head">
+              <h3>지하주차장 결로저감팬</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">습기 많은 장마철에 결로가 생겨 곰팡이가 번식하는 것을 막을 수 있도록 지하주차장에도 결로 저감팬을 설치하여 결로를 줄여줍니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-tint"></i></div>
+            <div class="system-card-head">
+              <h3>지하 엘리베이터홀 제습</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">자칫 눅눅한 공간이 될 수 있는 지하층 엘리베이터홀에 제습기를 설치하여 쾌적함이 유지되도록 관리합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-child"></i></div>
+            <div class="system-card-head">
+              <h3>키즈라운지</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">미세먼지 많은 날에도 걱정없이 아이들이 쾌적하게 키즈라운지에서 뛰어놀 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-cloud-sun"></i></div>
+            <div class="system-card-head">
+              <h3>웨더스테이션</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">단지 내 웨더스테이션이 설치되어 미세먼지 상태를 쉽게 확인할 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: 편의 시스템 ==================== -->
+    <div class="tab-panel" id="tab-3">
+      <div class="section-block">
+        <h2><span class="num"><i class="fas fa-thumbs-up"></i></span> 편의 시스템</h2>
+        <div class="system-grid">
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-arrows-alt"></i></div>
+            <div class="system-card-head">
+              <h3>가변형 구조</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">가족 구성원 개개인의 생활 양식을 반영한 라이프스타일에 맞춰 거실과 침실 등 고객 스스로가 원하는 공간으로 자유로운 구조 변경이 가능합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-user-shield"></i></div>
+            <div class="system-card-head">
+              <h3>1층 세대 프라이버시보완</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">지상 레벨 보다 1층 세대를 높여 외부로부터의 사생활 보호가 가능합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-warehouse"></i></div>
+            <div class="system-card-head">
+              <h3>세대창고</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">지하 주차장 PIT 공간을 활용하여 계절용품, 자전거 등 자주 사용하지 않는 물품들을 보관할 수 있는 공간을 제공합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-microchip"></i></div>
+            <div class="system-card-head">
+              <h3>인공지능 스마트홈 IoT 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">세대 IoT 시스템을 여러가지 음성인식 기기와 연동하여 사용할 수 있습니다. (연동가능 음성인식 기기 : 구글, 네이버, KT)</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-mobile-alt"></i></div>
+            <div class="system-card-head">
+              <h3>e편한세상 스마트홈</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">월패드의 기능을 어플리케이션으로 옮겨 스마트폰만으로 언제 어디서나 집의 상태를 확인하고 원격으로 제어할 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-key"></i></div>
+            <div class="system-card-head">
+              <h3>스마트폰 원패스</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">스마트폰을 소지하고 있으면 동선에 따라 자동으로 공동현관 출입구가 열리고 엘리베이터가 호출되는 최첨단 시스템으로 누구보다 편리한 스마트 라이프를 누릴 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="system-card-head">
+              <h3>주차위치 인식 서비스</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">주차 위치를 따로 기억하지 않고 스마트폰으로 쉽게 확인할 수 있어 외출시 편리합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-traffic-light"></i></div>
+            <div class="system-card-head">
+              <h3>주차유도 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">대형 쇼핑몰, 백화점처럼 주차가 가능한 곳은 녹색등, 불가능 한 곳은 빨간등으로 표기하여 주차할 곳을 빠르게 찾을 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-charging-station"></i></div>
+            <div class="system-card-head">
+              <h3>전기차 충전소</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">전기자동차 시대를 대비해 지하주차장에 전기차 충전 시스템을 계획하여 전기자동차 충전이 필요할 때 공용으로 사용하실 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: 소음저감 시스템 ==================== -->
+    <div class="tab-panel" id="tab-4">
+      <div class="section-block">
+        <h2><span class="num"><i class="fas fa-volume-mute"></i></span> 소음저감 시스템</h2>
+        <div class="system-grid">
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-layer-group"></i></div>
+            <div class="system-card-head">
+              <h3>D-사일런트 플로어 (D-Silent Floor) PRO</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">층간소음을 대폭 줄여주는 완충재와 몰탈을 적용한 최적의 층간소음 저감 시스템으로 조용한 집을 완성합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-wind"></i></div>
+            <div class="system-card-head">
+              <h3>주방 및 욕실 직배기 시스템</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">공용 덕트를 통해 주방, 욕실 공기를 배출하는 일반 아파트와 달리 외부로 직접 배출하여 소음을 원천 차단하고 더 쾌적한 공기 순환이 가능합니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="system-card-head">
+              <h3>층간 소음을 대폭 줄여주는 60T 완충재</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">일반 아파트보다 2배 두꺼운 60mm 바닥차음재를 적용하여, 층간소음을 획기적으로 줄일 뿐만 아니라 난방에너지까지도 절약할 수 있습니다.</p>
+          </div>
+          <div class="system-card">
+            <div class="icon"><i class="fas fa-window-maximize"></i></div>
+            <div class="system-card-head">
+              <h3>방음효과가 뛰어난 이중창호</h3>
+              <button class="toggle-btn" onclick="toggleCard(this)" aria-label="설명 보기"><i class="fas fa-plus"></i></button>
+            </div>
+            <p class="system-card-desc">모든 창호에 이중 창호 시스템을 적용하여 외부의 소음뿐 아니라 냉기까지 차단하여 쾌적한 주거환경이 실현됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    function switchTab(index) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.querySelectorAll('.tab-btn')[index].classList.add('active');
+      document.getElementById('tab-' + index).classList.add('active');
+    }
+
+    function toggleCard(btn) {
+      const card = btn.closest('.system-card');
+      const expanded = card.classList.toggle('expanded');
+      const icon = btn.querySelector('i');
+      icon.className = expanded ? 'fas fa-times' : 'fas fa-plus';
+      btn.setAttribute('aria-label', expanded ? '설명 닫기' : '설명 보기');
+    }
+  </script>
+
+</body>
+</html>
