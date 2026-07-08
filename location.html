@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>최고의 입지 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: var(--beige);
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 15px; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 6px; background: rgba(255,255,255,0.15);
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .top-bar-title { color: var(--white); font-size: 1rem; font-weight: 700; }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+      padding: 50px 20px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-header h1 {
+      position: relative; color: var(--white); font-size: 2rem; font-weight: 900; margin-bottom: 10px;
+    }
+    .page-header p {
+      position: relative; color: rgba(255,255,255,0.7); font-size: 0.95rem;
+    }
+
+    .content-wrap {
+      max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px;
+    }
+
+    .section-block {
+      margin-bottom: 50px;
+    }
+    .section-block:last-child { margin-bottom: 0; }
+
+    .section-block h2 {
+      font-size: 1.15rem; font-weight: 900; color: var(--navy);
+      margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+    }
+    .section-block h2 .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; min-width: 40px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white); border-radius: 12px; font-size: 1.1rem;
+    }
+
+    .map-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .map-card img {
+      width: 100%; display: block; border-radius: 8px;
+      cursor: zoom-in;
+    }
+    .map-caption {
+      text-align: center; color: var(--gray); font-size: 0.8rem; margin-top: 10px;
+    }
+
+    /* ===== PLACE GRID ===== */
+    .place-category {
+      margin-bottom: 30px;
+    }
+    .place-category:last-child { margin-bottom: 0; }
+    .place-category-title {
+      font-size: 0.95rem; font-weight: 700; color: var(--orange-dark);
+      margin-bottom: 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--orange-warm); display: inline-block;
+    }
+    .place-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 14px;
+    }
+    .place-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .place-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+    .place-card img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+    }
+    .place-card .place-name {
+      padding: 10px 8px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .note-box {
+      background: var(--beige); border: 1px solid var(--beige-dark);
+      border-radius: 8px; padding: 14px 18px; margin-top: 20px;
+      font-size: 0.85rem; color: var(--gray);
+    }
+    .note-box i { color: var(--orange); margin-right: 6px; }
+
+    /* ===== IMAGE MODAL ===== */
+    .img-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(13,27,40,0.92);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .img-modal.active { display: flex; }
+    .img-modal-inner {
+      max-width: 1000px; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .img-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; margin-bottom: 14px;
+    }
+    .img-modal-title { color: var(--white); font-size: 1.1rem; font-weight: 900; }
+    .img-modal-close {
+      background: rgba(255,255,255,0.12); border: none; color: var(--white);
+      width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem;
+      cursor: pointer; transition: background 0.2s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.25); }
+    .img-modal-inner img {
+      max-width: 100%; max-height: 78vh; box-shadow: var(--shadow-lg);
+    }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--navy-dark); color: rgba(255,255,255,0.5);
+      text-align: center; padding: 25px 20px; font-size: 0.8rem;
+    }
+    .page-footer a { color: var(--orange-warm); text-decoration: none; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .place-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+      .place-card .place-name { font-size: 0.75rem; padding: 8px 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+      <span class="top-bar-title">최고의 입지</span>
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>최고의 입지</h1>
+    <p>교통, 병원, 생활 편의 시설까지 완벽한 입지를 누린다</p>
+  </div>
+
+  <div class="content-wrap">
+
+    <!-- 광역 위치도 -->
+    <div class="section-block">
+      <h2><span class="num"><i class="fas fa-map-marked-alt"></i></span> 광역 위치도</h2>
+      <div class="map-card">
+        <img src="img/location/cg_wide_map.jpg" alt="광역 위치도" onclick="openImgModal(this.src, '광역 위치도')">
+        <div class="map-caption">이미지를 클릭하면 크게 볼 수 있습니다</div>
+      </div>
+    </div>
+
+    <!-- 광역조감도 -->
+    <div class="section-block">
+      <h2><span class="num"><i class="fas fa-mountain-city"></i></span> 광역조감도</h2>
+      <div class="map-card">
+        <img src="img/location/cg_wide_birds_view.jpg" alt="광역조감도" onclick="openImgModal(this.src, '광역조감도')">
+      </div>
+      <div class="note-box">
+        <i class="fas fa-info-circle"></i>
+        본 홈페이지의 CG는 소비자의 이해를 돕기 위한 것으로 실제와 차이가 날 수 있으며, 건축물의 입면 등 외관 및 색채계획, 창호계획 등은 일부 변경될 수 있습니다.
+      </div>
+    </div>
+
+    <!-- 주변시설 -->
+    <div class="section-block">
+      <h2><span class="num"><i class="fas fa-location-dot"></i></span> 주변시설</h2>
+
+      <div class="place-category">
+        <div class="place-category-title">교통</div>
+        <div class="place-grid" id="placeGrid-traffic"></div>
+      </div>
+
+      <div class="place-category">
+        <div class="place-category-title">교육</div>
+        <div class="place-grid" id="placeGrid-edu"></div>
+      </div>
+
+      <div class="place-category">
+        <div class="place-category-title">자연환경</div>
+        <div class="place-grid" id="placeGrid-nature"></div>
+      </div>
+
+      <div class="place-category">
+        <div class="place-category-title">의료 · 행정</div>
+        <div class="place-grid" id="placeGrid-medical"></div>
+      </div>
+
+      <div class="place-category">
+        <div class="place-category-title">상업 · 업무</div>
+        <div class="place-grid" id="placeGrid-biz"></div>
+      </div>
+
+      <div class="note-box">
+        <i class="fas fa-camera"></i>
+        본 사진은 2026년 6월에 촬영된 사진입니다.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IMAGE MODAL -->
+  <div class="img-modal" id="imgModal">
+    <div class="img-modal-inner">
+      <div class="img-modal-header">
+        <div class="img-modal-title" id="imgModalTitle"></div>
+        <button class="img-modal-close" onclick="closeImgModal()"><i class="fas fa-times"></i></button>
+      </div>
+      <img id="imgModalImg" src="" alt="">
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    const places = {
+      traffic: [
+        { img: 'faci01.jpg', name: '서분당 IC' },
+        { img: 'faci04.jpg', name: '금곡 IC' },
+        { img: 'faci03.jpg', name: '미금역' },
+        { img: 'faci07.jpg', name: '정자역' },
+        { img: 'faci12.jpg', name: '판교역' }
+      ],
+      edu: [
+        { img: 'faci05.jpg', name: '늘푸른중학교' },
+        { img: 'faci06.jpg', name: '낙생고' }
+      ],
+      nature: [
+        { img: 'faci02.jpg', name: '낙생저수지' }
+      ],
+      medical: [
+        { img: 'faci09.jpg', name: '분당서울대학교 병원' },
+        { img: 'faci10.jpg', name: '분당구청' }
+      ],
+      biz: [
+        { img: 'faci08.jpg', name: '네이버 1784 / 그린팩토리' },
+        { img: 'faci11.jpg', name: 'AK플라자' },
+        { img: 'faci13.jpg', name: '현대백화점 판교점' },
+        { img: 'faci14.jpg', name: '판교 알파돔시티' },
+        { img: 'faci15.jpg', name: '카카오 판교 아지트' },
+        { img: 'faci16.jpg', name: '엔씨소프트 판교 R&D센터' }
+      ]
+    };
+
+    Object.keys(places).forEach(key => {
+      const grid = document.getElementById('placeGrid-' + key);
+      places[key].forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'place-card';
+        card.onclick = () => openImgModal('img/location/' + p.img, p.name);
+        card.innerHTML = '<img src="img/location/' + p.img + '" alt="' + p.name + '">' +
+          '<div class="place-name">' + p.name + '</div>';
+        grid.appendChild(card);
+      });
+    });
+
+    function openImgModal(src, title) {
+      document.getElementById('imgModalImg').src = src;
+      document.getElementById('imgModalTitle').textContent = title;
+      document.getElementById('imgModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeImgModal() {
+      document.getElementById('imgModal').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('imgModal').addEventListener('click', function(e) {
+      if (e.target === this) closeImgModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeImgModal();
+    });
+  </script>
+
+</body>
+</html>
