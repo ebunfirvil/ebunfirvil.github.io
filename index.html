@@ -450,6 +450,30 @@
       color: var(--orange);
     }
 
+    .floorplan-imgwrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .floorplan-nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: var(--orange); border: none; color: var(--white);
+      width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem;
+      cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+      transition: background 0.2s ease; z-index: 5;
+    }
+    .floorplan-nav-btn:hover { background: var(--orange-dark); }
+    .floorplan-nav-btn.prev { left: -10px; }
+    .floorplan-nav-btn.next { right: -10px; }
+    @media (max-width: 768px) {
+      .floorplan-nav-btn.prev { left: 2px; }
+      .floorplan-nav-btn.next { right: 2px; }
+    }
+    .floorplan-counter {
+      margin-top: 12px; font-size: 0.85rem; color: var(--gray); font-weight: 500;
+    }
+
     .btn-outline {
       background: transparent;
       color: var(--white);
@@ -1850,7 +1874,12 @@
     <div class="modal-content">
       <span class="close-btn" onclick="closeFloorPlan()">&times;</span>
       <h3 id="floorplanType">Type</h3>
-      <img id="floorplanImg" src="" alt="평면도">
+      <div class="floorplan-imgwrap">
+        <button class="floorplan-nav-btn prev" onclick="navFloorPlanImage(-1)"><i class="fas fa-chevron-left"></i></button>
+        <img id="floorplanImg" src="" alt="평면도">
+        <button class="floorplan-nav-btn next" onclick="navFloorPlanImage(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="floorplan-counter" id="floorplanCounter"></div>
     </div>
   </div>
 
@@ -2430,23 +2459,34 @@
     });
 
     // Floor Plan Modal
+    let currentFloorPlan = { images: [], labels: [], index: 0 };
+
     function openFloorPlan(type) {
       const modal = document.getElementById('floorplanModal');
-      const modalImg = document.getElementById('floorplanImg');
       const modalType = document.getElementById('floorplanType');
-      
-      const images = {
-        '51A': '51A.png',
-        '55A': '55A.png',
-        '55B': '55B.png',
-        '59A': '59A.png',
-        '59T': '59T.png'
+
+      currentFloorPlan = {
+        images: ['img/' + type + '.png', 'img/planimages_' + type + '.png'],
+        labels: ['평면도', '투시도'],
+        index: 0
       };
-      
+
       modalType.textContent = 'Type ' + type;
-      modalImg.src = 'img/' + images[type];
+      updateFloorPlanImage();
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
+    }
+
+    function updateFloorPlanImage() {
+      document.getElementById('floorplanImg').src = currentFloorPlan.images[currentFloorPlan.index];
+      document.getElementById('floorplanCounter').textContent =
+        currentFloorPlan.labels[currentFloorPlan.index] + ' (' + (currentFloorPlan.index + 1) + '/' + currentFloorPlan.images.length + ')';
+    }
+
+    function navFloorPlanImage(dir) {
+      const len = currentFloorPlan.images.length;
+      currentFloorPlan.index = (currentFloorPlan.index + dir + len) % len;
+      updateFloorPlanImage();
     }
 
     function closeFloorPlan() {
@@ -2462,10 +2502,14 @@
     });
 
     document.addEventListener('keydown', function(e) {
+      const floorplanModal = document.getElementById('floorplanModal');
+      if (floorplanModal.style.display !== 'flex') return;
       if (e.key === 'Escape') {
-        document.getElementById('floorplanModal').style.display = 'none';
+        floorplanModal.style.display = 'none';
         document.body.style.overflow = '';
       }
+      if (e.key === 'ArrowLeft') navFloorPlanImage(-1);
+      if (e.key === 'ArrowRight') navFloorPlanImage(1);
     });
 
     // Balance text in a container: insert <br> at evenly-spaced whitespace boundaries
