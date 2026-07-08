@@ -649,8 +649,8 @@
     .info-cards {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 14px;
-      margin-top: 30px;
+      gap: 8px;
+      margin-top: 25px;
     }
 
     @media (min-width: 600px) {
@@ -667,52 +667,59 @@
 
     .info-card {
       background: var(--navy);
-      border-radius: 12px;
-      padding: 18px 16px;
+      border-radius: 10px;
+      padding: 10px 12px;
       box-shadow: var(--shadow);
       transition: all 0.3s ease;
       border: 1px solid transparent;
       color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .info-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       box-shadow: var(--shadow-lg);
       border-color: var(--orange);
     }
 
     .info-card-icon {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
       background: linear-gradient(135deg, var(--orange), var(--orange-light));
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--white);
-      font-size: 1.05rem;
-      margin-bottom: 10px;
+      font-size: 0.85rem;
+    }
+
+    .info-card-body {
+      min-width: 0;
     }
 
     .info-card h3 {
-      font-size: 0.92rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--white);
-      margin-bottom: 5px;
+      margin-bottom: 1px;
     }
 
     .info-card p {
       color: rgba(255,255,255,0.75);
-      font-size: 0.8rem;
-      line-height: 1.55;
+      font-size: 0.7rem;
+      line-height: 1.35;
     }
 
     .info-card .value {
-      font-size: 1.05rem;
+      font-size: 0.82rem;
       font-weight: 900;
       color: var(--orange-warm);
       display: block;
-      margin-top: 4px;
+      margin-top: 1px;
     }
 
     /* ===== FLOOR PLANS - 베이지 배경, 남색 카드 ===== */
@@ -1797,36 +1804,48 @@
       <div class="info-cards">
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-user-tie"></i></div>
-          <h3>시행사</h3>
-          <p>한국토지주택공사 (LH)</p>
-          <span class="value">LH Corporation</span>
+          <div class="info-card-body">
+            <h3>시행사</h3>
+            <p>한국토지주택공사 (LH)</p>
+            <span class="value">LH Corporation</span>
+          </div>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-hard-hat"></i></div>
-          <h3>시공사 (공동시공)</h3>
-          <p>DL이앤씨 · 극동건설 · 고덕종합건설 · 금성백조건설</p>
-          <span class="value">4개사 공동시공</span>
+          <div class="info-card-body">
+            <h3>시공사 (공동시공)</h3>
+            <p>DL이앤씨 · 극동건설 · 고덕종합건설 · 금성백조건설</p>
+            <span class="value">4개사 공동시공</span>
+          </div>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-map-pin"></i></div>
-          <h3>현장 위치</h3>
-          <p>경기도 성남시 분당구 동막로 245 일원<br>(성남낙생지구 A-1블록)</p>
+          <div class="info-card-body">
+            <h3>현장 위치</h3>
+            <p>경기도 성남시 분당구 동막로 245 일원 (성남낙생지구 A-1블록)</p>
+          </div>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-building"></i></div>
-          <h3>주택전시관</h3>
-          <p>경기도 용인시 수지구 동천동 855-2</p>
-          <span class="value">2026.07.03 오픈</span>
+          <div class="info-card-body">
+            <h3>주택전시관</h3>
+            <p>경기도 용인시 수지구 동천동 855-2</p>
+            <span class="value">2026.07.03 오픈</span>
+          </div>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-phone"></i></div>
-          <h3>문의 전화</h3>
-          <p>031-538-1777</p>
+          <div class="info-card-body">
+            <h3>문의 전화</h3>
+            <p>031-538-1777</p>
+          </div>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-home"></i></div>
-          <h3>주택유형</h3>
-          <p>국민주택 (전용 85㎡ 이하)<br>분양가상한제 적용 · 지역난방</p>
+          <div class="info-card-body">
+            <h3>주택유형</h3>
+            <p>국민주택 (전용 85㎡ 이하) · 분양가상한제 적용 · 지역난방</p>
+          </div>
         </div>
       </div>
 
