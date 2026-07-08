@@ -646,23 +646,20 @@
     }
 
     /* ===== INFO CARDS - 남색 카드 ===== */
-    #info {
-      background: var(--beige);
-    }
-
     .info-cards {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 25px;
+      gap: 14px;
+      margin-top: 30px;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 600px) {
       .info-cards {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: 900px) {
       .info-cards {
         grid-template-columns: repeat(3, 1fr);
       }
@@ -670,8 +667,8 @@
 
     .info-card {
       background: var(--navy);
-      border-radius: 16px;
-      padding: 35px 30px;
+      border-radius: 12px;
+      padding: 18px 16px;
       box-shadow: var(--shadow);
       transition: all 0.3s ease;
       border: 1px solid transparent;
@@ -679,43 +676,43 @@
     }
 
     .info-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-lg);
       border-color: var(--orange);
     }
 
     .info-card-icon {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       background: linear-gradient(135deg, var(--orange), var(--orange-light));
-      border-radius: 14px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--white);
-      font-size: 1.5rem;
-      margin-bottom: 20px;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
     }
 
     .info-card h3 {
-      font-size: 1.1rem;
+      font-size: 0.92rem;
       font-weight: 700;
       color: var(--white);
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     .info-card p {
       color: rgba(255,255,255,0.75);
-      font-size: 0.9rem;
-      line-height: 1.7;
+      font-size: 0.8rem;
+      line-height: 1.55;
     }
 
     .info-card .value {
-      font-size: 1.4rem;
+      font-size: 1.05rem;
       font-weight: 900;
       color: var(--orange-warm);
       display: block;
-      margin-top: 5px;
+      margin-top: 4px;
     }
 
     /* ===== FLOOR PLANS - 베이지 배경, 남색 카드 ===== */
@@ -1795,22 +1792,8 @@
           </div>
         </div>
       </div>
-      <div class="siteplan-card fade-in" style="text-align:center;margin-top:30px;">
-        <div class="amenity-list-title">최고의 입지</div>
-        <p style="color:var(--gray);font-size:0.9rem;margin:-6px 0 16px;">교통 · 교육 · 자연환경 · 의료 · 상업까지, 주변시설을 한눈에 확인해보세요</p>
-        <a href="location.html" class="btn btn-primary" target="_blank"><i class="fas fa-map-marked-alt"></i> 입지 안내 보기</a>
-      </div>
-    </div>
-  </section>
 
-  <!-- ===== INFO CARDS ===== -->
-  <section id="info">
-    <div class="container">
-      <div class="section-header fade-in">
-        <div class="section-tag">PROJECT INFO</div>
-        <h2>주요 정보</h2>
-        <p>사업주체, 위치, 시설 등 핵심 정보를 한눈에</p>
-      </div>
+      <!-- ===== INFO CARDS (개요에 편입) ===== -->
       <div class="info-cards">
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-user-tie"></i></div>
@@ -1845,6 +1828,12 @@
           <h3>주택유형</h3>
           <p>국민주택 (전용 85㎡ 이하)<br>분양가상한제 적용 · 지역난방</p>
         </div>
+      </div>
+
+      <div class="siteplan-card fade-in" style="text-align:center;margin-top:30px;">
+        <div class="amenity-list-title">최고의 입지</div>
+        <p style="color:var(--gray);font-size:0.9rem;margin:-6px 0 16px;">교통 · 교육 · 자연환경 · 의료 · 상업까지, 주변시설을 한눈에 확인해보세요</p>
+        <a href="location.html" class="btn btn-primary" target="_blank"><i class="fas fa-map-marked-alt"></i> 입지 안내 보기</a>
       </div>
     </div>
   </section>
