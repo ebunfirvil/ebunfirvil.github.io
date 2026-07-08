@@ -456,6 +456,7 @@
     }
     .floorplan-nav-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; justify-content: center;
       background: var(--orange); border: none; color: var(--white);
       width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem;
       cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.25);
@@ -992,6 +993,7 @@
     }
     .amenity-nav-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
+      display: flex; align-items: center; justify-content: center;
       background: rgba(255,255,255,0.15); border: none; color: var(--white);
       width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem;
       cursor: pointer; transition: background 0.2s ease;
@@ -1116,32 +1118,56 @@
     }
 
     /* 현재 진행 중인 일정 */
+    .timeline-item.is-current {
+      z-index: 2;
+    }
+
     .timeline-item.is-current .timeline-content {
       border-top-color: var(--orange);
-      box-shadow: 0 0 0 2px var(--orange-warm), var(--shadow);
+      border-top-width: 4px;
+      background: linear-gradient(135deg, #fff5ee, var(--white));
+      box-shadow: 0 0 0 3px var(--orange-warm), 0 16px 40px rgba(232,98,46,0.3);
+      transform: scale(1.05);
+      position: relative;
+    }
+
+    .timeline-item.is-current .timeline-content h3 {
+      color: var(--orange-dark);
     }
 
     .timeline-item.is-current::before {
+      width: 20px;
+      height: 20px;
       background: var(--orange-warm);
+      box-shadow: 0 0 0 3px var(--orange-warm);
       animation: timelinePulse 1.8s ease-out infinite;
     }
 
     @keyframes timelinePulse {
       0% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 3px rgba(255,154,86,0.5); }
-      70% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 14px rgba(255,154,86,0); }
-      100% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 14px rgba(255,154,86,0); }
+      70% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 18px rgba(255,154,86,0); }
+      100% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 18px rgba(255,154,86,0); }
     }
 
     .timeline-now-badge {
-      display: inline-block;
-      margin-left: 6px;
-      padding: 2px 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 8px;
+      padding: 4px 13px;
       border-radius: 999px;
       background: var(--orange);
       color: var(--white);
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
       vertical-align: middle;
+      animation: badgePulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(232,98,46,0.55); }
+      50% { box-shadow: 0 0 0 7px rgba(232,98,46,0); }
     }
 
     /* ===== NEWS - 베이지 배경 ===== */
@@ -2295,7 +2321,7 @@
         if (dateEl) {
           const badge = document.createElement('span');
           badge.className = 'timeline-now-badge';
-          badge.textContent = badgeText;
+          badge.innerHTML = '<i class="fas fa-bell"></i> ' + badgeText;
           dateEl.appendChild(badge);
         }
       }
