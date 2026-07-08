@@ -316,11 +316,11 @@
     }
 
     .hero-stats {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 150px);
       justify-content: center;
-      gap: 40px;
+      gap: 20px 24px;
       margin-bottom: 40px;
-      flex-wrap: wrap;
     }
 
     .hero-stat {
@@ -1537,7 +1537,10 @@
       }
     }
 
-    @media (max-width: 768px) {
+    /* nav switches to the hamburger menu earlier than other tablet
+       tweaks — with 9 nav items it needs ~1100px to fit on one line
+       without each link's text wrapping mid-word */
+    @media (max-width: 1100px) {
       .header-inner {
         height: 60px;
       }
@@ -1572,7 +1575,9 @@
       .social-links {
         display: none;
       }
+    }
 
+    @media (max-width: 768px) {
       .hero h1 {
         font-size: 1.8rem;
       }
@@ -1582,13 +1587,14 @@
       }
 
       .hero-stats {
-        gap: 12px;
+        grid-template-columns: repeat(3, 100px);
+        gap: 8px;
       }
 
       .hero-stat {
-        width: 110px;
+        width: 100px;
         min-height: 116px;
-        padding: 12px 8px;
+        padding: 12px 6px;
       }
 
       .hero-stat-number {
@@ -1704,13 +1710,18 @@
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday3">--</span>
-          <span class="hero-stat-label">동호수 발표</span>
+          <span class="hero-stat-label">당첨자 및 동호수 발표</span>
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.31</span>
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday4">--</span>
           <span class="hero-stat-label">계약</span>
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.11.04</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" id="dday6">--</span>
+          <span class="hero-stat-label">옵션 선택</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.12(예정)</span>
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday5">--</span>
@@ -2340,6 +2351,7 @@
       const dday2Target = new Date('2026-07-20T00:00:00+09:00');
       const dday3Target = new Date('2026-07-31T00:00:00+09:00');
       const dday4Target = new Date('2026-11-04T00:00:00+09:00');
+      const dday6Target = new Date('2026-12-01T00:00:00+09:00');
       const dday5Target = new Date('2029-02-01T00:00:00+09:00');
 
       function calcDDay(target) {
@@ -2352,11 +2364,13 @@
       const el2 = document.getElementById('dday2');
       const el3 = document.getElementById('dday3');
       const el4 = document.getElementById('dday4');
+      const el6 = document.getElementById('dday6');
       const el5 = document.getElementById('dday5');
       if (el1) el1.textContent = calcDDay(dday1Target);
       if (el2) el2.textContent = calcDDay(dday2Target);
       if (el3) el3.textContent = calcDDay(dday3Target);
       if (el4) el4.textContent = calcDDay(dday4Target);
+      if (el6) el6.textContent = calcDDay(dday6Target);
       if (el5) el5.textContent = calcDDay(dday5Target);
     }
 
