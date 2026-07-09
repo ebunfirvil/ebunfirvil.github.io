@@ -1,0 +1,851 @@
+{
+  "51A": {
+    "living": [
+      {
+        "file": "img/modelhouse/51A/living/01.png",
+        "caption": "구석에서 침실1방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/02.png",
+        "caption": "샤시",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/03.png",
+        "caption": "샤시에서 주방방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/04.png",
+        "caption": "샤시에서 현관방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/05.png",
+        "caption": "인피니티도어",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/06.png",
+        "caption": "주방에서 샷시방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/07.png",
+        "caption": "침실1에서 침실2방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/living/08.jpeg",
+        "caption": "강마루",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/living/09.jpeg",
+        "caption": "디자인월",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/living/10.jpeg",
+        "caption": "스마트홈 연계 조명 시스템",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/living/11.jpeg",
+        "caption": "스마트홈 연계 조명시스템",
+        "option": true
+      }
+    ],
+    "bath-common": [
+      {
+        "file": "img/modelhouse/51A/bath-common/01.png",
+        "caption": "세면대",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/02.png",
+        "caption": "세면대2(대림바스)",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/03.png",
+        "caption": "수건걸이",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/04.png",
+        "caption": "수건함",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/05.png",
+        "caption": "수전",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/06.png",
+        "caption": "양변기",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/07.png",
+        "caption": "욕조",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/08.png",
+        "caption": "화장실",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/09.png",
+        "caption": "화장실2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-common/10.png",
+        "caption": "휴지걸이",
+        "option": false
+      }
+    ],
+    "common": [
+      {
+        "file": "img/modelhouse/51A/common/01.jpeg",
+        "caption": "도어락",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/common/02.jpeg",
+        "caption": "시스템 일반 에어컨",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/common/03.jpeg",
+        "caption": "프리미엄 시스템 에어컨",
+        "option": true
+      }
+    ],
+    "laundry": [
+      {
+        "file": "img/modelhouse/51A/laundry/01.png",
+        "caption": "세탁기 공간",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/02.png",
+        "caption": "세탁실",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/03.png",
+        "caption": "세탁실2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/04.png",
+        "caption": "실외기실 바닥",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/05.png",
+        "caption": "실외기실 천장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/06.png",
+        "caption": "실외기실 천장2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/07.png",
+        "caption": "실외기실",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/laundry/08.jpeg",
+        "caption": "세탁실 세라믹탄성코트",
+        "option": true
+      }
+    ],
+    "kitchen": [
+      {
+        "file": "img/modelhouse/51A/kitchen/01.png",
+        "caption": "냉장고장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/02.png",
+        "caption": "싱크대쪽",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/03.png",
+        "caption": "아일랜드장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/04.png",
+        "caption": "아일랜드장2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/05.jpeg",
+        "caption": "절수패달",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/06.png",
+        "caption": "주방",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/07.png",
+        "caption": "쿡탑쪽",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/08.png",
+        "caption": "통합공기질 센서",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/09.jpeg",
+        "caption": "냉장고장",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/10.jpeg",
+        "caption": "렌지후드 상세",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/11.jpeg",
+        "caption": "렌지후드",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/12.jpeg",
+        "caption": "빌트인 식세기",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/13.jpeg",
+        "caption": "빌트인 전기 오븐",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/51A/kitchen/14.jpeg",
+        "caption": "사일런트 후드",
+        "option": true
+      }
+    ],
+    "bath-bedroom": [
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/01.png",
+        "caption": "샤워실",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/02.png",
+        "caption": "세면대",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/03.png",
+        "caption": "수건함",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/04.png",
+        "caption": "수전",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/05.png",
+        "caption": "양변기",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/06.png",
+        "caption": "일반 손잡이",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/07.png",
+        "caption": "화장실 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/08.png",
+        "caption": "화장실 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bath-bedroom/09.png",
+        "caption": "휴지걸이 월패드",
+        "option": false
+      }
+    ],
+    "bedroom1": [
+      {
+        "file": "img/modelhouse/51A/bedroom1/01.png",
+        "caption": "드레스룸 붙박이장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/02.png",
+        "caption": "드레스룸",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/03.jpeg",
+        "caption": "붙박이장 실물",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/04.png",
+        "caption": "안방 문 뒤 분전함",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/05.png",
+        "caption": "침실1 전체_안쪽",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/06.png",
+        "caption": "침실1 전체_입구쪽",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/07.png",
+        "caption": "침실1 창문",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/08.png",
+        "caption": "침실1",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom1/09.png",
+        "caption": "화장대",
+        "option": false
+      }
+    ],
+    "bedroom2": [
+      {
+        "file": "img/modelhouse/51A/bedroom2/01.png",
+        "caption": "붙박이장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom2/02.png",
+        "caption": "인피니티도어 손잡이",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom2/03.png",
+        "caption": "침실2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom2/04.png",
+        "caption": "침실2입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/bedroom2/05.jpeg",
+        "caption": "침실2 붙박이장",
+        "option": true
+      }
+    ],
+    "entrance": [
+      {
+        "file": "img/modelhouse/51A/entrance/01.png",
+        "caption": "중문",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/entrance/02.png",
+        "caption": "중문레일 상단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/entrance/03.png",
+        "caption": "중문레일 하단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/51A/entrance/04.png",
+        "caption": "현관",
+        "option": false
+      }
+    ]
+  },
+  "55B": {
+    "living": [
+      {
+        "file": "img/modelhouse/55B/living/01.png",
+        "caption": "TV 정면",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/02.png",
+        "caption": "거실 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/03.png",
+        "caption": "거실 전체2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/04.png",
+        "caption": "거실 천장1",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/05.png",
+        "caption": "거실 천장2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/06.png",
+        "caption": "샤시 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/07.png",
+        "caption": "샤시에서 주방방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/08.png",
+        "caption": "소파에서 출입구 방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/09.png",
+        "caption": "소파쪽 벽면",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/10.png",
+        "caption": "아일랜드장에서 샤시방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/11.png",
+        "caption": "안방입구에서 샤시방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/12.png",
+        "caption": "월패드",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/living/13.jpeg",
+        "caption": "디자인월",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/living/14.jpeg",
+        "caption": "스마트홈 연계 조명시스템",
+        "option": true
+      }
+    ],
+    "bath-common": [
+      {
+        "file": "img/modelhouse/55B/bath-common/01.png",
+        "caption": "세면대",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/02.png",
+        "caption": "수건걸이",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/03.png",
+        "caption": "수건함",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/04.png",
+        "caption": "수전",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/05.png",
+        "caption": "양변기",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/06.png",
+        "caption": "욕조",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/07.png",
+        "caption": "화장실 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/08.png",
+        "caption": "화장실 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-common/09.png",
+        "caption": "휴지걸이",
+        "option": false
+      }
+    ],
+    "common": [
+      {
+        "file": "img/modelhouse/55B/common/01.jpeg",
+        "caption": "도어락",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/common/02.jpeg",
+        "caption": "시스템 일반 에어컨",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/common/03.jpeg",
+        "caption": "프리미엄 시스템 에어컨",
+        "option": true
+      }
+    ],
+    "hallway": [
+      {
+        "file": "img/modelhouse/55B/hallway/01.png",
+        "caption": "중문 바닥 레일",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/hallway/02.png",
+        "caption": "중문 천장 레일",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/hallway/03.png",
+        "caption": "중문",
+        "option": false
+      }
+    ],
+    "laundry": [
+      {
+        "file": "img/modelhouse/55B/laundry/01.png",
+        "caption": "문 사이 공간",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/02.png",
+        "caption": "세탁기 공간",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/03.png",
+        "caption": "세탁실 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/04.png",
+        "caption": "실외기실 바닥",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/05.png",
+        "caption": "실외기실 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/06.png",
+        "caption": "실외기실 천장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/07.png",
+        "caption": "실외기실 천장2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/laundry/08.jpeg",
+        "caption": "세탁실 세라믹탄성코트",
+        "option": true
+      }
+    ],
+    "alpharoom": [
+      {
+        "file": "img/modelhouse/55B/alpharoom/01.png",
+        "caption": "알파룸 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/alpharoom/02.png",
+        "caption": "알파룸 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/alpharoom/03.png",
+        "caption": "알파룸 전체2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/alpharoom/04.png",
+        "caption": "알파룸 창문",
+        "option": false
+      }
+    ],
+    "kitchen": [
+      {
+        "file": "img/modelhouse/55B/kitchen/01.png",
+        "caption": "냉장고장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/02.png",
+        "caption": "싱크대부 상단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/03.png",
+        "caption": "싱크대부 하단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/04.png",
+        "caption": "아일랜드장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/05.jpeg",
+        "caption": "절수패달",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/06.png",
+        "caption": "주방1",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/07.png",
+        "caption": "주방2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/08.png",
+        "caption": "주방부",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/09.png",
+        "caption": "쿡탑부 상단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/10.png",
+        "caption": "쿡탑부 하단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/11.jpeg",
+        "caption": "냉장고장",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/12.jpeg",
+        "caption": "렌지후드 상세",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/13.jpeg",
+        "caption": "빌트인 식세기",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/14.jpeg",
+        "caption": "빌트인 전기 오븐",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/kitchen/15.jpeg",
+        "caption": "사일런트 후드",
+        "option": true
+      }
+    ],
+    "bedroom1": [
+      {
+        "file": "img/modelhouse/55B/bedroom1/01.png",
+        "caption": "드레스룸 붙박이장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/02.png",
+        "caption": "드레스룸 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/03.png",
+        "caption": "드레스룸에서 침실방향",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/04.png",
+        "caption": "붙박이장 벽",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/05.jpeg",
+        "caption": "붙박이장 실물",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/06.png",
+        "caption": "안방 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/07.png",
+        "caption": "안방전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/08.png",
+        "caption": "안방전체2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/09.png",
+        "caption": "안방전체3",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/10.png",
+        "caption": "화장대 상단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/11.png",
+        "caption": "화장대 하단",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom1/12.jpeg",
+        "caption": "드레스룸 전체",
+        "option": true
+      }
+    ],
+    "bedroom2": [
+      {
+        "file": "img/modelhouse/55B/bedroom2/01.png",
+        "caption": "침실2 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom2/02.png",
+        "caption": "침실2 전체",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom2/03.png",
+        "caption": "침실2 전체2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom2/04.png",
+        "caption": "침실2 전체3",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom2/05.png",
+        "caption": "침실2 창문",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bedroom2/06.jpeg",
+        "caption": "침실2 붙박이장",
+        "option": true
+      }
+    ],
+    "bath-bedroom": [
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/01.png",
+        "caption": "샤워실",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/02.png",
+        "caption": "세면대",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/03.png",
+        "caption": "수건걸이",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/04.png",
+        "caption": "수건함",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/05.png",
+        "caption": "수전1",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/06.png",
+        "caption": "수전2",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/07.png",
+        "caption": "양변기",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/08.png",
+        "caption": "화장실 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/bath-bedroom/09.png",
+        "caption": "휴지걸이, 월패드",
+        "option": false
+      }
+    ],
+    "entrance": [
+      {
+        "file": "img/modelhouse/55B/entrance/01.png",
+        "caption": "오픈형 신발장",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/entrance/02.png",
+        "caption": "팬트리 입구",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/entrance/03.png",
+        "caption": "현관 소등 스위치",
+        "option": false
+      },
+      {
+        "file": "img/modelhouse/55B/entrance/04.jpeg",
+        "caption": "오픈형 신발장",
+        "option": true
+      },
+      {
+        "file": "img/modelhouse/55B/entrance/05.jpeg",
+        "caption": "팬트리",
+        "option": true
+      }
+    ]
+  }
+}
