@@ -349,6 +349,10 @@
       display: block;
     }
 
+    .hero-stat-number.dday-past {
+      color: rgba(255,255,255,0.35);
+    }
+
     .hero-stat-label {
       font-size: 0.85rem;
       color: rgba(255,255,255,0.6);
@@ -2364,22 +2368,26 @@
 
       function calcDDay(target) {
         const diff = target - now;
-        if (diff <= 0) return 'D-Day';
-        return Math.ceil(diff / (1000 * 60 * 60 * 24)) + '일';
+        if (diff <= 0) {
+          const daysPast = Math.floor(-diff / (1000 * 60 * 60 * 24));
+          return { text: daysPast === 0 ? 'D-Day' : 'D+' + daysPast, past: daysPast > 0 };
+        }
+        return { text: Math.ceil(diff / (1000 * 60 * 60 * 24)) + '일', past: false };
       }
 
-      const el1 = document.getElementById('dday1');
-      const el2 = document.getElementById('dday2');
-      const el3 = document.getElementById('dday3');
-      const el4 = document.getElementById('dday4');
-      const el6 = document.getElementById('dday6');
-      const el5 = document.getElementById('dday5');
-      if (el1) el1.textContent = calcDDay(dday1Target);
-      if (el2) el2.textContent = calcDDay(dday2Target);
-      if (el3) el3.textContent = calcDDay(dday3Target);
-      if (el4) el4.textContent = calcDDay(dday4Target);
-      if (el6) el6.textContent = calcDDay(dday6Target);
-      if (el5) el5.textContent = calcDDay(dday5Target);
+      function applyDDay(el, target) {
+        if (!el) return;
+        const { text, past } = calcDDay(target);
+        el.textContent = text;
+        el.classList.toggle('dday-past', past);
+      }
+
+      applyDDay(document.getElementById('dday1'), dday1Target);
+      applyDDay(document.getElementById('dday2'), dday2Target);
+      applyDDay(document.getElementById('dday3'), dday3Target);
+      applyDDay(document.getElementById('dday4'), dday4Target);
+      applyDDay(document.getElementById('dday6'), dday6Target);
+      applyDDay(document.getElementById('dday5'), dday5Target);
     }
 
     updateDDay();
