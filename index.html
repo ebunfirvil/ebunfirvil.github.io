@@ -463,6 +463,95 @@
       z-index: 1001;
     }
 
+    .notice-popup {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .notice-popup.active { display: flex; }
+
+    .notice-popup-content {
+      background: var(--white);
+      border-radius: 14px;
+      max-width: 380px;
+      width: 100%;
+      padding: 32px 28px 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    .notice-popup-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: var(--gray);
+      cursor: pointer;
+      line-height: 1;
+      background: none;
+      border: none;
+    }
+
+    .notice-popup-content i.notice-popup-icon {
+      font-size: 2.4rem;
+      color: var(--orange);
+      margin-bottom: 14px;
+    }
+
+    .notice-popup-content h3 {
+      color: var(--navy);
+      margin: 0 0 12px;
+      font-size: 1.25rem;
+    }
+
+    .notice-popup-content p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0 0 22px;
+    }
+
+    .notice-popup-btn {
+      display: inline-block;
+      width: 100%;
+      background: var(--orange);
+      color: var(--white);
+      font-weight: 700;
+      padding: 13px 0;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .notice-popup-footer {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    .notice-popup-footer input {
+      cursor: pointer;
+    }
+
+    .notice-popup-footer label {
+      cursor: pointer;
+    }
+
     .close-btn:hover {
       color: var(--orange);
     }
@@ -1971,6 +2060,67 @@
     </div>
   </div>
 
+  <!-- ===== 위임장 제출 안내 팝업 ===== -->
+  <div class="notice-popup" id="delegateNoticePopup">
+    <div class="notice-popup-content">
+      <button class="notice-popup-close" onclick="closeDelegateNotice()" aria-label="닫기">&times;</button>
+      <i class="fas fa-file-signature notice-popup-icon"></i>
+      <h3>위임장 제출 안내</h3>
+      <p>입주예정자 협의회 활동을 위한 위임장 접수가 진행 중입니다.<br>아래 버튼을 눌러 위임장을 제출해 주세요.</p>
+      <a href="https://acro.ozform.kr/agree/contract.php?acode=be143f8d910c5313d9efdea403fe162b7083f1171b122c25214b6e80b5dfaf8772e13b55ef40d743d3d9fc79024e645c4a667e8fceef629d5c2371d8721f7980" target="_blank" class="notice-popup-btn" onclick="closeDelegateNotice()">위임장 제출하기</a>
+      <div class="notice-popup-footer">
+        <input type="checkbox" id="delegateNoticeHideToday">
+        <label for="delegateNoticeHideToday">오늘 하루 보지 않기</label>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 위임장 제출 안내 팝업 (KST 2026-07-31 오후 1시부터 노출, 방문자 기기 시간대 무관)
+    (function () {
+      var KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+      // 2026-07-31 13:00 KST = 2026-07-31 04:00 UTC
+      var POPUP_START_UTC_MS = Date.UTC(2026, 6, 31, 4, 0, 0);
+      var HIDE_KEY = 'delegateNoticeHideDate';
+
+      function todayStr() {
+        // KST 기준 날짜 (기기 시간대와 무관)
+        var kst = new Date(Date.now() + KST_OFFSET_MS);
+        var y = kst.getUTCFullYear();
+        var m = String(kst.getUTCMonth() + 1).padStart(2, '0');
+        var day = String(kst.getUTCDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+      }
+
+      if (Date.now() < POPUP_START_UTC_MS) return;
+
+      var today = todayStr();
+      var hiddenDate = localStorage.getItem(HIDE_KEY);
+      if (hiddenDate === today) return;
+
+      window.closeDelegateNotice = function () {
+        var popup = document.getElementById('delegateNoticePopup');
+        popup.classList.remove('active');
+        var hideToday = document.getElementById('delegateNoticeHideToday');
+        if (hideToday && hideToday.checked) {
+          localStorage.setItem(HIDE_KEY, todayStr());
+        }
+      };
+
+      function showPopup() {
+        var popup = document.getElementById('delegateNoticePopup');
+        if (popup) popup.classList.add('active');
+      }
+
+      if (document.readyState === 'complete') {
+        setTimeout(showPopup, 500);
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(showPopup, 500);
+        });
+      }
+    })();
+  </script>
+
   <!-- ===== BACK TO TOP ===== -->
   <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="맨 위로">
     <i class="fas fa-arrow-up"></i>
@@ -2274,6 +2424,7 @@
               <li><a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_260702.pdf" target="_blank">입주자모집공고 (전문)</a></li>
               <li><a href="https://apply.lh.or.kr" target="_blank">LH 청약플러스</a></li>
               <li><a href="modelhouse.html" target="_blank">모델하우스</a></li>
+              <li><a href="https://acro.ozform.kr/agree/contract.php?acode=be143f8d910c5313d9efdea403fe162b7083f1171b122c25214b6e80b5dfaf8772e13b55ef40d743d3d9fc79024e645c4a667e8fceef629d5c2371d8721f7980" target="_blank">위임장 제출</a></li>
             </ul>
           </div>
         </div>
