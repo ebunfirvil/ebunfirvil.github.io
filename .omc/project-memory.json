@@ -1,0 +1,77 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1785552235761,
+  "projectRoot": "/Users/leeopklop/e-park-hansang-bundang",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "_archive": {
+      "path": "_archive",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1785552235751,
+      "keyFiles": [
+        "INDEX_STRUCTURE.md",
+        "README-structure.md",
+        "documents.html",
+        "download_files.py",
+        "elife_logo_construction.svg"
+      ]
+    },
+    "img": {
+      "path": "img",
+      "purpose": null,
+      "fileCount": 38,
+      "lastAccessed": 1785552235752,
+      "keyFiles": [
+        "51A.png",
+        "55A.png",
+        "55B.png",
+        "59A.png",
+        "59T.png"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "index.html",
+      "accessCount": 40,
+      "lastAccessed": 1785552483727,
+      "type": "file"
+    },
+    {
+      "path": "index_test.html",
+      "accessCount": 8,
+      "lastAccessed": 1785139432567,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
