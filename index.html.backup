@@ -4,10 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>e편한세상 분당 퍼스트빌리지 입주예정자 협의회</title>
-  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
   <style>
@@ -160,19 +156,6 @@
       background: rgba(255,255,255,0.2);
     }
 
-    .naver-badge {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-    }
-    .naver-badge img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
     .mobile-toggle {
       display: none;
       background: none;
@@ -180,35 +163,6 @@
       color: var(--white);
       font-size: 1.5rem;
       cursor: pointer;
-    }
-
-    /* ===== BACK TO TOP ===== */
-    .back-to-top {
-      position: fixed;
-      right: 24px;
-      bottom: 24px;
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      border: none;
-      background: var(--orange);
-      color: var(--white);
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      z-index: 900;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: all 0.3s ease;
-    }
-    .back-to-top.show {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-    .back-to-top:hover {
-      background: var(--orange-dark);
     }
 
     /* ===== HERO - 남색 계열 ===== */
@@ -320,26 +274,15 @@
     }
 
     .hero-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 150px);
+      display: flex;
       justify-content: center;
-      gap: 20px 24px;
+      gap: 40px;
       margin-bottom: 40px;
+      flex-wrap: wrap;
     }
 
     .hero-stat {
-      width: 150px;
-      min-height: 132px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       text-align: center;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 14px;
-      padding: 16px 12px;
-      backdrop-filter: blur(4px);
     }
 
     .hero-stat-number {
@@ -347,10 +290,6 @@
       font-weight: 900;
       color: var(--orange-warm);
       display: block;
-    }
-
-    .hero-stat-number.dday-past {
-      color: rgba(255,255,255,0.35);
     }
 
     .hero-stat-label {
@@ -435,6 +374,7 @@
     .modal-content {
       background: var(--white);
       padding: 20px;
+      border-radius: 12px;
       max-width: 90%;
       max-height: 90%;
       overflow: auto;
@@ -450,6 +390,7 @@
     .modal-content img {
       max-width: 100%;
       max-height: 80vh;
+      border-radius: 8px;
     }
 
     .close-btn {
@@ -463,136 +404,8 @@
       z-index: 1001;
     }
 
-    .notice-popup {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .notice-popup.active { display: flex; }
-
-    .notice-popup-content {
-      background: var(--white);
-      border-radius: 14px;
-      max-width: 380px;
-      width: 100%;
-      padding: 32px 28px 24px;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-    }
-
-    .notice-popup-close {
-      position: absolute;
-      top: 12px;
-      right: 14px;
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: var(--gray);
-      cursor: pointer;
-      line-height: 1;
-      background: none;
-      border: none;
-    }
-
-    .notice-popup-content i.notice-popup-icon {
-      font-size: 2.4rem;
-      color: var(--orange);
-      margin-bottom: 14px;
-    }
-
-    .notice-popup-content h3 {
-      color: var(--navy);
-      margin: 0 0 12px;
-      font-size: 1.25rem;
-    }
-
-    .notice-popup-content p {
-      color: var(--gray);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin: 0 0 22px;
-    }
-
-    .notice-popup-btn {
-      display: inline-block;
-      width: 100%;
-      background: var(--orange);
-      color: var(--white);
-      font-weight: 700;
-      padding: 13px 0;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1rem;
-    }
-
-    .notice-popup-footer {
-      margin-top: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.85rem;
-      color: var(--gray);
-    }
-
-    .notice-popup-footer input {
-      cursor: pointer;
-    }
-
-    .notice-popup-footer label {
-      cursor: pointer;
-    }
-
-    .notice-popup-dismiss {
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .notice-popup-dismiss:hover {
-      color: var(--orange);
-    }
-
-    .notice-popup-divider {
-      color: var(--gray);
-      opacity: 0.5;
-    }
-
     .close-btn:hover {
       color: var(--orange);
-    }
-
-    .floorplan-imgwrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .floorplan-nav-btn {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      display: flex; align-items: center; justify-content: center;
-      background: var(--orange); border: none; color: var(--white);
-      width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem;
-      cursor: pointer; box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-      transition: background 0.2s ease; z-index: 5;
-    }
-    .floorplan-nav-btn:hover { background: var(--orange-dark); }
-    .floorplan-nav-btn.prev { left: -10px; }
-    .floorplan-nav-btn.next { right: -10px; }
-    @media (max-width: 768px) {
-      .floorplan-nav-btn.prev { left: 2px; }
-      .floorplan-nav-btn.next { right: 2px; }
-    }
-    .floorplan-counter {
-      margin-top: 12px; font-size: 0.85rem; color: var(--gray); font-weight: 500;
     }
 
     .btn-outline {
@@ -753,20 +566,23 @@
     }
 
     /* ===== INFO CARDS - 남색 카드 ===== */
+    #info {
+      background: var(--beige);
+    }
+
     .info-cards {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 8px;
-      margin-top: 25px;
+      gap: 25px;
     }
 
-    @media (min-width: 600px) {
+    @media (min-width: 768px) {
       .info-cards {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 1024px) {
       .info-cards {
         grid-template-columns: repeat(3, 1fr);
       }
@@ -774,59 +590,52 @@
 
     .info-card {
       background: var(--navy);
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 16px;
+      padding: 35px 30px;
       box-shadow: var(--shadow);
       transition: all 0.3s ease;
       border: 1px solid transparent;
       color: var(--white);
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
 
     .info-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-5px);
       box-shadow: var(--shadow-lg);
       border-color: var(--orange);
     }
 
     .info-card-icon {
-      width: 30px;
-      height: 30px;
-      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
       background: linear-gradient(135deg, var(--orange), var(--orange-light));
-      border-radius: 8px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--white);
-      font-size: 0.85rem;
-    }
-
-    .info-card-body {
-      min-width: 0;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
     }
 
     .info-card h3 {
-      font-size: 0.78rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: var(--white);
-      margin-bottom: 1px;
+      margin-bottom: 10px;
     }
 
     .info-card p {
       color: rgba(255,255,255,0.75);
-      font-size: 0.7rem;
-      line-height: 1.35;
+      font-size: 0.9rem;
+      line-height: 1.7;
     }
 
     .info-card .value {
-      font-size: 0.82rem;
+      font-size: 1.4rem;
       font-weight: 900;
       color: var(--orange-warm);
       display: block;
-      margin-top: 1px;
+      margin-top: 5px;
     }
 
     /* ===== FLOOR PLANS - 베이지 배경, 남색 카드 ===== */
@@ -911,232 +720,6 @@
 
     .plan-card.has-image:hover img {
       opacity: 0.85;
-    }
-
-    /* ===== SITE INFO (단지안내) ===== */
-    #siteinfo {
-      background: var(--white);
-    }
-
-    .siteplan-card {
-      background: var(--beige);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-
-    .siteplan-hint {
-      text-align: center; color: var(--gray); font-size: 0.85rem; margin-bottom: 14px;
-    }
-    .siteplan-hint i { color: var(--orange); margin-right: 5px; }
-
-    .siteplan-wrap {
-      position: relative;
-      width: 100%;
-      line-height: 0;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .siteplan-wrap img {
-      width: 100%;
-      display: block;
-    }
-
-    .hotspot {
-      position: absolute;
-      width: 30px; height: 30px;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      background: var(--orange);
-      border: 3px solid var(--white);
-      box-shadow: 0 0 0 3px var(--orange);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--white);
-      font-size: 0.75rem;
-      animation: hotspotPulse 2s ease-out infinite;
-      transition: transform 0.2s ease;
-    }
-    .hotspot:hover { transform: translate(-50%, -50%) scale(1.15); }
-
-    @keyframes hotspotPulse {
-      0% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 3px rgba(232,98,46,0.5); }
-      70% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 14px rgba(232,98,46,0); }
-      100% { box-shadow: 0 0 0 3px var(--orange), 0 0 0 14px rgba(232,98,46,0); }
-    }
-
-    .hotspot-label {
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--navy-dark);
-      color: var(--white);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    .hotspot:hover .hotspot-label { opacity: 1; }
-
-    @media (max-width: 640px) {
-      .hotspot { width: 22px; height: 22px; }
-      .hotspot-label { display: none; }
-    }
-
-    .photo-hotspot {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      width: 100px;
-      background: rgba(13,27,40,0.85);
-      border: 2px solid var(--orange-warm);
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-    }
-    .photo-hotspot:hover {
-      transform: translate(-50%, -50%) scale(1.08);
-      border-color: var(--white);
-    }
-    .photo-hotspot img {
-      width: 100%; height: 56px; object-fit: cover; display: block;
-    }
-    .photo-hotspot span {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--white);
-      text-align: center;
-      padding: 4px 2px;
-    }
-    @media (max-width: 640px) {
-      .photo-hotspot { width: 68px; }
-      .photo-hotspot img { height: 38px; }
-      .photo-hotspot span { font-size: 0.6rem; padding: 2px; }
-    }
-
-    .amenity-list-title {
-      font-size: 1.1rem; font-weight: 900; color: var(--navy);
-      margin-bottom: 14px;
-    }
-    .amenity-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-    }
-    .amenity-card {
-      background: var(--white);
-      border: 1px solid var(--beige-dark);
-      border-radius: 12px;
-      padding: 16px 14px;
-      text-align: center;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: all 0.25s ease;
-    }
-    .amenity-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--orange-light);
-    }
-    .amenity-card i {
-      display: block; font-size: 1.4rem; color: var(--orange); margin-bottom: 8px;
-    }
-    .amenity-card span {
-      display: block; font-size: 0.88rem; font-weight: 700; color: var(--navy);
-    }
-
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .photo-card {
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-    .photo-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-lg);
-    }
-    .photo-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      display: block;
-    }
-    .photo-card-label {
-      padding: 10px 12px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--navy);
-      background: var(--white);
-    }
-
-    .amenity-modal {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(13,27,40,0.92);
-      z-index: 1000;
-      align-items: center; justify-content: center;
-      padding: 20px;
-    }
-    .amenity-modal.active { display: flex; }
-    .amenity-modal-inner {
-      max-width: 900px; width: 100%;
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .amenity-modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      width: 100%; margin-bottom: 14px;
-    }
-    .amenity-modal-title {
-      color: var(--white); font-size: 1.2rem; font-weight: 900;
-    }
-    .amenity-modal-close {
-      background: rgba(255,255,255,0.12); border: none; color: var(--white);
-      width: 38px; height: 38px; border-radius: 50%; font-size: 1.1rem;
-      cursor: pointer; transition: background 0.2s ease;
-    }
-    .amenity-modal-close:hover { background: rgba(255,255,255,0.25); }
-
-    .amenity-modal-imgwrap {
-      position: relative; width: 100%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .amenity-modal-imgwrap img {
-      max-width: 100%; max-height: 70vh;
-      box-shadow: var(--shadow-lg);
-    }
-    .amenity-nav-btn {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,0.15); border: none; color: var(--white);
-      width: 44px; height: 44px; border-radius: 50%; font-size: 1.2rem;
-      cursor: pointer; transition: background 0.2s ease;
-    }
-    .amenity-nav-btn:hover { background: rgba(255,255,255,0.3); }
-    .amenity-nav-btn.prev { left: -10px; }
-    .amenity-nav-btn.next { right: -10px; }
-    @media (max-width: 768px) {
-      .amenity-nav-btn.prev { left: 4px; }
-      .amenity-nav-btn.next { right: 4px; }
-    }
-
-    .amenity-modal-desc {
-      color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 14px; text-align: center;
-    }
-    .amenity-modal-counter {
-      color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 8px;
     }
 
     /* ===== TIMELINE - 베이지 배경 ===== */
@@ -1244,56 +827,32 @@
     }
 
     /* 현재 진행 중인 일정 */
-    .timeline-item.is-current {
-      z-index: 2;
-    }
-
     .timeline-item.is-current .timeline-content {
       border-top-color: var(--orange);
-      border-top-width: 4px;
-      background: linear-gradient(135deg, #fff5ee, var(--white));
-      box-shadow: 0 0 0 3px var(--orange-warm), 0 16px 40px rgba(232,98,46,0.3);
-      transform: scale(1.05);
-      position: relative;
-    }
-
-    .timeline-item.is-current .timeline-content h3 {
-      color: var(--orange-dark);
+      box-shadow: 0 0 0 2px var(--orange-warm), var(--shadow);
     }
 
     .timeline-item.is-current::before {
-      width: 20px;
-      height: 20px;
       background: var(--orange-warm);
-      box-shadow: 0 0 0 3px var(--orange-warm);
       animation: timelinePulse 1.8s ease-out infinite;
     }
 
     @keyframes timelinePulse {
       0% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 3px rgba(255,154,86,0.5); }
-      70% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 18px rgba(255,154,86,0); }
-      100% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 18px rgba(255,154,86,0); }
+      70% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 14px rgba(255,154,86,0); }
+      100% { box-shadow: 0 0 0 3px var(--orange-warm), 0 0 0 14px rgba(255,154,86,0); }
     }
 
     .timeline-now-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      margin-left: 8px;
-      padding: 4px 13px;
+      display: inline-block;
+      margin-left: 6px;
+      padding: 2px 9px;
       border-radius: 999px;
       background: var(--orange);
       color: var(--white);
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.3px;
+      font-size: 0.7rem;
+      font-weight: 700;
       vertical-align: middle;
-      animation: badgePulse 1.8s ease-in-out infinite;
-    }
-
-    @keyframes badgePulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(232,98,46,0.55); }
-      50% { box-shadow: 0 0 0 7px rgba(232,98,46,0); }
     }
 
     /* ===== NEWS - 베이지 배경 ===== */
@@ -1323,12 +882,12 @@
     }
 
     .news-date {
-      min-width: 90px;
+      min-width: 80px;
       text-align: center;
     }
 
     .news-date .day {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: 900;
       color: var(--navy);
       display: block;
@@ -1336,7 +895,7 @@
     }
 
     .news-date .period {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--gray);
     }
 
@@ -1461,8 +1020,7 @@
       margin: 0 auto 20px;
     }
 
-    .cc-cafe { background: var(--white); border: 2px solid #03c75a; padding: 12px; }
-    .cc-cafe img { width: 100%; height: 100%; object-fit: contain; }
+    .cc-cafe { background: linear-gradient(135deg, #f7ce00, #e6b800); color: #fff; }
     .cc-kakao { background: linear-gradient(135deg, #fee500, #e6d100); color: #3c1e1e; }
 
     .community-card h3 {
@@ -1652,10 +1210,7 @@
       }
     }
 
-    /* nav switches to the hamburger menu earlier than other tablet
-       tweaks — with 9 nav items it needs ~1100px to fit on one line
-       without each link's text wrapping mid-word */
-    @media (max-width: 1100px) {
+    @media (max-width: 768px) {
       .header-inner {
         height: 60px;
       }
@@ -1690,9 +1245,7 @@
       .social-links {
         display: none;
       }
-    }
 
-    @media (max-width: 768px) {
       .hero h1 {
         font-size: 1.8rem;
       }
@@ -1702,22 +1255,11 @@
       }
 
       .hero-stats {
-        grid-template-columns: repeat(3, 100px);
-        gap: 8px;
-      }
-
-      .hero-stat {
-        width: 100px;
-        min-height: 116px;
-        padding: 12px 6px;
+        gap: 20px;
       }
 
       .hero-stat-number {
         font-size: 1.6rem;
-      }
-
-      .hero-stat-label {
-        font-size: 0.75rem;
       }
 
       .section-header h2 {
@@ -1772,7 +1314,6 @@
           <li><a href="#main" class="active">메인</a></li>
           <li><a href="#about">개요</a></li>
           <li><a href="#plans">평형</a></li>
-          <li><a href="#siteinfo">단지안내</a></li>
           <li><a href="#timeline">일정</a></li>
           <li><a href="#news">뉴스</a></li>
           <li><a href="#calculator">계산기</a></li>
@@ -1781,8 +1322,9 @@
         </ul>
       </nav>
       <div class="social-links">
-        <a href="https://cafe.naver.com/naksangheemang" target="_blank" title="네이버 카페"><span class="naver-badge"><img src="img/cafe-logo.png" alt="네이버 카페"></span></a>
-        <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" title="카카오톡"><i class="fas fa-comment"></i></a>
+        <a href="#" title="네이버 카페"><i class="fab fa-naver"></i></a>
+        <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" title="카카오톡"><i class="fab fa-kakao"></i></a>
+        <a href="#" title="이메일"><i class="fas fa-envelope"></i></a>
       </div>
       <button class="mobile-toggle" onclick="document.getElementById('mainNav').classList.toggle('active')">
         <i class="fas fa-bars"></i>
@@ -1820,12 +1362,12 @@
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday2">--</span>
-          <span class="hero-stat-label">본청약</span>
+          <span class="hero-stat-label">일반 청약</span>
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.20</span>
         </div>
         <div class="hero-stat">
           <span class="hero-stat-number" id="dday3">--</span>
-          <span class="hero-stat-label">당첨자 및 동호수 발표</span>
+          <span class="hero-stat-label">동호수 발표</span>
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.07.31</span>
         </div>
         <div class="hero-stat">
@@ -1834,20 +1376,16 @@
           <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.11.04</span>
         </div>
         <div class="hero-stat">
-          <span class="hero-stat-number" id="dday6">--</span>
-          <span class="hero-stat-label">옵션 선택</span>
-          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2026.12(예정)</span>
-        </div>
-        <div class="hero-stat">
           <span class="hero-stat-number" id="dday5">--</span>
           <span class="hero-stat-label">입주</span>
-          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2029.02(예정)</span>
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:3px;display:block;">2029.02</span>
         </div>
       </div>
       <div class="hero-buttons">
         <a href="apply-precautions.html" class="btn btn-outline" target="_blank"><i class="fas fa-info-circle"></i> 청약시 주의사항</a>
         <a href="apply-documents.html" class="btn btn-outline" target="_blank"><i class="fas fa-info-circle"></i> 당첨자 제출 서류</a>
         <a href="contract-documents.html" class="btn btn-outline" target="_blank"><i class="fas fa-file-alt"></i> 계약 구비 서류</a>
+        <a href="amenities.html" class="btn btn-outline" target="_blank"><i class="fas fa-map-marked-alt"></i> 편의시설 안내</a>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -1876,7 +1414,7 @@
           </p>
           <p>
             신혼희망타운 공공분양 933세대와 행복주택 467세대를 포함하여 총 1,400세대의
-            주거공간이 조성되며, 2029.02 입주를 목표로 하고 있습니다.
+            주거공간이 조성되며, 2029년 2월 입주를 목표로 하고 있습니다.
           </p>
           <div class="about-features">
             <div class="about-feature">
@@ -1893,69 +1431,64 @@
             </div>
             <div class="about-feature">
               <i class="fas fa-car"></i>
-              <span>주차 1,784대 (공동 1,776 / 근린 8)</span>
+              <span>주차 1,776대 (공동 1,768 / 근린 8)</span>
             </div>
             <div class="about-feature">
               <i class="fas fa-calendar-alt"></i>
-              <span>입주 예정: 2029.02</span>
+              <span>입주 예정: 2029년 02월</span>
+            </div>
+            <div class="about-feature">
+              <i class="fas fa-store"></i>
+              <span>주택전시관 2026년 07월 예정</span>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <!-- ===== INFO CARDS (개요에 편입) ===== -->
+  <!-- ===== INFO CARDS ===== -->
+  <section id="info">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">PROJECT INFO</div>
+        <h2>주요 정보</h2>
+        <p>사업주체, 위치, 시설 등 핵심 정보를 한눈에</p>
+      </div>
       <div class="info-cards">
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-user-tie"></i></div>
-          <div class="info-card-body">
-            <h3>시행사</h3>
-            <p>한국토지주택공사 (LH)</p>
-            <span class="value">LH Corporation</span>
-          </div>
+          <h3>시행사</h3>
+          <p>한국토지주택공사 (LH)</p>
+          <span class="value">LH Corporation</span>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-hard-hat"></i></div>
-          <div class="info-card-body">
-            <h3>시공사 (공동시공)</h3>
-            <p>DL이앤씨 · 극동건설 · 고덕종합건설 · 금성백조건설</p>
-            <span class="value">4개사 공동시공</span>
-          </div>
+          <h3>시공사 (공동시공)</h3>
+          <p>DL이앤씨 · 극동건설 · 고덕종합건설 · 금성백조건설</p>
+          <span class="value">4개사 공동시공</span>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-map-pin"></i></div>
-          <div class="info-card-body">
-            <h3>현장 위치</h3>
-            <p>경기도 성남시 분당구 동막로 245 일원 (성남낙생지구 A-1블록)</p>
-          </div>
+          <h3>현장 위치</h3>
+          <p>경기도 성남시 분당구 동막로 245 일원<br>(성남낙생지구 A-1블록)</p>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-building"></i></div>
-          <div class="info-card-body">
-            <h3>주택전시관</h3>
-            <p>경기도 용인시 수지구 동천동 855-2</p>
-            <span class="value">2026.07.03 오픈</span>
-          </div>
+          <h3>주택전시관</h3>
+          <p>경기도 용인시 수지구 동천동 855-2</p>
+          <span class="value">2026년 07월 오픈 예정</span>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-phone"></i></div>
-          <div class="info-card-body">
-            <h3>문의 전화</h3>
-            <p>031-538-1777</p>
-          </div>
+          <h3>문의 전화</h3>
+          <p>031-538-1777</p>
         </div>
         <div class="info-card fade-in">
           <div class="info-card-icon"><i class="fas fa-home"></i></div>
-          <div class="info-card-body">
-            <h3>주택유형</h3>
-            <p>국민주택 (전용 85㎡ 이하) · 분양가상한제 적용 · 지역난방</p>
-          </div>
+          <h3>주택유형</h3>
+          <p>국민주택 (전용 85㎡ 이하)<br>분양가상한제 적용 · 지역난방</p>
         </div>
-      </div>
-
-      <div class="siteplan-card fade-in" style="text-align:center;margin-top:30px;">
-        <div class="amenity-list-title">최고의 입지</div>
-        <p style="color:var(--gray);font-size:0.9rem;margin:-6px 0 16px;">교통 · 교육 · 자연환경 · 의료 · 상업까지, 주변시설을 한눈에 확인해보세요</p>
-        <a href="location.html" class="btn btn-primary" target="_blank"><i class="fas fa-map-marked-alt"></i> 입지 안내 보기</a>
       </div>
     </div>
   </section>
@@ -1972,21 +1505,21 @@
         <div class="plan-card fade-in" onclick="openFloorPlan('51A')">
           <div class="type">Type 51A</div>
           <div class="area">51<span>㎡</span></div>
-          <div class="units">413세대</div>
+          <div class="units">413호</div>
           <div class="price">약 5.55억 ~ 5.91억 원</div>
           <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
         </div>
         <div class="plan-card fade-in" onclick="openFloorPlan('55A')">
           <div class="type">Type 55A</div>
           <div class="area">55<span>㎡</span></div>
-          <div class="units">468세대</div>
+          <div class="units">468호</div>
           <div class="price">약 5.98억 ~ 6.37억 원</div>
           <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
         </div>
         <div class="plan-card fade-in" onclick="openFloorPlan('55B')">
           <div class="type">Type 55B</div>
           <div class="area">55<span>㎡</span></div>
-          <div class="units">254세대</div>
+          <div class="units">254호</div>
           <div class="price">약 5.98억 ~ 6.36억 원</div>
           <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
         </div>
@@ -2007,210 +1540,6 @@
       </div>
     </div>
   </section>
-
-  <!-- ===== SITE INFO (단지안내) ===== -->
-  <section id="siteinfo">
-    <div class="container">
-      <div class="section-header fade-in">
-        <div class="section-tag">SITE INFO</div>
-        <h2>단지안내</h2>
-        <p>단지 배치도에서 주황색 점을 클릭하면 해당 시설 사진을 볼 수 있습니다</p>
-      </div>
-
-      <div class="siteplan-card fade-in">
-        <div class="siteplan-hint"><i class="fas fa-hand-pointer"></i> 배치도 위 점을 클릭해보세요 (PC/모바일 모두 가능)</div>
-        <div class="siteplan-wrap" id="siteplanWrap">
-          <img src="img/amenities/site-plan.png" alt="단지 배치도">
-          <!-- hotspots injected by JS -->
-        </div>
-      </div>
-
-      <div class="siteplan-card fade-in">
-        <div class="amenity-list-title">편의시설 목록</div>
-        <div class="amenity-grid" id="amenityGrid"></div>
-      </div>
-
-      <div class="siteplan-card fade-in">
-        <div class="amenity-list-title">단지 전경 갤러리</div>
-        <div class="photo-grid" id="photoGrid"></div>
-      </div>
-
-      <div class="siteplan-card fade-in" style="text-align:center;">
-        <div class="amenity-list-title">e편한세상 스마트 시스템 안내</div>
-        <p style="color:var(--gray);font-size:0.9rem;margin:-6px 0 16px;">안전 · 에너지 절약 · 건강 · 편의 · 소음저감 5대 시스템을 자세히 확인해보세요</p>
-        <a href="system.html" class="btn btn-primary" target="_blank"><i class="fas fa-microchip"></i> 시스템 안내 보기</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== SITE INFO MODAL ===== -->
-  <!-- Floor Plan Modal -->
-  <div id="floorplanModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeFloorPlan()">&times;</span>
-      <h3 id="floorplanType">Type</h3>
-      <div class="floorplan-imgwrap">
-        <button class="floorplan-nav-btn prev" onclick="navFloorPlanImage(-1)"><i class="fas fa-chevron-left"></i></button>
-        <img id="floorplanImg" src="" alt="평면도">
-        <button class="floorplan-nav-btn next" onclick="navFloorPlanImage(1)"><i class="fas fa-chevron-right"></i></button>
-      </div>
-      <div class="floorplan-counter" id="floorplanCounter"></div>
-    </div>
-  </div>
-
-  <div class="amenity-modal" id="amenityModal">
-    <div class="amenity-modal-inner">
-      <div class="amenity-modal-header">
-        <div class="amenity-modal-title" id="amenityModalTitle">시설명</div>
-        <button class="amenity-modal-close" onclick="closeAmenityModal()"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="amenity-modal-imgwrap">
-        <button class="amenity-nav-btn prev" onclick="navAmenityImage(-1)"><i class="fas fa-chevron-left"></i></button>
-        <img id="amenityModalImg" src="" alt="">
-        <button class="amenity-nav-btn next" onclick="navAmenityImage(1)"><i class="fas fa-chevron-right"></i></button>
-      </div>
-      <div class="amenity-modal-desc" id="amenityModalDesc"></div>
-      <div class="amenity-modal-counter" id="amenityModalCounter"></div>
-    </div>
-  </div>
-
-  <!-- ===== 위임장 제출 안내 팝업 ===== -->
-  <div class="notice-popup" id="delegateNoticePopup">
-    <div class="notice-popup-content">
-      <button class="notice-popup-close" onclick="closeDelegateNotice()" aria-label="닫기">&times;</button>
-      <i class="fas fa-file-signature notice-popup-icon"></i>
-      <h3>위임장 제출 안내</h3>
-      <p>입주예정자 협의회 활동을 위한 위임장 접수가 진행 중입니다.<br>아래 버튼을 눌러 위임장을 제출해 주세요.</p>
-      <a href="https://acro.ozform.kr/agree/contract.php?acode=be143f8d910c5313d9efdea403fe162b7083f1171b122c25214b6e80b5dfaf8772e13b55ef40d743d3d9fc79024e645c4a667e8fceef629d5c2371d8721f7980" target="_blank" class="notice-popup-btn" onclick="closeDelegateNotice()">위임장 제출하기</a>
-      <div class="notice-popup-footer">
-        <input type="checkbox" id="delegateNoticeHideToday">
-        <label for="delegateNoticeHideToday">오늘 하루 보지 않기</label>
-      </div>
-    </div>
-  </div>
-  <script>
-    // 위임장 제출 안내 팝업 (KST 2026-07-31 오후 1시부터 노출, 방문자 기기 시간대 무관)
-    // 2026-08-01: 인증 유도 팝업으로 임시 교체를 위해 비활성화 (나중에 다시 사용 예정, 코드 보존)
-    (function () {
-      var POPUP_ENABLED = false;
-      if (!POPUP_ENABLED) return;
-
-      var KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-      // 2026-07-31 13:00 KST = 2026-07-31 04:00 UTC
-      var POPUP_START_UTC_MS = Date.UTC(2026, 6, 31, 4, 0, 0);
-      var HIDE_KEY = 'delegateNoticeHideDate';
-
-      function todayStr() {
-        // KST 기준 날짜 (기기 시간대와 무관)
-        var kst = new Date(Date.now() + KST_OFFSET_MS);
-        var y = kst.getUTCFullYear();
-        var m = String(kst.getUTCMonth() + 1).padStart(2, '0');
-        var day = String(kst.getUTCDate()).padStart(2, '0');
-        return y + '-' + m + '-' + day;
-      }
-
-      if (Date.now() < POPUP_START_UTC_MS) return;
-
-      var today = todayStr();
-      var hiddenDate = localStorage.getItem(HIDE_KEY);
-      if (hiddenDate === today) return;
-
-      window.closeDelegateNotice = function () {
-        var popup = document.getElementById('delegateNoticePopup');
-        popup.classList.remove('active');
-        var hideToday = document.getElementById('delegateNoticeHideToday');
-        if (hideToday && hideToday.checked) {
-          localStorage.setItem(HIDE_KEY, todayStr());
-        }
-      };
-
-      function showPopup() {
-        var popup = document.getElementById('delegateNoticePopup');
-        if (popup) popup.classList.add('active');
-      }
-
-      if (document.readyState === 'complete') {
-        setTimeout(showPopup, 500);
-      } else {
-        window.addEventListener('load', function () {
-          setTimeout(showPopup, 500);
-        });
-      }
-    })();
-  </script>
-
-  <!-- ===== 본인인증 안내 팝업 (2026-08-09까지 노출) ===== -->
-  <div class="notice-popup" id="verifyNoticePopup">
-    <div class="notice-popup-content">
-      <button class="notice-popup-close" onclick="closeVerifyNotice()" aria-label="닫기">&times;</button>
-      <i class="fas fa-user-check notice-popup-icon"></i>
-      <h3>본인인증 안내</h3>
-      <p>네이버 카페 및 카카오톡 단체채팅방 가입을 위한 본인인증입니다.<br>아래 버튼을 눌러 인증을 진행해 주세요.</p>
-      <a href="https://forms.gle/bBe4odMSAsrq93Ac8" target="_blank" class="notice-popup-btn" onclick="closeVerifyNotice()">본인인증 하기</a>
-      <div class="notice-popup-footer">
-        <span class="notice-popup-dismiss" onclick="hideVerifyNotice('today')">오늘 하루 보지 않기</span>
-        <span class="notice-popup-divider">|</span>
-        <span class="notice-popup-dismiss" onclick="hideVerifyNotice('forever')">다시는 보지 않기</span>
-      </div>
-    </div>
-  </div>
-  <script>
-    // 본인인증 유도 팝업 (2026-08-09 KST 자정까지 노출, 방문자 기기 시간대 무관)
-    (function () {
-      var KST_OFFSET_MS = 9 * 60 * 60 * 1000;
-      // 2026-08-10 00:00 KST = 2026-08-09 15:00 UTC (전일까지 노출)
-      var POPUP_END_UTC_MS = Date.UTC(2026, 7, 9, 15, 0, 0);
-      var HIDE_KEY = 'verifyNoticeHideDate';
-
-      function todayStr() {
-        // KST 기준 날짜 (기기 시간대와 무관)
-        var kst = new Date(Date.now() + KST_OFFSET_MS);
-        var y = kst.getUTCFullYear();
-        var m = String(kst.getUTCMonth() + 1).padStart(2, '0');
-        var day = String(kst.getUTCDate()).padStart(2, '0');
-        return y + '-' + m + '-' + day;
-      }
-
-      if (Date.now() >= POPUP_END_UTC_MS) return;
-
-      var today = todayStr();
-      var hiddenDate = localStorage.getItem(HIDE_KEY);
-      if (hiddenDate === 'forever' || hiddenDate === today) return;
-
-      window.closeVerifyNotice = function () {
-        var popup = document.getElementById('verifyNoticePopup');
-        popup.classList.remove('active');
-      };
-
-      window.hideVerifyNotice = function (type) {
-        var popup = document.getElementById('verifyNoticePopup');
-        popup.classList.remove('active');
-        if (type === 'forever') {
-          localStorage.setItem(HIDE_KEY, 'forever');
-        } else {
-          localStorage.setItem(HIDE_KEY, todayStr());
-        }
-      };
-
-      function showPopup() {
-        var popup = document.getElementById('verifyNoticePopup');
-        if (popup) popup.classList.add('active');
-      }
-
-      if (document.readyState === 'complete') {
-        setTimeout(showPopup, 500);
-      } else {
-        window.addEventListener('load', function () {
-          setTimeout(showPopup, 500);
-        });
-      }
-    })();
-  </script>
-
-  <!-- ===== BACK TO TOP ===== -->
-  <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="맨 위로">
-    <i class="fas fa-arrow-up"></i>
-  </button>
 
   <!-- ===== TIMELINE ===== -->
   <section id="timeline">
@@ -2237,49 +1566,42 @@
         </div>
         <div class="timeline-item fade-in" data-start="2026-07-13" data-end="2026-07-14">
           <div class="timeline-content">
-            <div class="timeline-date">2026.07.13 ~ 2026.07.14</div>
+            <div class="timeline-date">07.13 ~ 07.14</div>
             <h3>사전청약 당첨자 신청</h3>
             <p>LH 청약플러스 / 모바일앱 / 10:00 ~ 17:00</p>
           </div>
         </div>
         <div class="timeline-item fade-in" data-start="2026-07-20" data-end="2026-07-21">
           <div class="timeline-content">
-            <div class="timeline-date">2026.07.20 ~ 2026.07.21</div>
+            <div class="timeline-date">07.20 ~ 07.21</div>
             <h3>본청약 (신혼부부 등)</h3>
             <p>LH 청약플러스 / 모바일앱 / 10:00 ~ 17:00</p>
           </div>
         </div>
         <div class="timeline-item fade-in" data-start="2026-07-31" data-end="2026-07-31">
           <div class="timeline-content">
-            <div class="timeline-date">2026.07.31</div>
+            <div class="timeline-date">07.31</div>
             <h3>당첨자 발표</h3>
             <p>오후 14:00 이후 / SMS, LH 청약플러스, ARS(1661-7700)</p>
           </div>
         </div>
         <div class="timeline-item fade-in" data-start="2026-08-07" data-end="2026-08-17">
           <div class="timeline-content">
-            <div class="timeline-date">2026.08.07 ~ 2026.08.17</div>
+            <div class="timeline-date">08.07 ~ 08.17</div>
             <h3>당첨자 서류 제출</h3>
             <p>방문 제출 / 10:00 ~ 16:00 (공고일 이후 발급분만 인정)</p>
           </div>
         </div>
         <div class="timeline-item fade-in" data-start="2026-11-04" data-end="2026-11-13">
           <div class="timeline-content">
-            <div class="timeline-date">2026.11.04 ~ 2026.11.13</div>
+            <div class="timeline-date">11.04 ~ 11.13</div>
             <h3>계약 체결</h3>
             <p>현장계약 (주택전시관 내) / 10:00 ~ 16:00</p>
           </div>
         </div>
-        <div class="timeline-item fade-in" data-start="2026-12-01" data-end="2026-12-31">
-          <div class="timeline-content">
-            <div class="timeline-date">2026.12(예정)</div>
-            <h3>옵션 선택</h3>
-            <p>추가선택품목 옵션 선택 예정</p>
-          </div>
-        </div>
         <div class="timeline-item fade-in" data-start="2029-02-01" data-end="2029-02-01">
           <div class="timeline-content">
-            <div class="timeline-date">2029.02(예정)</div>
+            <div class="timeline-date">2029.02</div>
             <h3>입주 예정</h3>
             <p>택지조성 및 송전탑 지중화 공사 상황에 따라 지연 가능</p>
           </div>
@@ -2299,68 +1621,24 @@
       <div class="news-list">
         <div class="news-item fade-in">
           <div class="news-date">
-            <span class="day">05.29</span>
-            <span class="period">2026</span>
+            <span class="day">29</span>
+            <span class="period">2026.05</span>
           </div>
           <div class="news-body">
             <div class="news-tag">입주자모집공고</div>
             <h3>입주자 모집공고 발표 — 청약 일정 확정</h3>
-            <p>e편한세상 분당 퍼스트빌리지(성남낙생지구 A-1블록)의 입주자 모집공고가 2026.05.29 공고되었습니다. 사전청약은 2026.07.13~2026.07.14, 본청약은 2026.07.20~2026.07.21 진행됩니다.</p>
+            <p>e편한세상 분당 퍼스트빌리지(성남낙생지구 A-1블록)의 입주자 모집공고가 2026년 5월 29일 공고되었습니다. 사전청약은 7월 13일~14일, 본청약은 7월 20일~21일 진행됩니다.</p>
           </div>
         </div>
         <div class="news-item fade-in">
           <div class="news-date">
-            <span class="day">07.03</span>
-            <span class="period">2026</span>
+            <span class="day">03</span>
+            <span class="period">2026.07</span>
           </div>
           <div class="news-body">
             <div class="news-tag">전시관</div>
-            <h3>주택전시관 개관 — 평면도 및 상세 견적 확인</h3>
-            <p>경기도 용인시 수지구 동천동 855-2에 주택전시관이 2026.07.03 개관했습니다. 내방 시 상세 평면도 및 견적을 제공받을 수 있습니다.</p>
-          </div>
-        </div>
-        <div class="news-item fade-in">
-          <div class="news-date">
-            <span class="day">07.13</span>
-            <span class="period">2026</span>
-          </div>
-          <div class="news-body">
-            <div class="news-tag">사전청약</div>
-            <h3>사전청약 당첨자 선호타입 선정 — 2026.07.13 ~ 2026.07.14</h3>
-            <p>사전청약 당첨자를 대상으로 동호수 배정의 기준이 되는 선호타입 신청을 받습니다. LH 청약플러스 또는 모바일앱에서 10:00 ~ 17:00 진행되니 기간 내 신청해주세요.</p>
-          </div>
-        </div>
-        <div class="news-item fade-in">
-          <div class="news-date">
-            <span class="day">07.20</span>
-            <span class="period">2026</span>
-          </div>
-          <div class="news-body">
-            <div class="news-tag">본청약</div>
-            <h3>본청약 (신혼부부 등) — 2026.07.20 ~ 2026.07.21</h3>
-            <p>신혼부부 등 일반 대상자의 본청약이 진행됩니다. LH 청약플러스 또는 모바일앱에서 10:00 ~ 17:00 접수받습니다.</p>
-          </div>
-        </div>
-        <div class="news-item fade-in">
-          <div class="news-date">
-            <span class="day">07.31</span>
-            <span class="period">2026</span>
-          </div>
-          <div class="news-body">
-            <div class="news-tag">당첨자발표</div>
-            <h3>당첨자 발표 — 2026.07.31</h3>
-            <p>오후 14:00 이후 SMS, LH 청약플러스, ARS(1661-7700)를 통해 당첨 여부를 확인할 수 있습니다.</p>
-          </div>
-        </div>
-        <div class="news-item fade-in">
-          <div class="news-date">
-            <span class="day">08.07</span>
-            <span class="period">2026</span>
-          </div>
-          <div class="news-body">
-            <div class="news-tag">서류제출</div>
-            <h3>당첨자 서류 제출 — 2026.08.07 ~ 2026.08.17</h3>
-            <p>당첨자 및 예비입주자는 10:00 ~ 16:00 방문 제출로 서류를 접수합니다. 입주자모집공고일(2026.05.29) 이후 발급분만 인정되니 발급일자를 꼭 확인하세요.</p>
+            <h3>주택전시관 개관 예정 — 평면도 및 상세 견적 확인</h3>
+            <p>경기도 용인시 수지구 동천동 855-2에 주택전시관이 2026년 7월 3일 개관 예정입니다. 내방 시 상세 평면도 및 견적을 제공받을 수 있습니다.</p>
           </div>
         </div>
         <div class="news-item fade-in">
@@ -2369,9 +1647,20 @@
             <span class="period">2026</span>
           </div>
           <div class="news-body">
-            <div class="news-tag">위임장</div>
-            <h3>입주예정자 협의회 위임장 접수 안내</h3>
-            <p>입예협의 공식 대표성 확보를 위해 당첨자(입주예정자)분들의 위임장을 받고 있습니다. 위임장 양식 및 제출 방법은 네이버 카페 공지사항을 확인해 주세요.</p>
+            <div class="news-tag">공사</div>
+            <h3>택지조성 및 송전탑 지중화 공사 진행 중</h3>
+            <p>입주 예정일(2029년 2월)은 택지조성 및 송전탑 지중화 공사 상황에 따라 지연될 수 있습니다. 최신 공사 진척 소식은 협의회에서 안내해 드립니다.</p>
+          </div>
+        </div>
+        <div class="news-item fade-in">
+          <div class="news-date">
+            <span class="day">--</span>
+            <span class="period">2026</span>
+          </div>
+          <div class="news-body">
+            <div class="news-tag">입예협</div>
+            <h3>입주예정자 협의회 설립 준비</h3>
+            <p>2023년 10월 5일 설립된 사전청약 입주예정자 협의회가 설립되었고, 본청약 당첨자와 함께 입예협을 설립 예정입니다. 이웃 간 정보공유 및 소통을 위한 다양한 활동을 계획 중이며, 가입 절차는 아래에서 확인하세요.</p>
           </div>
         </div>
       </div>
@@ -2388,16 +1677,15 @@
       </div>
       <div class="community-grid">
         <div class="community-card fade-in">
-          <div class="community-card-icon cc-cafe"><img src="img/cafe-logo.png" alt="네이버 카페 로고"></div>
+          <div class="community-card-icon cc-cafe"><i class="fab fa-naver"></i></div>
           <h3>네이버 카페</h3>
           <p>최신 단지 소식, 분양 정보, 공사 진척 등<br>다양한 정보를 공유하는 공간</p>
           <a href="https://cafe.naver.com/naksangheemang" target="_blank" class="btn btn-primary">카페 가입하기</a>
         </div>
         <div class="community-card fade-in">
-          <div class="community-card-icon cc-kakao"><i class="fas fa-comment"></i></div>
+          <div class="community-card-icon cc-kakao"><i class="fab fa-kakao"></i></div>
           <h3>카카오톡 대화방</h3>
           <p>실시간으로 소통하고<br>즉각적인 정보를 나누는 공간</p>
-          <p style="font-size:0.8rem;">적격인증 관련 내용은 카페에서 확인해주세요</p>
           <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" class="btn btn-primary">대화방 참여</a>
         </div>
       </div>
@@ -2488,8 +1776,8 @@
               <li><a href="#main">메인</a></li>
               <li><a href="#about">단지 개요</a></li>
               <li><a href="#plans">평형 정보</a></li>
-              <li><a href="#siteinfo">단지안내</a></li>
               <li><a href="#timeline">주요 일정</a></li>
+              <li><a href="amenities.html" target="_blank">편의시설 안내</a></li>
               <li><a href="https://spontaneous-semifreddo-d21be3.netlify.app" target="_blank">분양가/수익공유 계산기</a></li>
               <li><a href="https://joy-papa.github.io/ebundangfirst/" target="_blank">옵션 계산기</a></li>
               <li><a href="chat.html">AI 질문하기</a></li>
@@ -2509,9 +1797,6 @@
               <li><a href="https://www.elife.co.kr/Posm_list01.action?commonMap.CD_BIZ_LND=210114" target="_blank">공식 홈페이지</a></li>
               <li><a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_260702.pdf" target="_blank">입주자모집공고 (전문)</a></li>
               <li><a href="https://apply.lh.or.kr" target="_blank">LH 청약플러스</a></li>
-              <li><a href="modelhouse.html" target="_blank">모델하우스</a></li>
-              <li><a href="https://acro.ozform.kr/agree/contract.php?acode=be143f8d910c5313d9efdea403fe162b7083f1171b122c25214b6e80b5dfaf8772e13b55ef40d743d3d9fc79024e645c4a667e8fceef629d5c2371d8721f7980" target="_blank">위임장 제출</a></li>
-              <li><a href="https://forms.gle/bBe4odMSAsrq93Ac8" target="_blank">본인인증</a></li>
             </ul>
           </div>
         </div>
@@ -2531,16 +1816,6 @@
         header.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
-      }
-    });
-
-    // Back to top button
-    window.addEventListener('scroll', () => {
-      const backToTop = document.getElementById('backToTop');
-      if (window.scrollY > 400) {
-        backToTop.classList.add('show');
-      } else {
-        backToTop.classList.remove('show');
       }
     });
 
@@ -2591,31 +1866,24 @@
       const dday2Target = new Date('2026-07-20T00:00:00+09:00');
       const dday3Target = new Date('2026-07-31T00:00:00+09:00');
       const dday4Target = new Date('2026-11-04T00:00:00+09:00');
-      const dday6Target = new Date('2026-12-01T00:00:00+09:00');
       const dday5Target = new Date('2029-02-01T00:00:00+09:00');
 
       function calcDDay(target) {
         const diff = target - now;
-        if (diff <= 0) {
-          const daysPast = Math.floor(-diff / (1000 * 60 * 60 * 24));
-          return { text: daysPast === 0 ? 'D-Day' : 'D+' + daysPast, past: daysPast > 0 };
-        }
-        return { text: Math.ceil(diff / (1000 * 60 * 60 * 24)) + '일', past: false };
+        if (diff <= 0) return 'D-Day';
+        return Math.ceil(diff / (1000 * 60 * 60 * 24)) + '일';
       }
 
-      function applyDDay(el, target) {
-        if (!el) return;
-        const { text, past } = calcDDay(target);
-        el.textContent = text;
-        el.classList.toggle('dday-past', past);
-      }
-
-      applyDDay(document.getElementById('dday1'), dday1Target);
-      applyDDay(document.getElementById('dday2'), dday2Target);
-      applyDDay(document.getElementById('dday3'), dday3Target);
-      applyDDay(document.getElementById('dday4'), dday4Target);
-      applyDDay(document.getElementById('dday6'), dday6Target);
-      applyDDay(document.getElementById('dday5'), dday5Target);
+      const el1 = document.getElementById('dday1');
+      const el2 = document.getElementById('dday2');
+      const el3 = document.getElementById('dday3');
+      const el4 = document.getElementById('dday4');
+      const el5 = document.getElementById('dday5');
+      if (el1) el1.textContent = calcDDay(dday1Target);
+      if (el2) el2.textContent = calcDDay(dday2Target);
+      if (el3) el3.textContent = calcDDay(dday3Target);
+      if (el4) el4.textContent = calcDDay(dday4Target);
+      if (el5) el5.textContent = calcDDay(dday5Target);
     }
 
     updateDDay();
@@ -2656,7 +1924,7 @@
         if (dateEl) {
           const badge = document.createElement('span');
           badge.className = 'timeline-now-badge';
-          badge.innerHTML = '<i class="fas fa-bell"></i> ' + badgeText;
+          badge.textContent = badgeText;
           dateEl.appendChild(badge);
         }
       }
@@ -2665,198 +1933,24 @@
     updateTimelineProgress();
     setInterval(updateTimelineProgress, 3600000); // 매시간 재확인 (자정 넘어가는 경우 대비)
 
-    // ===== SITE INFO (단지안내) =====
-    const amenities = [
-      {
-        name: '주출입구',
-        icon: 'fa-archway',
-        top: 23.4, left: 85.4,
-        images: ['img/amenities/enteries.png']
-      },
-      {
-        name: '커뮤니티센터 Ⅰ (B1)',
-        icon: 'fa-dumbbell',
-        top: 44.0, left: 62.1,
-        images: ['img/amenities/community-center1.png', 'img/amenities/cc1_gym.png', 'img/amenities/comunity_rg.png', 'img/amenities/gx-room.png'],
-        desc: '피트니스 · G.X룸 · 커뮤니티라운지 · 라운지카페(작은도서관) · 샤워룸(남/여) · 미니짐 · 실내골프연습장 · 멀티룸(주민회의실)'
-      },
-      {
-        name: '커뮤니티센터 Ⅱ (B1)',
-        icon: 'fa-child-reaching',
-        top: 71.9, left: 45.8,
-        images: ['img/amenities/community-center2.png', 'img/amenities/indoor-sports-court.png', 'img/amenities/cm1_private_office.png'],
-        desc: '키즈라운지(공동육아공간) · 스포츠코트 · 다함께돌봄센터 · 프라이빗오피스룸 · 멀티룸'
-      },
-      {
-        name: '어린이집 (1, 2F)',
-        icon: 'fa-child',
-        top: 56.2, left: 53.7,
-        images: ['img/amenities/daycare-interior.png', 'img/amenities/daycare-exterior.png']
-      },
-      {
-        name: '드포엠카페',
-        icon: 'fa-mug-hot',
-        top: 39.6, left: 72.9,
-        images: ['img/amenities/dpoem-cafe-exterior.png', 'img/amenities/dpoem-cafe-interior.png']
-      },
-      {
-        name: '드포엠파크',
-        icon: 'fa-tree',
-        top: 33.0, left: 72.0,
-        images: ['img/amenities/dpoem-park.png']
-      },
-      {
-        name: '드포엠플레이 (104동측)',
-        icon: 'fa-water-ladder',
-        top: 38.1, left: 63.2,
-        images: ['img/amenities/community-center1-exterior.png']
-      },
-      {
-        name: '드포엠플레이 (111동측)',
-        icon: 'fa-water-ladder',
-        top: 69.8, left: 14.9,
-        images: ['img/amenities/dpoem-play.png']
-      },
-      {
-        name: '게스트하우스',
-        icon: 'fa-bed',
-        top: 64.0, left: 7.5,
-        images: ['img/amenities/guesthouse.png']
-      },
-      {
-        name: '근린생활시설',
-        icon: 'fa-store',
-        top: 37.5, left: 92.2,
-        images: ['img/amenities/neighborhood-facility.png']
-      }
-    ];
-
-    const galleryPhotos = [
-      { name: '단지 투시도', images: ['img/perspective.png'], top: 26, left: 18 },
-      { name: '단지 조감도', images: ['img/aerial.png'], top: 46, left: 18 }
-    ];
-
-    const siteplanWrap = document.getElementById('siteplanWrap');
-    const amenityGrid = document.getElementById('amenityGrid');
-    const photoGrid = document.getElementById('photoGrid');
-
-    amenities.forEach((a, idx) => {
-      const dot = document.createElement('div');
-      dot.className = 'hotspot';
-      dot.style.top = a.top + '%';
-      dot.style.left = a.left + '%';
-      dot.innerHTML = '<i class="fas ' + a.icon + '"></i><span class="hotspot-label">' + a.name + '</span>';
-      dot.onclick = () => openAmenityModal(idx);
-      siteplanWrap.appendChild(dot);
-
-      const card = document.createElement('div');
-      card.className = 'amenity-card';
-      card.innerHTML = '<i class="fas ' + a.icon + '"></i><span>' + a.name + '</span>';
-      card.onclick = () => openAmenityModal(idx);
-      amenityGrid.appendChild(card);
-    });
-
-    galleryPhotos.forEach((p, idx) => {
-      const thumb = document.createElement('div');
-      thumb.className = 'photo-hotspot';
-      thumb.style.top = p.top + '%';
-      thumb.style.left = p.left + '%';
-      thumb.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><span>' + p.name + '</span>';
-      thumb.onclick = () => openGalleryPhoto(idx);
-      siteplanWrap.appendChild(thumb);
-    });
-
-    galleryPhotos.forEach((p, idx) => {
-      const card = document.createElement('div');
-      card.className = 'photo-card';
-      card.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><div class="photo-card-label">' + p.name + '</div>';
-      card.onclick = () => openGalleryPhoto(idx);
-      photoGrid.appendChild(card);
-    });
-
-    let currentAmenity = null;
-    let currentImageIndex = 0;
-
-    function openAmenityModal(idx) {
-      currentAmenity = amenities[idx];
-      currentImageIndex = 0;
-      renderAmenityModal();
-      document.getElementById('amenityModal').classList.add('active');
-    }
-
-    function openGalleryPhoto(idx) {
-      currentAmenity = galleryPhotos[idx];
-      currentImageIndex = 0;
-      renderAmenityModal();
-      document.getElementById('amenityModal').classList.add('active');
-    }
-
-    function renderAmenityModal() {
-      if (!currentAmenity) return;
-      document.getElementById('amenityModalTitle').textContent = currentAmenity.name;
-      document.getElementById('amenityModalImg').src = currentAmenity.images[currentImageIndex];
-      document.getElementById('amenityModalDesc').textContent = currentAmenity.desc || '';
-      const multi = currentAmenity.images.length > 1;
-      document.getElementById('amenityModalCounter').textContent = multi
-        ? (currentImageIndex + 1) + ' / ' + currentAmenity.images.length
-        : '';
-      document.querySelectorAll('.amenity-nav-btn').forEach(btn => {
-        btn.style.display = multi ? 'flex' : 'none';
-      });
-    }
-
-    function navAmenityImage(dir) {
-      if (!currentAmenity) return;
-      const len = currentAmenity.images.length;
-      currentImageIndex = (currentImageIndex + dir + len) % len;
-      renderAmenityModal();
-    }
-
-    function closeAmenityModal() {
-      document.getElementById('amenityModal').classList.remove('active');
-      currentAmenity = null;
-    }
-
-    document.getElementById('amenityModal').addEventListener('click', function (e) {
-      if (e.target === this) closeAmenityModal();
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (!document.getElementById('amenityModal').classList.contains('active')) return;
-      if (e.key === 'Escape') closeAmenityModal();
-      if (e.key === 'ArrowLeft') navAmenityImage(-1);
-      if (e.key === 'ArrowRight') navAmenityImage(1);
-    });
-
     // Floor Plan Modal
-    let currentFloorPlan = { images: [], labels: [], index: 0 };
-
     function openFloorPlan(type) {
       const modal = document.getElementById('floorplanModal');
+      const modalImg = document.getElementById('floorplanImg');
       const modalType = document.getElementById('floorplanType');
-
-      currentFloorPlan = {
-        images: ['img/' + type + '.png', 'img/planimages_' + type + '.png', 'img/pyposition_' + type + '.png'],
-        labels: ['평면도', '투시도', '타입위치'],
-        index: 0
+      
+      const images = {
+        '51A': '51A.png',
+        '55A': '55A.png',
+        '55B': '55B.png',
+        '59A': '59A.png',
+        '59T': '59T.png'
       };
-
+      
       modalType.textContent = 'Type ' + type;
-      updateFloorPlanImage();
+      modalImg.src = 'img/' + images[type];
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
-    }
-
-    function updateFloorPlanImage() {
-      document.getElementById('floorplanImg').src = currentFloorPlan.images[currentFloorPlan.index];
-      document.getElementById('floorplanCounter').textContent =
-        currentFloorPlan.labels[currentFloorPlan.index] + ' (' + (currentFloorPlan.index + 1) + '/' + currentFloorPlan.images.length + ')';
-    }
-
-    function navFloorPlanImage(dir) {
-      const len = currentFloorPlan.images.length;
-      currentFloorPlan.index = (currentFloorPlan.index + dir + len) % len;
-      updateFloorPlanImage();
     }
 
     function closeFloorPlan() {
@@ -2872,14 +1966,10 @@
     });
 
     document.addEventListener('keydown', function(e) {
-      const floorplanModal = document.getElementById('floorplanModal');
-      if (floorplanModal.style.display !== 'flex') return;
       if (e.key === 'Escape') {
-        floorplanModal.style.display = 'none';
+        document.getElementById('floorplanModal').style.display = 'none';
         document.body.style.overflow = '';
       }
-      if (e.key === 'ArrowLeft') navFloorPlanImage(-1);
-      if (e.key === 'ArrowRight') navFloorPlanImage(1);
     });
 
     // Balance text in a container: insert <br> at evenly-spaced whitespace boundaries
@@ -2965,7 +2055,15 @@
       clearTimeout(_resizeTimer);
       _resizeTimer = setTimeout(balanceHeroLines, 150);
     });
-
   </script>
+
+  <!-- Floor Plan Modal -->
+  <div id="floorplanModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeFloorPlan()">&times;</span>
+      <h3 id="floorplanType">Type</h3>
+      <img id="floorplanImg" src="" alt="평면도">
+    </div>
+  </div>
 </body>
 </html>
