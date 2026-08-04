@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XBMCQDJSZD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XBMCQDJSZD');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자주 묻는 질문 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: var(--beige);
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 15px; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 6px; background: rgba(255,255,255,0.15);
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .top-bar-title { color: var(--white); font-size: 1rem; font-weight: 700; }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+      padding: 50px 20px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-header h1 {
+      position: relative; color: var(--white); font-size: 2rem; font-weight: 900; margin-bottom: 10px;
+    }
+    .page-header p {
+      position: relative; color: rgba(255,255,255,0.7); font-size: 0.95rem;
+    }
+
+    .content-wrap {
+      max-width: 820px; margin: 0 auto; padding: 40px 20px 80px;
+    }
+
+    /* ===== MARKDOWN CARD ===== */
+    .md-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 36px 32px;
+    }
+    .md-card h1 {
+      font-size: 1.6rem; font-weight: 900; color: var(--navy); margin-bottom: 16px;
+    }
+    .md-card h2 {
+      font-size: 1.15rem; font-weight: 900; color: var(--orange-dark);
+      margin: 30px 0 12px; padding-top: 22px; border-top: 1px solid var(--beige-dark);
+    }
+    .md-card h2:first-of-type { padding-top: 0; border-top: none; }
+    .md-card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin: 18px 0 8px; }
+    .md-card p { margin-bottom: 12px; color: var(--dark); }
+    .md-card ul, .md-card ol { margin: 0 0 12px 22px; color: var(--dark); }
+    .md-card li { margin-bottom: 4px; }
+    .md-card a { color: var(--orange); font-weight: 600; text-decoration: none; }
+    .md-card a:hover { text-decoration: underline; }
+    .md-card strong { color: var(--navy); }
+    .md-card blockquote {
+      border-left: 3px solid var(--orange-warm); padding: 4px 16px; margin: 12px 0;
+      color: var(--gray); background: var(--beige); border-radius: 0 8px 8px 0;
+    }
+    .md-card code {
+      background: var(--beige-dark); padding: 2px 6px; border-radius: 4px; font-size: 0.9em;
+    }
+    .md-card hr { border: none; border-top: 1px solid var(--beige-dark); margin: 24px 0; }
+    .md-loading { text-align: center; color: var(--gray); padding: 40px 0; }
+
+    /* ===== EDIT PANEL ===== */
+    .edit-banner {
+      max-width: 820px; margin: 24px auto 0; padding: 0 20px;
+    }
+    .edit-banner-inner {
+      background: rgba(232,98,46,0.1); border: 1px solid rgba(232,98,46,0.3);
+      border-radius: 10px; padding: 12px 16px; font-size: 0.85rem; color: var(--orange-dark);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .edit-card {
+      max-width: 820px; margin: 20px auto 0; padding: 0 20px 40px;
+    }
+    .edit-card-inner {
+      background: var(--white); border-radius: 16px; box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .edit-field { margin-bottom: 16px; }
+    .edit-field label {
+      display: block; font-size: 0.85rem; font-weight: 700; color: var(--navy); margin-bottom: 6px;
+    }
+    .edit-field .hint { font-size: 0.78rem; color: var(--gray); margin-top: 6px; }
+    .edit-field .hint a { color: var(--orange); }
+    .edit-field input[type="password"] {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--beige-dark); border-radius: 8px;
+      font-size: 0.9rem; font-family: monospace;
+    }
+    .edit-field textarea {
+      width: 100%; min-height: 360px; padding: 14px; border: 1px solid var(--beige-dark);
+      border-radius: 8px; font-size: 0.85rem; font-family: 'SF Mono', Consolas, monospace;
+      line-height: 1.6; resize: vertical;
+    }
+    .edit-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--gray); margin-top: 8px; }
+    .edit-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+      border-radius: 8px; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      border: none; transition: all 0.2s ease;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--orange), var(--orange-light)); color: var(--white); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: var(--beige); color: var(--navy); border: 1px solid var(--beige-dark); }
+    .btn-secondary:hover { background: var(--beige-dark); }
+    .btn-danger { background: transparent; color: #c44e1e; border: 1px solid rgba(196,78,30,0.3); }
+    .edit-status { margin-top: 14px; font-size: 0.85rem; padding: 10px 14px; border-radius: 8px; display: none; }
+    .edit-status.show { display: block; }
+    .edit-status.ok { background: rgba(46,160,67,0.12); color: #1e7a30; }
+    .edit-status.err { background: rgba(196,78,30,0.12); color: #c44e1e; }
+    .edit-status.info { background: var(--beige); color: var(--gray); }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--navy-dark); color: rgba(255,255,255,0.5);
+      text-align: center; padding: 25px 20px; font-size: 0.8rem;
+    }
+    .page-footer a { color: var(--orange-warm); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .md-card { padding: 26px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+      <span class="top-bar-title">자주 묻는 질문</span>
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>자주 묻는 질문</h1>
+    <p>입주예정자분들이 자주 궁금해하시는 내용을 정리했습니다</p>
+  </div>
+
+  <div class="content-wrap">
+    <div class="md-card" id="qnaContent">
+      <div class="md-loading"><i class="fas fa-spinner fa-spin"></i> 불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- EDIT MODE (only rendered when ?mode=edit is in the URL) -->
+  <div id="editArea" style="display:none;">
+    <div class="edit-banner">
+      <div class="edit-banner-inner">
+        <i class="fas fa-lock"></i>
+        편집 모드입니다. 이 화면은 URL을 아는 누구나 열어볼 수 있지만, 저장은 이 저장소에 쓰기 권한이 있는 GitHub 토큰이 있어야만 가능합니다.
+      </div>
+    </div>
+    <div class="edit-card">
+      <div class="edit-card-inner">
+        <div class="edit-field">
+          <label for="ghToken">GitHub Personal Access Token</label>
+          <input type="password" id="ghToken" placeholder="ghp_... 또는 github_pat_...">
+          <div class="hint">
+            <a href="https://github.com/settings/tokens?type=beta" target="_blank">Fine-grained token 발급</a> 시
+            <code>ebunfirvil/ebunfirvil.github.io</code> 저장소 하나만 선택하고 Contents 권한을 Read/Write로 설정하세요.
+          </div>
+          <label class="edit-checkbox">
+            <input type="checkbox" id="rememberToken" checked>
+            이 브라우저에 토큰 저장 (localStorage)
+          </label>
+        </div>
+
+        <div class="edit-field">
+          <label for="mdEditor">내용 (Markdown)</label>
+          <textarea id="mdEditor" spellcheck="false" placeholder="불러오는 중..."></textarea>
+        </div>
+
+        <div class="edit-actions">
+          <button class="btn btn-secondary" id="btnPreview"><i class="fas fa-eye"></i> 미리보기</button>
+          <button class="btn btn-primary" id="btnSave"><i class="fas fa-cloud-upload-alt"></i> GitHub에 저장</button>
+          <button class="btn btn-danger" id="btnClearToken"><i class="fas fa-trash"></i> 저장된 토큰 삭제</button>
+        </div>
+
+        <div class="edit-status" id="editStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
+  </div>
+
+  <script>
+    const REPO_OWNER = 'ebunfirvil';
+    const REPO_NAME = 'ebunfirvil.github.io';
+    const FILE_PATH = 'qna-data.md';
+    const BRANCH = 'main';
+    const TOKEN_STORAGE_KEY = 'qna_gh_pat';
+
+    const qnaContent = document.getElementById('qnaContent');
+    const isEditMode = new URLSearchParams(location.search).get('mode') === 'edit';
+
+    function b64DecodeUnicode(b64) {
+      const binary = atob(b64.replace(/\n/g, ''));
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return new TextDecoder('utf-8').decode(bytes);
+    }
+    function b64EncodeUnicode(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return btoa(binary);
+    }
+
+    function renderMarkdown(md) {
+      qnaContent.innerHTML = marked.parse(md);
+    }
+
+    let currentSha = null;
+
+    async function loadQna() {
+      try {
+        const res = await fetch(
+          `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}&t=${Date.now()}`,
+          { headers: { 'Accept': 'application/vnd.github+json' } }
+        );
+        if (!res.ok) throw new Error('GitHub API 응답 오류: ' + res.status);
+        const data = await res.json();
+        currentSha = data.sha;
+        const md = b64DecodeUnicode(data.content);
+        renderMarkdown(md);
+        if (isEditMode) document.getElementById('mdEditor').value = md;
+      } catch (err) {
+        // 폴백: GitHub API 실패 시 정적 파일을 직접 fetch (sha는 얻을 수 없으므로 저장은 재시도 필요)
+        try {
+          const res2 = await fetch(FILE_PATH + '?t=' + Date.now());
+          const md2 = await res2.text();
+          renderMarkdown(md2);
+          if (isEditMode) document.getElementById('mdEditor').value = md2;
+        } catch (err2) {
+          qnaContent.innerHTML = '<p style="color:#c44e1e;">내용을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</p>';
+        }
+      }
+    }
+
+    loadQna();
+
+    if (isEditMode) {
+      document.getElementById('editArea').style.display = 'block';
+
+      const tokenInput = document.getElementById('ghToken');
+      const savedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (savedToken) tokenInput.value = savedToken;
+
+      const statusEl = document.getElementById('editStatus');
+      function setStatus(msg, type) {
+        statusEl.textContent = msg;
+        statusEl.className = 'edit-status show ' + type;
+      }
+
+      let previewing = false;
+      document.getElementById('btnPreview').addEventListener('click', () => {
+        const editor = document.getElementById('mdEditor');
+        previewing = !previewing;
+        if (previewing) {
+          renderMarkdown(editor.value);
+          editor.style.display = 'none';
+          document.getElementById('btnPreview').innerHTML = '<i class="fas fa-code"></i> 편집으로 돌아가기';
+        } else {
+          editor.style.display = 'block';
+          document.getElementById('btnPreview').innerHTML = '<i class="fas fa-eye"></i> 미리보기';
+        }
+      });
+
+      document.getElementById('btnClearToken').addEventListener('click', () => {
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        tokenInput.value = '';
+        setStatus('저장된 토큰을 삭제했습니다.', 'info');
+      });
+
+      document.getElementById('btnSave').addEventListener('click', async () => {
+        const token = tokenInput.value.trim();
+        const remember = document.getElementById('rememberToken').checked;
+        const md = document.getElementById('mdEditor').value;
+
+        if (!token) {
+          setStatus('GitHub 토큰을 입력해야 저장할 수 있습니다.', 'err');
+          return;
+        }
+        if (!currentSha) {
+          setStatus('현재 파일 버전을 확인하지 못했습니다. 새로고침 후 다시 시도해주세요.', 'err');
+          return;
+        }
+
+        const btn = document.getElementById('btnSave');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 저장 중...';
+        setStatus('저장 중입니다...', 'info');
+
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Accept': 'application/vnd.github+json',
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: 'FAQ 업데이트 (qna.html 편집모드)',
+                content: b64EncodeUnicode(md),
+                sha: currentSha,
+                branch: BRANCH
+              })
+            }
+          );
+
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}));
+            if (res.status === 401 || res.status === 403) {
+              throw new Error('토큰이 유효하지 않거나 이 저장소에 쓰기 권한이 없습니다.');
+            }
+            if (res.status === 409) {
+              throw new Error('다른 곳에서 먼저 저장되어 충돌이 발생했습니다. 새로고침 후 다시 시도해주세요.');
+            }
+            throw new Error(errBody.message || ('저장 실패: ' + res.status));
+          }
+
+          const data = await res.json();
+          currentSha = data.content.sha;
+
+          if (remember) {
+            localStorage.setItem(TOKEN_STORAGE_KEY, token);
+          } else {
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+          }
+
+          setStatus('저장되었습니다! GitHub Pages 캐시 특성상 실제 화면 반영까지 최대 10분 정도 걸릴 수 있습니다.', 'ok');
+          if (previewing) renderMarkdown(md);
+        } catch (err) {
+          setStatus(err.message, 'err');
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> GitHub에 저장';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
