@@ -6,7 +6,9 @@
 
 >인증에 사용되는 이미지는 동/호수가 나오도록 해주세요.
 
->인증시 사용되는 경로는 다음과 같습니다. [LH청약플러스](https://apply.lh.or.kr) > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 
+>인증시 사용되는 경로는 다음과 같습니다. 
+
+>[LH청약플러스](https://apply.lh.or.kr) > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 [바로가기](https://apply.lh.or.kr/lhapply/apply/pr/przwin/selectPrzwinRdList.do?mi=1110)
 
 >업로드는 이미지 파일만 가능합니다.
 >[인증 링크](https://forms.gle/bBe4odMSAsrq93Ac8)
