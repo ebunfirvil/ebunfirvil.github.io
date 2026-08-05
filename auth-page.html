@@ -117,7 +117,8 @@
       display: block; font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 7px;
     }
     .form-field label .req { color: var(--orange); margin-left: 2px; }
-    .form-field label .optional-tag {
+    .form-field label .optional-tag,
+    .form-field label .field-note {
       font-weight: 400; color: var(--gray); font-size: 0.78rem; margin-left: 4px;
     }
     .form-field input[type="text"],
@@ -293,8 +294,10 @@
         </div>
 
         <div class="form-field">
-          <label for="naverId">네이버ID<span class="req">*</span></label>
-          <input type="text" id="naverId" name="naverId" required placeholder="네이버 카페 아이디">
+          <label for="naverId">네이버ID<span class="req">*</span><span class="field-note">(닉네임이 아닌 계정명입니다.)</span></label>
+          <input type="text" id="naverId" name="naverId" required placeholder="네이버 카페 아이디"
+            pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
+            title="한글은 입력할 수 없습니다">
         </div>
       </fieldset>
 
@@ -443,6 +446,14 @@
     const submitStatus = document.getElementById('submitStatus');
     const submitStatusText = document.getElementById('submitStatusText');
 
+    // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다
+    const naverIdInput = document.getElementById('naverId');
+    const HANGUL_RE = /[ᄀ-ᇿ㄰-㆏가-힣]/g;
+    naverIdInput.addEventListener('input', () => {
+      const filtered = naverIdInput.value.replace(HANGUL_RE, '');
+      if (filtered !== naverIdInput.value) naverIdInput.value = filtered;
+    });
+
     let selectedFile = null;
     let lastOcrName = ''; // 표시용(참고용) — 이름은 폼 필드가 없으므로 별도 보관
     let ocrFailCount = 0;
@@ -537,11 +548,9 @@
 
       if (success) {
         ocrFailCount = 0;
-        lastOcrName = result.name;
+        lastOcrName = result.name; // 화면에는 표시하지 않고 제출 데이터(관리자 참고용)에만 담아 보냄
         ocrTitleText.textContent = '자동 인식 완료';
-        ocrResultRows.innerHTML = `
-          <div class="ocr-row"><span>이름 (참고용)</span><span>${escapeHtml(result.name || '판독 안 됨')}</span></div>
-        `;
+        ocrResultRows.innerHTML = '';
         // 이미 직접입력이 풀린 뒤라면(3회 실패 후 다시 시도해 성공한 경우) 사용자가 입력해둔 값을 덮어쓰지 않는다
         if (manualEntryUnlocked) {
           if (!receiptNoInput.value.trim()) receiptNoInput.value = result.receipt_no;
@@ -570,10 +579,6 @@
           );
         }
       }
-    }
-
-    function escapeHtml(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     imageInput.addEventListener('change', () => {
