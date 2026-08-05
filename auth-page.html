@@ -387,14 +387,16 @@
 
   <script>
     // ── 배포 시 채워야 할 값 ──────────────────────────────────────────────
-    // OCR_API_URL: 192.168.1.3 홈서버 OCR 엔드포인트. 배포 시엔 chat.html의 API_URL과
-    // 동일하게 Cloudflare Tunnel 공개 HTTPS 호스트명이어야 함(사설 IP/http는 Mixed Content로
-    // 브라우저가 차단함). auth-page.html?mode=test 로 열면 같은 LAN 안에서 192.168.1.3에
-    // 직접 연결해 테스트할 수 있음(배포용 URL은 그대로 두고 켜고 끌 수 있게 분리).
+    // OCR_API_URL: 192.168.1.3 홈서버 OCR 엔드포인트.
+    // chat.html의 API_URL(Cloudflare Quick Tunnel)과는 다른 경로를 쓴다 — Cloudflare Quick
+    // Tunnel은 100초 하드 타임아웃이 있어 OCR(9~125초+ 소요)에는 자주 524로 끊긴다.
+    // 대신 Synology NAS(leeopklop.synology.me) 리버스 프록시(→192.168.1.3:8000, 타임아웃 300초로
+    // 늘려둠)를 거치도록 전용 경로를 만들었다(2026-08-05). chat.html은 그대로 Cloudflare 유지.
+    // auth-page.html?mode=test 로 열면 같은 LAN 안에서 192.168.1.3에 직접 연결해 테스트 가능.
     const IS_TEST_MODE = new URLSearchParams(location.search).get('mode') === 'test';
     const OCR_API_URL = IS_TEST_MODE
       ? 'http://192.168.1.3:8000/api/auth-page/ocr'
-      : 'https://mind-reg-split-precise.trycloudflare.com/api/auth-page/ocr';
+      : 'https://leeopklop.synology.me:7000/api/auth-page/ocr';
 
     // SUBMIT_URL: Google Apps Script Web App 배포 URL(.../exec). 이미지(base64) + 폼필드 +
     // submission_id를 이 URL 한 곳으로만 전송하며, Drive 업로드+Sheets 기록을 전담함.
