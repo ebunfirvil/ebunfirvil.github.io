@@ -1,0 +1,27 @@
+# 192.168.1.4 — OCR 보조 서버 (우선 순위 1순위)
+
+기존 192.168.1.3 서버와 별개로, 성능이 더 좋은 두 번째 Mac(192.168.1.4)에 OCR 전용 서버를 하나 더 세웠다. `auth-page.html`은 이 서버를 **먼저** 시도하고, 통신이 안 되면 192.168.1.3으로 자동 폴백한다.
+
+192.168.1.3의 `rag-server`(RAG 챗봇용 FastAPI, `main.py`)와 달리, 이 서버는 OCR 기능만 있는 완전히 독립된 최소 구성이다 — 기존 인프라에 얹는 게 아니라 이 기기에 새로 하나 띄운 것.
+
+## 구성
+- 코드: `server.py` (이 디렉터리, `~/ocr-server/server.py`에도 동일 파일 배치됨)
+- 가상환경: `~/ocr-server/venv/` (fastapi, uvicorn, python-multipart, ollama)
+- 모델: `qwen3-vl:8b` (192.168.1.3과 동일 모델, 동일 프롬프트 — 결과 일관성을 위해 맞춤)
+- 포트: **8001** (8000번은 이 기기에서 Docker가 이미 사용 중이라 회피)
+- 외부 노출: 시놀로지 NAS(`leeopklop.synology.me`) 리버스 프록시, 소스 포트 **7001** → 대상 `192.168.1.4:8001`
+
+## 서버 실행
+```bash
+cd ~/ocr-server
+nohup venv/bin/python3 server.py > server.log 2>&1 &
+```
+
+## 상태 확인
+```bash
+curl http://192.168.1.4:8001/health
+curl -F "image=@테스트이미지.jpg" http://192.168.1.4:8001/api/auth-page/ocr
+```
+
+## 프론트엔드 연동
+`auth-page.html`은 `OCR_API_URL_PRIMARY`(이 서버, 7001)를 먼저 시도하고, 실패(타임아웃/네트워크 오류/5xx)하면 `OCR_API_URL_FALLBACK`(192.168.1.3, 7000)으로 자동 재시도한다.
