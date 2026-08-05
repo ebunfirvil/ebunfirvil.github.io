@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1785552235761,
+  "lastScanned": 1785807540669,
   "projectRoot": "/Users/leeopklop/e-park-hansang-bundang",
   "techStack": {
     "languages": [],
@@ -36,7 +36,7 @@
       "path": "_archive",
       "purpose": null,
       "fileCount": 9,
-      "lastAccessed": 1785552235751,
+      "lastAccessed": 1785807540659,
       "keyFiles": [
         "INDEX_STRUCTURE.md",
         "README-structure.md",
@@ -49,7 +49,7 @@
       "path": "img",
       "purpose": null,
       "fileCount": 38,
-      "lastAccessed": 1785552235752,
+      "lastAccessed": 1785807540659,
       "keyFiles": [
         "51A.png",
         "55A.png",
@@ -61,15 +61,111 @@
   },
   "hotPaths": [
     {
+      "path": "auth-page.html",
+      "accessCount": 57,
+      "lastAccessed": 1785899318084,
+      "type": "file"
+    },
+    {
       "path": "index.html",
-      "accessCount": 40,
-      "lastAccessed": 1785552483727,
+      "accessCount": 49,
+      "lastAccessed": 1785898550554,
+      "type": "file"
+    },
+    {
+      "path": "backend/rag-server/ocr_endpoint_addition.py",
+      "accessCount": 10,
+      "lastAccessed": 1785888397262,
+      "type": "file"
+    },
+    {
+      "path": "backend/apps-script/Code.gs",
+      "accessCount": 9,
+      "lastAccessed": 1785893481414,
       "type": "file"
     },
     {
       "path": "index_test.html",
       "accessCount": 8,
       "lastAccessed": 1785139432567,
+      "type": "file"
+    },
+    {
+      "path": "chat.html",
+      "accessCount": 5,
+      "lastAccessed": 1785876883363,
+      "type": "file"
+    },
+    {
+      "path": "backend/apps-script/README.md",
+      "accessCount": 5,
+      "lastAccessed": 1785893352617,
+      "type": "file"
+    },
+    {
+      "path": "location.html",
+      "accessCount": 3,
+      "lastAccessed": 1785807737101,
+      "type": "file"
+    },
+    {
+      "path": "contract-documents.html",
+      "accessCount": 3,
+      "lastAccessed": 1785851084455,
+      "type": "file"
+    },
+    {
+      "path": "apply-documents.html",
+      "accessCount": 3,
+      "lastAccessed": 1785851084692,
+      "type": "file"
+    },
+    {
+      "path": "apply-precautions.html",
+      "accessCount": 3,
+      "lastAccessed": 1785851096005,
+      "type": "file"
+    },
+    {
+      "path": "backend/rag-server/README.md",
+      "accessCount": 3,
+      "lastAccessed": 1785878308606,
+      "type": "file"
+    },
+    {
+      "path": "modelhouse.html",
+      "accessCount": 2,
+      "lastAccessed": 1785717735992,
+      "type": "file"
+    },
+    {
+      "path": "system.html",
+      "accessCount": 2,
+      "lastAccessed": 1785717738909,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 2,
+      "lastAccessed": 1785851075926,
+      "type": "file"
+    },
+    {
+      "path": "qna.html",
+      "accessCount": 2,
+      "lastAccessed": 1785876854437,
+      "type": "file"
+    },
+    {
+      "path": "qna-data.md",
+      "accessCount": 1,
+      "lastAccessed": 1785807797949,
+      "type": "file"
+    },
+    {
+      "path": "IMG_0977.PNG",
+      "accessCount": 1,
+      "lastAccessed": 1785897556532,
       "type": "file"
     }
   ],

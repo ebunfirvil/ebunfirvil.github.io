@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"export SSHPASS='qwer!@#$1'\\nsshpass -e scp /private/tmp/claude-501/-Users-leeopklop-e-park-hansang-bundang/30c891db-2613-4328-a926-46e5a5e05b0e/scratchpad/fix_prompt3.py jibdol@192.168.1.3...",
+  "error": "Exit code 2\nPermission denied, please try again.\r\nPermission denied, please try again.\r\nReceived disconnect from 192.168.1.3 port 22:2: Too many authentication failures\r\nDisconnected from 192.168.1.3 port 22\r\nscp: Connection closed\r\n/Users/jibdol/rag-server/venv/bin/python3: can't open file '/tmp/fix_prompt3.py': [Errno 2] No such file or directory",
+  "timestamp": "2026-08-05T02:34:30.077Z",
+  "retry_count": 1
+}

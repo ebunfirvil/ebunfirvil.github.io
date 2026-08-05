@@ -1,0 +1,10 @@
+{
+  "active": false,
+  "current_phase": "consensus-approved-pending-execution-approval",
+  "_meta": {
+    "mode": "ralplan",
+    "sessionId": "30c891db-2613-4328-a926-46e5a5e05b0e",
+    "updatedAt": "2026-08-04T20:28:53.017Z",
+    "updatedBy": "state_write_tool"
+  }
+}
