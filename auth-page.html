@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XBMCQDJSZD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XBMCQDJSZD');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>LH 청약 당첨자 인증 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e;
+      --orange-light: #f08850;
+      --orange-dark: #c44e1e;
+      --orange-warm: #ff9a56;
+      --navy: #1a3a5c;
+      --navy-light: #2a5a8c;
+      --navy-dark: #0d1b2a;
+      --beige: #fdf8f5;
+      --beige-dark: #f5efe8;
+      --beige-warm: #f0e6d8;
+      --dark: #2c1810;
+      --gray: #6b5b52;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1);
+      --shadow-lg: 0 8px 40px rgba(26,58,92,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #333;
+      line-height: 1.8;
+      background: var(--beige);
+    }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .top-bar-left { display: flex; align-items: center; gap: 15px; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      padding: 6px 14px; border-radius: 6px; background: rgba(255,255,255,0.15);
+      transition: all 0.3s ease;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .top-bar-title { color: var(--white); font-size: 1rem; font-weight: 700; }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+      padding: 50px 20px 40px; text-align: center; position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-header h1 {
+      position: relative; color: var(--white); font-size: 1.9rem; font-weight: 900; margin-bottom: 10px;
+    }
+    .page-header p {
+      position: relative; color: rgba(255,255,255,0.75); font-size: 0.92rem; max-width: 560px; margin: 0 auto;
+    }
+
+    .content-wrap {
+      max-width: 720px; margin: 0 auto; padding: 32px 20px 80px;
+    }
+
+    .notice-banner {
+      background: linear-gradient(135deg, rgba(26,58,92,0.06), rgba(232,98,46,0.06));
+      border: 1px solid var(--beige-warm);
+      border-left: 4px solid var(--orange);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+      color: var(--gray);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .notice-banner i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
+
+    /* ===== FORM CARD ===== */
+    .form-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 32px 28px;
+    }
+    .form-field { margin-bottom: 20px; }
+    .form-field label {
+      display: block; font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 7px;
+    }
+    .form-field label .req { color: var(--orange); margin-left: 2px; }
+    .form-field label .optional-tag {
+      font-weight: 400; color: var(--gray); font-size: 0.78rem; margin-left: 4px;
+    }
+    .form-field input[type="text"],
+    .form-field input[type="email"],
+    .form-field select {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--beige-warm); border-radius: 8px;
+      font-size: 0.92rem; font-family: 'Noto Sans KR', sans-serif; background: var(--beige);
+      color: var(--dark); outline: none; transition: border-color 0.2s;
+    }
+    .form-field input[type="text"]:focus,
+    .form-field input[type="email"]:focus,
+    .form-field select:focus { border-color: var(--orange); background: var(--white); }
+    .form-field input[readonly],
+    .form-field select.locked { background: var(--beige-dark); color: var(--gray); cursor: not-allowed; }
+    .form-field select.locked { pointer-events: none; background-image: none; }
+    .form-field select { appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b5b52' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
+      padding-right: 40px;
+    }
+    .form-field .hint { font-size: 0.78rem; color: var(--gray); margin-top: 6px; }
+
+    .file-drop {
+      border: 2px dashed var(--beige-warm); border-radius: 10px; padding: 24px 16px;
+      text-align: center; background: var(--beige); cursor: pointer; transition: border-color 0.2s;
+    }
+    .file-drop:hover { border-color: var(--orange); }
+    .file-drop i { font-size: 1.6rem; color: var(--orange); margin-bottom: 8px; display: block; }
+    .file-drop .file-drop-text { font-size: 0.88rem; color: var(--gray); }
+    .file-drop input[type="file"] { display: none; }
+    .file-preview { margin-top: 12px; text-align: center; }
+    .file-preview img { max-width: 100%; max-height: 220px; border-radius: 8px; box-shadow: var(--shadow); }
+    .file-preview .file-name { font-size: 0.82rem; color: var(--gray); margin-top: 8px; }
+
+    .ocr-box {
+      margin-top: 14px; padding: 14px 16px; border-radius: 10px;
+      background: rgba(26,58,92,0.05); border: 1px solid var(--beige-warm);
+      font-size: 0.85rem; display: none;
+    }
+    .ocr-box.show { display: block; }
+    .ocr-box .ocr-title { font-weight: 700; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .ocr-box .ocr-row { display: flex; justify-content: space-between; padding: 3px 0; color: var(--dark); }
+    .ocr-box .ocr-row span:first-child { color: var(--gray); }
+    .ocr-box.loading .ocr-title i { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .ocr-fail-warning {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      background: rgba(196,78,30,0.1); color: var(--orange-dark); font-size: 0.82rem;
+      display: none; align-items: flex-start; gap: 8px;
+    }
+    .ocr-fail-warning.show { display: flex; }
+    .ocr-fail-warning i { margin-top: 2px; flex-shrink: 0; }
+
+    .size-error {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      background: rgba(196,78,30,0.12); color: #c44e1e; font-size: 0.82rem;
+      display: none; align-items: flex-start; gap: 8px;
+    }
+    .size-error.show { display: flex; }
+
+    fieldset { border: none; margin: 0 0 26px; padding: 0; }
+    legend {
+      font-size: 0.78rem; font-weight: 700; color: var(--orange-dark); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--beige-dark);
+      width: 100%;
+    }
+
+    .submit-actions { margin-top: 8px; }
+    .btn-submit {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 15px 20px; border-radius: 10px; font-size: 0.98rem; font-weight: 700; cursor: pointer;
+      border: none; color: var(--white);
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      transition: all 0.2s ease;
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+    .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+    .submit-status {
+      margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 0.88rem;
+      display: none; align-items: flex-start; gap: 10px;
+    }
+    .submit-status.show { display: flex; }
+    .submit-status.ok { background: rgba(46,160,67,0.12); color: #1e7a30; }
+    .submit-status.err { background: rgba(196,78,30,0.12); color: #c44e1e; }
+    .submit-status.info { background: var(--beige-dark); color: var(--gray); }
+    .submit-status i { margin-top: 2px; flex-shrink: 0; }
+
+    /* ===== FOOTER ===== */
+    .page-footer {
+      background: var(--navy-dark); color: rgba(255,255,255,0.5);
+      text-align: center; padding: 25px 20px; font-size: 0.8rem;
+    }
+    .page-footer a { color: var(--orange-warm); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .form-card { padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+      <span class="top-bar-title">당첨자 인증</span>
+    </div>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>LH 청약 당첨자 인증</h1>
+    <p>당첨 화면 캡쳐 이미지와 정보를 제출해 주세요. 제출된 원본 이미지는 관리자가 육안으로 최종 확인합니다.</p>
+  </div>
+
+  <div class="content-wrap">
+
+    <div class="notice-banner">
+      <i class="fas fa-info-circle"></i>
+      <span>인증샷을 업로드하면 접수번호·호수를 사진에서 자동으로 인식해 채워드립니다(2~3분 정도 걸릴 수 있습니다). 자동 인식이 3회 연속 실패하면 직접 입력할 수 있게 됩니다. 최종 확인은 제출된 원본 사진으로 관리자가 진행합니다.</span>
+    </div>
+
+    <form class="form-card" id="authForm" novalidate>
+
+      <fieldset>
+        <legend>제출자 정보</legend>
+
+        <div class="form-field">
+          <label for="imageInput">인증샷 업로드<span class="req">*</span></label>
+          <label class="file-drop" for="imageInput">
+            <i class="fas fa-camera"></i>
+            <div class="file-drop-text">당첨 화면 캡쳐 이미지를 선택하세요 (jpg/png/heic, 최대 10MB)</div>
+            <input type="file" id="imageInput" name="image" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" required>
+          </label>
+          <div class="file-preview" id="filePreview" style="display:none;">
+            <img id="filePreviewImg" alt="업로드한 이미지 미리보기">
+            <div class="file-name" id="fileNameLabel"></div>
+          </div>
+          <div class="size-error" id="sizeError">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>이미지 용량이 10MB를 초과합니다. 더 작은 용량의 이미지를 선택해 주세요.</span>
+          </div>
+          <div class="ocr-box" id="ocrBox">
+            <div class="ocr-title"><i class="fas fa-spinner"></i> <span id="ocrTitleText">자동 판독 중... (2~3분 정도 걸릴 수 있습니다)</span></div>
+            <div id="ocrResultRows"></div>
+          </div>
+          <div class="ocr-fail-warning" id="ocrFailWarning">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span id="ocrFailText"></span>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="email">이메일<span class="req">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="example@email.com">
+        </div>
+
+        <div class="form-field">
+          <label for="applyType">청약구분<span class="req">*</span></label>
+          <select id="applyType" name="applyType" required>
+            <option value="" disabled selected>선택해 주세요</option>
+            <option value="사전청약당첨자">사전청약당첨자</option>
+            <option value="본청약당첨자">본청약당첨자</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="kakaoNick">카톡방닉네임<span class="req">*</span></label>
+          <input type="text" id="kakaoNick" name="kakaoNick" required placeholder="카카오톡 오픈채팅방 닉네임">
+        </div>
+
+        <div class="form-field">
+          <label for="naverId">네이버ID<span class="req">*</span></label>
+          <input type="text" id="naverId" name="naverId" required placeholder="네이버 카페 아이디">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>배우자 정보 (선택)</legend>
+
+        <div class="form-field">
+          <label for="spouseNick">배우자닉네임<span class="optional-tag">(선택)</span></label>
+          <input type="text" id="spouseNick" name="spouseNick" placeholder="배우자 카톡방닉네임 (해당 시)">
+        </div>
+
+        <div class="form-field">
+          <label for="spouseRole">배우자구분<span class="optional-tag">(선택)</span></label>
+          <select id="spouseRole" name="spouseRole">
+            <option value="" selected>선택 안 함</option>
+            <option value="남편">남편</option>
+            <option value="아내">아내</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>자동 인식 정보 (인증샷에서 자동으로 채워집니다)</legend>
+
+        <div class="form-field">
+          <label for="receiptNo">접수번호 (6자리)<span class="req">*</span></label>
+          <input type="text" id="receiptNo" name="receiptNo" required readonly
+            inputmode="numeric" pattern="\d{6}" maxlength="6" placeholder="인증샷 업로드 시 자동으로 채워집니다">
+          <div class="hint" id="receiptNoHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 채워집니다.</div>
+        </div>
+
+        <div class="form-field">
+          <label for="houseType">주택형<span class="req">*</span></label>
+          <select id="houseType" name="houseType" required class="locked" tabindex="-1">
+            <option value="" disabled selected>인증샷 업로드 시 자동으로 선택됩니다</option>
+            <option value="51A">51A</option>
+            <option value="55A">55A</option>
+            <option value="55B">55B</option>
+            <option value="59A">59A</option>
+            <option value="59T">59T</option>
+          </select>
+          <div class="hint" id="houseTypeHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.</div>
+        </div>
+
+        <div class="form-field">
+          <label for="building">당첨동<span class="req">*</span></label>
+          <select id="building" name="building" required class="locked" tabindex="-1">
+            <option value="" disabled selected>인증샷 업로드 시 자동으로 선택됩니다</option>
+            <option value="101동">101동</option>
+            <option value="102동">102동</option>
+            <option value="103동">103동</option>
+            <option value="104동">104동</option>
+            <option value="105동">105동</option>
+            <option value="106동">106동</option>
+            <option value="107동">107동</option>
+            <option value="108동">108동</option>
+            <option value="109동">109동</option>
+            <option value="110동">110동</option>
+            <option value="111동">111동</option>
+            <option value="112동">112동</option>
+          </select>
+          <div class="hint" id="buildingHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.</div>
+        </div>
+
+        <div class="form-field">
+          <label for="unitNo">호수<span class="req">*</span></label>
+          <input type="text" id="unitNo" name="unitNo" required readonly placeholder="인증샷 업로드 시 자동으로 채워집니다">
+          <div class="hint" id="unitNoHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 채워집니다.</div>
+        </div>
+      </fieldset>
+
+      <div class="submit-actions">
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> 제출하기
+        </button>
+        <div class="submit-status" id="submitStatus">
+          <i class="fas"></i>
+          <span id="submitStatusText"></span>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
+  </div>
+
+  <script>
+    // ── 배포 시 채워야 할 값 ──────────────────────────────────────────────
+    // OCR_API_URL: 192.168.1.3 홈서버 OCR 엔드포인트. 배포 시엔 chat.html의 API_URL과
+    // 동일하게 Cloudflare Tunnel 공개 HTTPS 호스트명이어야 함(사설 IP/http는 Mixed Content로
+    // 브라우저가 차단함). auth-page.html?mode=test 로 열면 같은 LAN 안에서 192.168.1.3에
+    // 직접 연결해 테스트할 수 있음(배포용 URL은 그대로 두고 켜고 끌 수 있게 분리).
+    const IS_TEST_MODE = new URLSearchParams(location.search).get('mode') === 'test';
+    const OCR_API_URL = IS_TEST_MODE
+      ? 'http://192.168.1.3:8000/api/auth-page/ocr'
+      : 'https://mind-reg-split-precise.trycloudflare.com/api/auth-page/ocr';
+
+    // SUBMIT_URL: Google Apps Script Web App 배포 URL(.../exec). 이미지(base64) + 폼필드 +
+    // submission_id를 이 URL 한 곳으로만 전송하며, Drive 업로드+Sheets 기록을 전담함.
+    const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
+    // ──────────────────────────────────────────────────────────────────────
+
+    const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
+    // 실측 기준(192.168.1.3, qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초.
+    // 여유를 더 두기 위해 200초로 설정(2026-08-05 실측 후 조정).
+    const OCR_TIMEOUT_MS = 200000;
+
+    const submissionId = (crypto.randomUUID ? crypto.randomUUID() :
+      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      }));
+
+    const form = document.getElementById('authForm');
+    const imageInput = document.getElementById('imageInput');
+    const filePreview = document.getElementById('filePreview');
+    const filePreviewImg = document.getElementById('filePreviewImg');
+    const fileNameLabel = document.getElementById('fileNameLabel');
+    const sizeError = document.getElementById('sizeError');
+    const ocrBox = document.getElementById('ocrBox');
+    const ocrTitleText = document.getElementById('ocrTitleText');
+    const ocrResultRows = document.getElementById('ocrResultRows');
+    const ocrFailWarning = document.getElementById('ocrFailWarning');
+    const ocrFailText = document.getElementById('ocrFailText');
+    const receiptNoInput = document.getElementById('receiptNo');
+    const unitNoInput = document.getElementById('unitNo');
+    const receiptNoHint = document.getElementById('receiptNoHint');
+    const unitNoHint = document.getElementById('unitNoHint');
+    const houseTypeSelect = document.getElementById('houseType');
+    const buildingSelect = document.getElementById('building');
+    const houseTypeHint = document.getElementById('houseTypeHint');
+    const buildingHint = document.getElementById('buildingHint');
+    const VALID_HOUSE_TYPES = new Set(['51A', '55A', '55B', '59A', '59T']);
+    const VALID_BUILDINGS = new Set(
+      Array.from({ length: 12 }, (_, i) => (101 + i) + '동')
+    );
+    const submitBtn = document.getElementById('submitBtn');
+    const submitStatus = document.getElementById('submitStatus');
+    const submitStatusText = document.getElementById('submitStatusText');
+
+    let selectedFile = null;
+    let lastOcrName = ''; // 표시용(참고용) — 이름은 폼 필드가 없으므로 별도 보관
+    let ocrFailCount = 0;
+    const OCR_FAIL_LIMIT = 3;
+    let manualEntryUnlocked = false; // 3회 연속 인식 실패 전까지는 접수번호/주택형/당첨동/호수 전부 잠금
+
+    function setSubmitStatus(msg, type, iconClass) {
+      submitStatus.className = 'submit-status show ' + type;
+      submitStatus.querySelector('i').className = 'fas ' + iconClass;
+      submitStatusText.textContent = msg;
+    }
+    function clearSubmitStatus() {
+      submitStatus.className = 'submit-status';
+    }
+
+    function setOcrFailMessage(msg) {
+      if (!msg) { ocrFailWarning.classList.remove('show'); return; }
+      ocrFailText.textContent = msg;
+      ocrFailWarning.classList.add('show');
+    }
+
+    function unlockManualEntry() {
+      if (manualEntryUnlocked) return;
+      manualEntryUnlocked = true;
+
+      receiptNoInput.readOnly = false;
+      unitNoInput.readOnly = false;
+      receiptNoInput.placeholder = '예: 123456';
+      unitNoInput.placeholder = '예: 1502';
+
+      houseTypeSelect.classList.remove('locked');
+      houseTypeSelect.removeAttribute('tabindex');
+      buildingSelect.classList.remove('locked');
+      buildingSelect.removeAttribute('tabindex');
+
+      const msg = '자동 인식에 3회 실패해 직접 입력·선택이 가능합니다. 사진을 보고 정확히 입력해 주세요.';
+      receiptNoHint.textContent = msg;
+      unitNoHint.textContent = msg;
+      houseTypeHint.textContent = msg;
+      buildingHint.textContent = msg;
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function runOcrPreview(file) {
+      ocrBox.classList.add('show', 'loading');
+      ocrTitleText.textContent = '자동 판독 중... (2~3분 정도 걸릴 수 있습니다)';
+      ocrResultRows.innerHTML = '';
+      setOcrFailMessage('');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
+
+      let result = null;
+      try {
+        const fd = new FormData();
+        fd.append('image', file);
+        const res = await fetch(OCR_API_URL, {
+          method: 'POST',
+          body: fd,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error('OCR 서버 오류: ' + res.status);
+        const data = await res.json();
+        result = {
+          name: data.name || '',
+          receipt_no: data.receipt_no || '',
+          unit_no: data.unit_no || '',
+          house_type: data.house_type || '',
+          building: data.building || ''
+        };
+      } catch (err) {
+        clearTimeout(timeoutId);
+        result = null;
+      }
+
+      ocrBox.classList.remove('loading');
+
+      // 접수번호·주택형·당첨동·호수 네 가지가 전부 읽혀야 "성공"으로 취급한다.
+      // 넷 다 잠겨있는 필드라, 하나라도 못 채우면 제출 자체가 막히므로 재시도를 유도해야 한다.
+      const houseTypeOk = VALID_HOUSE_TYPES.has(result && result.house_type);
+      const buildingOk = VALID_BUILDINGS.has(result && result.building);
+      const success = !!(result && result.receipt_no && result.unit_no && houseTypeOk && buildingOk);
+
+      if (success) {
+        ocrFailCount = 0;
+        lastOcrName = result.name;
+        ocrTitleText.textContent = '자동 인식 완료';
+        ocrResultRows.innerHTML = `
+          <div class="ocr-row"><span>이름 (참고용)</span><span>${escapeHtml(result.name || '판독 안 됨')}</span></div>
+        `;
+        // 이미 직접입력이 풀린 뒤라면(3회 실패 후 다시 시도해 성공한 경우) 사용자가 입력해둔 값을 덮어쓰지 않는다
+        if (manualEntryUnlocked) {
+          if (!receiptNoInput.value.trim()) receiptNoInput.value = result.receipt_no;
+          if (!unitNoInput.value.trim()) unitNoInput.value = result.unit_no;
+          if (!houseTypeSelect.value) houseTypeSelect.value = result.house_type;
+          if (!buildingSelect.value) buildingSelect.value = result.building;
+        } else {
+          receiptNoInput.value = result.receipt_no;
+          unitNoInput.value = result.unit_no;
+          houseTypeSelect.value = result.house_type;
+          buildingSelect.value = result.building;
+        }
+        setOcrFailMessage('');
+      } else {
+        ocrFailCount++;
+        ocrTitleText.textContent = '자동 인식 실패';
+        ocrResultRows.innerHTML = '';
+        if (ocrFailCount < OCR_FAIL_LIMIT) {
+          setOcrFailMessage(
+            `접수번호·주택형·당첨동·호수 자동 인식에 실패했습니다 (${ocrFailCount}/${OCR_FAIL_LIMIT}회). 더 선명한 사진으로 다시 업로드해 주세요.`
+          );
+        } else {
+          unlockManualEntry();
+          setOcrFailMessage(
+            `자동 인식에 ${OCR_FAIL_LIMIT}회 실패했습니다. 아래 항목을 사진을 보고 직접 입력·선택해 주세요.`
+          );
+        }
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    imageInput.addEventListener('change', () => {
+      sizeError.classList.remove('show');
+      setOcrFailMessage('');
+      const file = imageInput.files[0];
+      if (!file) {
+        selectedFile = null;
+        filePreview.style.display = 'none';
+        ocrBox.classList.remove('show');
+        if (!manualEntryUnlocked) {
+        receiptNoInput.value = '';
+        unitNoInput.value = '';
+        houseTypeSelect.value = '';
+        buildingSelect.value = '';
+      }
+        return;
+      }
+
+      if (file.size > MAX_FILE_BYTES) {
+        sizeError.classList.add('show');
+        imageInput.value = '';
+        selectedFile = null;
+        filePreview.style.display = 'none';
+        ocrBox.classList.remove('show');
+        return;
+      }
+
+      selectedFile = file;
+      fileNameLabel.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + 'MB)';
+      const url = URL.createObjectURL(file);
+      filePreviewImg.src = url;
+      filePreview.style.display = 'block';
+
+      // 새 이미지를 고르면 이전 자동인식값은 비우고 다시 시도(직접입력이 풀린 뒤라면 유지)
+      if (!manualEntryUnlocked) {
+        receiptNoInput.value = '';
+        unitNoInput.value = '';
+        houseTypeSelect.value = '';
+        buildingSelect.value = '';
+      }
+
+      runOcrPreview(file);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearSubmitStatus();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      if (!selectedFile) {
+        setSubmitStatus('인증샷 이미지를 업로드해 주세요.', 'err', 'fa-circle-exclamation');
+        return;
+      }
+      if (selectedFile.size > MAX_FILE_BYTES) {
+        sizeError.classList.add('show');
+        setSubmitStatus('이미지 용량이 10MB를 초과합니다.', 'err', 'fa-circle-exclamation');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 제출 중...';
+      setSubmitStatus('제출 중입니다. 잠시만 기다려 주세요...', 'info', 'fa-circle-info');
+
+      try {
+        const dataUrl = await readFileAsDataURL(selectedFile);
+        // dataUrl 형태: "data:image/jpeg;base64,AAAA..." — 콤마 뒤 순수 base64만 전송
+        const commaIdx = dataUrl.indexOf(',');
+        const imageBase64 = dataUrl.slice(commaIdx + 1);
+
+        const payload = {
+          submission_id: submissionId,
+          email: document.getElementById('email').value.trim(),
+          apply_type: document.getElementById('applyType').value,
+          receipt_no: receiptNoInput.value.trim(),
+          kakao_nick: document.getElementById('kakaoNick').value.trim(),
+          house_type: document.getElementById('houseType').value,
+          building: document.getElementById('building').value,
+          unit_no: unitNoInput.value.trim(),
+          naver_id: document.getElementById('naverId').value.trim(),
+          spouse_nick: document.getElementById('spouseNick').value.trim(),
+          spouse_role: document.getElementById('spouseRole').value,
+          ocr_name: lastOcrName,
+          entry_method: manualEntryUnlocked ? '수동입력(자동인식3회실패)' : '자동인식',
+          image_base64: imageBase64,
+          image_mime: selectedFile.type || 'image/jpeg',
+          image_filename: selectedFile.name
+        };
+
+        const res = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('서버 응답 오류: ' + res.status);
+        const result = await res.json();
+
+        if (!result.ok) {
+          throw new Error(result.error || '제출에 실패했습니다.');
+        }
+
+        setSubmitStatus(
+          result.duplicate
+            ? '이미 제출이 완료되었습니다. (중복 제출 방지됨)'
+            : '제출이 완료되었습니다. 감사합니다!',
+          'ok', 'fa-circle-check'
+        );
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> 제출 완료';
+      } catch (err) {
+        setSubmitStatus(
+          '제출 중 오류가 발생했습니다: ' + err.message + ' — 잠시 후 다시 시도해 주세요.',
+          'err', 'fa-circle-exclamation'
+        );
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 다시 제출하기';
+      }
+    });
+  </script>
+
+</body>
+</html>
