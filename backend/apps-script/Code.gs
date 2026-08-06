@@ -13,13 +13,22 @@ var HEADER = ['submission_id','제출시각','이메일','접수번호','호수'
 var COL = {};
 HEADER.forEach(function(name, i) { COL[name] = i + 1; });
 
+function doGet(e) {
+  var action = e.parameter.action;
+  if (action === 'getKakaoConfig') {
+    return jsonResponse(getKakaoConfig());
+  }
+  return jsonResponse({ok: false, error: 'UNKNOWN_ACTION'});
+}
+
 function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(30000)) {
     return jsonResponse({ok: false, error: 'BUSY'});
   }
   try {
-    var data = JSON.parse(e.postData.contents);
     var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('인증페이지제출');
     assertHeaderMatches(sheet); // 시트 헤더가 코드가 기대하는 것과 다르면 즉시 에러로 실패(조용한 컬럼 밀림 방지)
 
@@ -76,6 +85,25 @@ function assertHeaderMatches(sheet) {
       throw new Error('헤더 불일치: 시트의 ' + (i + 1) + '번째 열이 예상과 다름(코드/시트 컬럼 순서 재확인 필요)');
     }
   }
+}
+
+// 카톡 인증코드 팝업 설정 — '카톡인증코드' 탭(없으면 자동 생성)의 2행에 [코드, 활성화]를 둔다.
+// 이 탭을 시트에서 직접 열어 값을 고치면 auth-page.html의 제출 완료 팝업에 바로 반영된다.
+function getOrCreateKakaoConfigSheet() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('카톡인증코드');
+  if (!sheet) {
+    sheet = ss.insertSheet('카톡인증코드');
+    sheet.getRange(1, 1, 1, 2).setValues([['코드', '활성화']]);
+    sheet.getRange(2, 1, 1, 2).setValues([['', false]]);
+  }
+  return sheet;
+}
+
+function getKakaoConfig() {
+  var sheet = getOrCreateKakaoConfigSheet();
+  var row = sheet.getRange(2, 1, 1, 2).getValues()[0];
+  return {ok: true, code: String(row[0] || ''), active: row[1] === true};
 }
 
 function jsonResponse(obj) {

@@ -260,6 +260,39 @@
     }
     .page-footer a { color: var(--orange-warm); text-decoration: none; }
 
+    /* ===== 카톡 인증코드 팝업 ===== */
+    .kakao-popup-overlay {
+      position: fixed; inset: 0; background: rgba(13,27,42,0.55); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .kakao-popup-overlay.show { display: flex; }
+    .kakao-popup {
+      background: var(--white); border-radius: 18px; box-shadow: var(--shadow-lg);
+      max-width: 380px; width: 100%; padding: 32px 26px 28px; text-align: center; position: relative;
+    }
+    .kakao-popup-close {
+      position: absolute; top: 14px; right: 14px; border: none; background: none;
+      color: var(--gray); font-size: 1.1rem; cursor: pointer; padding: 6px;
+    }
+    .kakao-popup-icon {
+      width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 14px;
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white); font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+    }
+    .kakao-popup h3 { color: var(--navy); font-size: 1.15rem; margin-bottom: 8px; }
+    .kakao-popup-desc { color: var(--gray); font-size: 0.86rem; line-height: 1.55; margin-bottom: 18px; }
+    .kakao-popup-link {
+      display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 10px;
+      background: rgba(26,58,92,0.06); color: var(--navy); font-weight: 700; font-size: 0.88rem;
+      text-decoration: none; margin-bottom: 18px; border: 1px solid var(--beige-warm);
+    }
+    .kakao-popup-link:hover { background: rgba(26,58,92,0.1); }
+    .kakao-popup-code {
+      font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; color: var(--orange-dark);
+      background: var(--beige); border: 1.5px dashed var(--orange-light); border-radius: 12px;
+      padding: 14px; font-family: 'Courier New', monospace;
+    }
+
     @media (max-width: 768px) {
       .page-header h1 { font-size: 1.5rem; }
       .form-card { padding: 24px 18px; }
@@ -479,6 +512,20 @@
     <p>&copy; 2026 <a href="index.html">e편한세상 분당 퍼스트빌리지 입주예정자 협의회</a></p>
   </div>
 
+  <!-- 카톡 인증코드 팝업 (제출 완료 후, 기능이 활성화된 경우에만 표시) -->
+  <div class="kakao-popup-overlay" id="kakaoPopupOverlay">
+    <div class="kakao-popup">
+      <button type="button" class="kakao-popup-close" id="kakaoPopupClose" aria-label="닫기"><i class="fas fa-times"></i></button>
+      <div class="kakao-popup-icon"><i class="fas fa-comment"></i></div>
+      <h3>카카오톡 오픈채팅방 인증코드</h3>
+      <p class="kakao-popup-desc">아래 오픈채팅방에 입장하신 후, 인증코드를 입력해 주세요.</p>
+      <a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" rel="noopener" class="kakao-popup-link">
+        <i class="fas fa-arrow-up-right-from-square"></i> 오픈채팅방 입장하기
+      </a>
+      <div class="kakao-popup-code" id="kakaoPopupCode"></div>
+    </div>
+  </div>
+
   <script>
     // ── 배포 시 채워야 할 값 ──────────────────────────────────────────────
     // OCR_API_URLS: OCR 서버 후보 목록, 앞에서부터 순서대로 시도한다.
@@ -543,6 +590,38 @@
     const submitBtn = document.getElementById('submitBtn');
     const submitStatus = document.getElementById('submitStatus');
     const submitStatusText = document.getElementById('submitStatusText');
+
+    // ── 카톡 인증코드 팝업 ──────────────────────────────────────────────
+    // 코드·활성화 여부는 Google 시트('카톡인증코드' 탭)에서 직접 관리한다 — 그 탭의 값을
+    // 고치면 Apps Script doGet을 통해 이 페이지가 읽어와 반영한다(별도 관리자 화면 없음).
+    let kakaoConfig = { code: '', active: false };
+
+    async function fetchKakaoConfig() {
+      try {
+        const res = await fetch(SUBMIT_URL + '?action=getKakaoConfig');
+        const data = await res.json();
+        if (data.ok) kakaoConfig = { code: data.code || '', active: data.active === true };
+      } catch (err) {
+        console.warn('카톡 인증코드 설정을 불러오지 못했습니다:', err);
+      }
+    }
+    fetchKakaoConfig();
+
+    const kakaoPopupOverlay = document.getElementById('kakaoPopupOverlay');
+    const kakaoPopupCode = document.getElementById('kakaoPopupCode');
+    const kakaoPopupClose = document.getElementById('kakaoPopupClose');
+
+    function showKakaoPopup() {
+      kakaoPopupCode.textContent = kakaoConfig.code;
+      kakaoPopupOverlay.classList.add('show');
+    }
+    function hideKakaoPopup() {
+      kakaoPopupOverlay.classList.remove('show');
+    }
+    kakaoPopupClose.addEventListener('click', hideKakaoPopup);
+    kakaoPopupOverlay.addEventListener('click', (e) => {
+      if (e.target === kakaoPopupOverlay) hideKakaoPopup();
+    });
 
     // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다
     const naverIdInput = document.getElementById('naverId');
@@ -823,6 +902,7 @@
           'ok', 'fa-circle-check'
         );
         submitBtn.innerHTML = '<i class="fas fa-check"></i> 제출 완료';
+        if (kakaoConfig.active && kakaoConfig.code) showKakaoPopup();
       } catch (err) {
         setSubmitStatus(
           '제출 중 오류가 발생했습니다: ' + err.message + ' — 잠시 후 다시 시도해 주세요.',
