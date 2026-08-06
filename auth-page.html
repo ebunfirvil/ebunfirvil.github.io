@@ -105,6 +105,51 @@
     }
     .notice-banner i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
 
+    /* ===== PRIVACY NOTICE ===== */
+    .privacy-notice {
+      background: var(--white);
+      border: 1px solid var(--beige-warm);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .privacy-notice summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 0.95rem;
+      background: linear-gradient(135deg, rgba(26,58,92,0.05), rgba(232,98,46,0.05));
+    }
+    .privacy-notice summary::-webkit-details-marker { display: none; }
+    .privacy-notice summary i.fa-shield-halved { color: var(--orange); }
+    .privacy-notice summary .chevron { margin-left: auto; color: var(--gray); transition: transform 0.2s; }
+    .privacy-notice summary .req,
+    .privacy-consent-row label .req { color: var(--orange); margin-left: 2px; }
+    .privacy-notice[open] summary .chevron { transform: rotate(180deg); }
+    .privacy-notice-body { padding: 4px 20px 20px; font-size: 0.86rem; color: var(--dark); line-height: 1.65; }
+    .privacy-notice-body p { margin: 0 0 12px; }
+    .privacy-notice-body .pn-section {
+      font-weight: 700; color: var(--orange-dark); font-size: 0.82rem;
+      margin: 18px 0 8px; padding-top: 14px; border-top: 1px solid var(--beige-dark);
+    }
+    .privacy-notice-body .pn-section:first-of-type { border-top: none; padding-top: 0; }
+    .privacy-notice-body ol, .privacy-notice-body ul { margin: 0 0 4px; padding-left: 20px; color: var(--gray); }
+    .privacy-notice-body li { margin-bottom: 4px; }
+    .privacy-notice-body a { color: var(--orange-dark); font-weight: 600; }
+    .privacy-consent-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 18px; padding: 14px 16px; background: var(--beige);
+      border-radius: 8px; border: 1px solid var(--beige-warm);
+    }
+    .privacy-consent-row input[type="checkbox"] { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--orange); flex-shrink: 0; }
+    .privacy-consent-row label { font-size: 0.85rem; color: var(--dark); font-weight: 600; cursor: pointer; }
+
     /* ===== FORM CARD ===== */
     .form-card {
       background: var(--white);
@@ -245,6 +290,52 @@
     </div>
 
     <form class="form-card" id="authForm" novalidate>
+
+      <details class="privacy-notice" id="privacyNotice" open>
+        <summary><i class="fas fa-shield-halved"></i> 개인정보 수집·이용 안내<span class="req">*</span> 필수(펼쳐서 확인) <i class="fas fa-chevron-down chevron"></i></summary>
+        <div class="privacy-notice-body">
+          <p>입주예정자협의회(이하 "입예협")는 실제 당첨자 확인 및 중복 접수/당첨 여부 검토를 위해 아래와 같이 개인정보를 수집·이용합니다. 내용을 확인하신 후 동의 여부를 선택해 주세요.</p>
+
+          <div class="pn-section">수집 목적</div>
+          <ol>
+            <li>실제 청약 당첨자 본인 확인</li>
+            <li>동일인의 중복 신청·중복 당첨 여부 검토 (동/호수 대조)</li>
+            <li>카카오톡 오픈채팅방 참여자 매칭</li>
+            <li>네이버 카페 정회원(등업) 자격 부여</li>
+          </ol>
+
+          <div class="pn-section">수집 항목</div>
+          <ul>
+            <li>이름 (가운데 글자 마스킹 처리)</li>
+            <li>청약 접수번호</li>
+            <li>동 / 호수</li>
+            <li>네이버 아이디 (카페 등업용)</li>
+            <li>카카오톡 닉네임 (오픈채팅방 매칭용)</li>
+            <li>위 정보가 기입된 "당첨/낙찰 결과확인" 캡쳐화면</li>
+          </ul>
+
+          <div class="pn-section">보유 및 이용 기간</div>
+          <p>입주 완료 시(또는 입예협 활동 종료 시)까지 보관하며, 목적 달성 후 지체 없이 파기합니다.</p>
+
+          <div class="pn-section">제3자 제공</div>
+          <p>수집된 정보는 입예협 운영 목적 외에는 사용하지 않으며, LH·시공사·시청 등 외부 기관을 포함한 제3자에게 제공하지 않습니다.</p>
+
+          <div class="pn-section">인증 절차를 운영하는 이유</div>
+          <p>카페나 카카오톡 오픈채팅방에 인증되지 않은 외부인이 들어올 경우, 분양·입주 관련 미공개 사항들이 외부로 유출될 수 있습니다. 그러한 상황이 발생하면 여러 이해관계자(LH, 시공사, 관할 시청 등)와의 관계에서 입예협이나 입주예정자들이 불이익을 받을 수 있어, 본 인증 절차는 이를 사전에 막기 위해 운영됩니다. 또한 외부 업체들의 진입을 예방하여 불필요한 광고 노출을 최소화하기 위함입니다.</p>
+
+          <div class="pn-section">동의를 거부할 권리 및 거부 시 불이익</div>
+          <p>본 동의는 선택 사항이며, 거부하실 수 있습니다. 다만 동의하지 않으실 경우 인증 절차를 진행하실 수 없으며, 네이버 카페(<a href="https://cafe.naver.com/naksangheemang" target="_blank" rel="noopener">cafe.naver.com/naksangheemang</a>) 등업이 되지 않고, 카카오톡 오픈채팅방(<a href="https://open.kakao.com/o/g3bb1i9d" target="_blank" rel="noopener">open.kakao.com/o/g3bb1i9d</a>)에서 추방될 수 있습니다.</p>
+
+          <div class="pn-section">정보주체의 권리</div>
+          <p>본인의 개인정보에 대해 열람, 정정, 삭제를 요청하실 수 있습니다.<br>
+          문의: 입예협 회장 카카오톡 오픈채팅 — <a href="https://open.kakao.com/o/stqcqSMf" target="_blank" rel="noopener">open.kakao.com/o/stqcqSMf</a></p>
+
+          <div class="privacy-consent-row">
+            <input type="checkbox" id="privacyConsent" name="privacyConsent" required>
+            <label for="privacyConsent">위 개인정보 수집·이용 안내를 확인했으며 이에 동의합니다.<span class="req">*</span></label>
+          </div>
+        </div>
+      </details>
 
       <fieldset>
         <legend>제출자 정보</legend>
