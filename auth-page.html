@@ -218,6 +218,34 @@
     .ocr-fail-warning.show { display: flex; }
     .ocr-fail-warning i { margin-top: 2px; flex-shrink: 0; }
 
+    .mode-switch-row {
+      margin-top: 14px; padding: 12px 14px; border-radius: 10px;
+      background: var(--beige); border: 1px solid var(--beige-warm);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .mode-switch { position: relative; display: inline-block; width: 44px; height: 25px; flex-shrink: 0; }
+    .mode-switch input { opacity: 0; width: 0; height: 0; }
+    .mode-switch-slider {
+      position: absolute; cursor: pointer; inset: 0; background: var(--beige-warm);
+      border-radius: 25px; transition: 0.2s;
+    }
+    .mode-switch-slider::before {
+      content: ""; position: absolute; height: 19px; width: 19px; left: 3px; bottom: 3px;
+      background: var(--white); border-radius: 50%; transition: 0.2s; box-shadow: var(--shadow);
+    }
+    .mode-switch input:checked + .mode-switch-slider { background: var(--orange); }
+    .mode-switch input:checked + .mode-switch-slider::before { transform: translateX(19px); }
+    .mode-switch-text { font-size: 0.85rem; color: var(--navy); }
+    .mode-switch-text strong { font-weight: 700; }
+    .mode-switch-text span { display: block; color: var(--gray); font-size: 0.78rem; margin-top: 2px; font-weight: 400; }
+    .mode-switch-note {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      background: rgba(26,58,92,0.06); color: var(--navy); font-size: 0.82rem;
+      display: none; align-items: flex-start; gap: 8px;
+    }
+    .mode-switch-note.show { display: flex; }
+    .mode-switch-note i { margin-top: 2px; flex-shrink: 0; color: var(--orange); }
+
     .size-error {
       margin-top: 10px; padding: 10px 14px; border-radius: 8px;
       background: rgba(196,78,30,0.12); color: #c44e1e; font-size: 0.82rem;
@@ -388,6 +416,22 @@
             <i class="fas fa-exclamation-triangle"></i>
             <span>이미지 용량이 10MB를 초과합니다. 더 작은 용량의 이미지를 선택해 주세요.</span>
           </div>
+
+          <div class="mode-switch-row">
+            <label class="mode-switch">
+              <input type="checkbox" id="manualModeSwitch" checked>
+              <span class="mode-switch-slider"></span>
+            </label>
+            <span class="mode-switch-text">
+              <strong>자동입력</strong>
+              <span>켜져 있으면 인증샷에서 자동으로 인식합니다. 끄면 접수번호·주택형·당첨동·호수를 직접 입력합니다.</span>
+            </span>
+          </div>
+          <div class="mode-switch-note" id="modeSwitchNote">
+            <i class="fas fa-circle-info"></i>
+            <span id="modeSwitchNoteText"></span>
+          </div>
+
           <div class="ocr-box" id="ocrBox">
             <div class="ocr-title"><i class="fas fa-spinner"></i> <span id="ocrTitleText">자동 판독 중... (최대 4~5분 정도 걸릴 수 있습니다)</span></div>
             <div id="ocrResultRows"></div>
@@ -444,7 +488,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>자동 인식 정보 (인증샷에서 자동으로 채워집니다)</legend>
+        <legend id="autoFieldsLegend">자동 인식 정보 (인증샷에서 자동으로 채워집니다)</legend>
 
         <div class="form-field">
           <label for="receiptNo">접수번호 (5~6자리)<span class="req">*</span></label>
@@ -635,7 +679,6 @@
     let lastOcrName = ''; // 표시용(참고용) — 이름은 폼 필드가 없으므로 별도 보관
     let ocrFailCount = 0;
     const OCR_FAIL_LIMIT = 3;
-    let manualEntryUnlocked = false; // 3회 연속 인식 실패 전까지는 접수번호/주택형/당첨동/호수 전부 잠금
 
     function setSubmitStatus(msg, type, iconClass) {
       submitStatus.className = 'submit-status show ' + type;
@@ -652,26 +695,79 @@
       ocrFailWarning.classList.add('show');
     }
 
-    function unlockManualEntry() {
-      if (manualEntryUnlocked) return;
-      manualEntryUnlocked = true;
+    // ── 자동입력 스위치 (기본값: 켜짐 = 자동입력) ────────────────────────
+    // 켜져 있으면(자동입력) 기존처럼 인증샷에서 자동으로 인식해 채운다(필드는 잠김).
+    // 꺼지면(수동입력) 접수번호/주택형/당첨동/호수를 직접 입력하고 OCR은 아예 호출하지 않는다.
+    const manualModeSwitch = document.getElementById('manualModeSwitch');
+    const autoFieldsLegend = document.getElementById('autoFieldsLegend');
+    const modeSwitchNote = document.getElementById('modeSwitchNote');
+    const modeSwitchNoteText = document.getElementById('modeSwitchNoteText');
+    const MANUAL_DELAY_NOTICE = '담당자가 수동으로 확인을 할 예정이오니 등업에 지연이 발생할 수 있습니다.';
 
-      receiptNoInput.readOnly = false;
-      unitNoInput.readOnly = false;
-      receiptNoInput.placeholder = '예: 123456';
-      unitNoInput.placeholder = '예: 1502';
-
-      houseTypeSelect.classList.remove('locked');
-      houseTypeSelect.removeAttribute('tabindex');
-      buildingSelect.classList.remove('locked');
-      buildingSelect.removeAttribute('tabindex');
-
-      const msg = '자동 인식에 3회 실패해 직접 입력·선택이 가능합니다. 사진을 보고 정확히 입력해 주세요.';
-      receiptNoHint.textContent = msg;
-      unitNoHint.textContent = msg;
-      houseTypeHint.textContent = msg;
-      buildingHint.textContent = msg;
+    function isManualMode() {
+      return !manualModeSwitch.checked;
     }
+    let prevManualMode = isManualMode();
+
+    function updateModeSwitchNote(justSwitchedOn) {
+      if (!isManualMode()) {
+        modeSwitchNote.classList.remove('show');
+        return;
+      }
+      modeSwitchNoteText.textContent = justSwitchedOn
+        ? '인증샷을 다시 업로드해 주세요. ' + MANUAL_DELAY_NOTICE
+        : MANUAL_DELAY_NOTICE;
+      modeSwitchNote.classList.add('show');
+    }
+
+    function applyManualMode(justSwitchedOn) {
+      const manual = isManualMode();
+
+      receiptNoInput.readOnly = !manual;
+      unitNoInput.readOnly = !manual;
+      houseTypeSelect.classList.toggle('locked', !manual);
+      buildingSelect.classList.toggle('locked', !manual);
+      if (manual) {
+        houseTypeSelect.removeAttribute('tabindex');
+        buildingSelect.removeAttribute('tabindex');
+      } else {
+        houseTypeSelect.setAttribute('tabindex', '-1');
+        buildingSelect.setAttribute('tabindex', '-1');
+      }
+
+      autoFieldsLegend.textContent = manual
+        ? '접수번호 / 주택형 / 당첨동 / 호수 (직접 입력)'
+        : '자동 인식 정보 (인증샷에서 자동으로 채워집니다)';
+
+      const hintMsg = manual ? '사진을 보고 직접 입력해 주세요.' : '인증샷을 업로드하면 사진에서 자동으로 인식되어 채워집니다.';
+      const selectHintMsg = manual ? '사진을 보고 직접 선택해 주세요.' : '인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.';
+      receiptNoInput.placeholder = manual ? '예: 123456' : '인증샷 업로드 시 자동으로 채워집니다';
+      unitNoInput.placeholder = manual ? '예: 1502' : '인증샷 업로드 시 자동으로 채워집니다';
+      receiptNoHint.textContent = hintMsg;
+      unitNoHint.textContent = hintMsg;
+      houseTypeHint.textContent = selectHintMsg;
+      buildingHint.textContent = selectHintMsg;
+
+      if (manual) {
+        ocrBox.classList.remove('show', 'loading');
+        setOcrFailMessage('');
+      } else if (selectedFile) {
+        // 자동 인식 모드로 전환 + 이미 첨부된 이미지가 있으면 바로 인식을 시도한다
+        ocrFailCount = 0;
+        runOcrPreview(selectedFile);
+      }
+
+      updateModeSwitchNote(justSwitchedOn);
+    }
+
+    manualModeSwitch.addEventListener('change', () => {
+      const manual = isManualMode();
+      const justSwitchedOn = manual && !prevManualMode;
+      applyManualMode(justSwitchedOn);
+      prevManualMode = manual;
+    });
+
+    applyManualMode(false); // 초기 상태 표시(기본값 자동입력이므로 필드 잠금 + 안내문 숨김)
 
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
@@ -762,18 +858,11 @@
         lastOcrName = result.name; // 화면에는 표시하지 않고 제출 데이터(관리자 참고용)에만 담아 보냄
         ocrTitleText.textContent = '자동 인식 완료';
         ocrResultRows.innerHTML = '';
-        // 이미 직접입력이 풀린 뒤라면(3회 실패 후 다시 시도해 성공한 경우) 사용자가 입력해둔 값을 덮어쓰지 않는다
-        if (manualEntryUnlocked) {
-          if (!receiptNoInput.value.trim()) receiptNoInput.value = result.receipt_no;
-          if (!unitNoInput.value.trim()) unitNoInput.value = result.unit_no;
-          if (!houseTypeSelect.value) houseTypeSelect.value = result.house_type;
-          if (!buildingSelect.value) buildingSelect.value = result.building;
-        } else {
-          receiptNoInput.value = result.receipt_no;
-          unitNoInput.value = result.unit_no;
-          houseTypeSelect.value = result.house_type;
-          buildingSelect.value = result.building;
-        }
+        // 이미 값이 입력돼 있으면(예: 수동입력 중 타이핑해둔 값) 덮어쓰지 않는다
+        if (!receiptNoInput.value.trim()) receiptNoInput.value = result.receipt_no;
+        if (!unitNoInput.value.trim()) unitNoInput.value = result.unit_no;
+        if (!houseTypeSelect.value) houseTypeSelect.value = result.house_type;
+        if (!buildingSelect.value) buildingSelect.value = result.building;
         setOcrFailMessage('');
       } else {
         ocrFailCount++;
@@ -784,9 +873,8 @@
             `접수번호·주택형·당첨동·호수 자동 인식에 실패했습니다 (${ocrFailCount}/${OCR_FAIL_LIMIT}회). 더 선명한 사진으로 다시 업로드해 주세요.`
           );
         } else {
-          unlockManualEntry();
           setOcrFailMessage(
-            `자동 인식에 ${OCR_FAIL_LIMIT}회 실패했습니다. 아래 항목을 사진을 보고 직접 입력·선택해 주세요.`
+            `자동 인식에 ${OCR_FAIL_LIMIT}회 실패했습니다. 다시 시도하시거나, 위의 '자동입력' 스위치를 끄고 직접 입력해 주세요.`
           );
         }
       }
@@ -800,12 +888,12 @@
         selectedFile = null;
         filePreview.style.display = 'none';
         ocrBox.classList.remove('show');
-        if (!manualEntryUnlocked) {
-        receiptNoInput.value = '';
-        unitNoInput.value = '';
-        houseTypeSelect.value = '';
-        buildingSelect.value = '';
-      }
+        if (!isManualMode()) {
+          receiptNoInput.value = '';
+          unitNoInput.value = '';
+          houseTypeSelect.value = '';
+          buildingSelect.value = '';
+        }
         return;
       }
 
@@ -824,14 +912,18 @@
       filePreviewImg.src = url;
       filePreview.style.display = 'block';
 
-      // 새 이미지를 고르면 이전 자동인식값은 비우고 다시 시도(직접입력이 풀린 뒤라면 유지)
-      if (!manualEntryUnlocked) {
-        receiptNoInput.value = '';
-        unitNoInput.value = '';
-        houseTypeSelect.value = '';
-        buildingSelect.value = '';
+      if (isManualMode()) {
+        // 수동입력 모드에서는 OCR을 아예 호출하지 않는다 — 재업로드 안내문이 있었다면 지운다
+        updateModeSwitchNote(false);
+        return;
       }
 
+      // 자동인식 모드: 새 이미지를 고르면 이전 인식값은 비우고 다시 시도
+      receiptNoInput.value = '';
+      unitNoInput.value = '';
+      houseTypeSelect.value = '';
+      buildingSelect.value = '';
+      ocrFailCount = 0;
       runOcrPreview(file);
     });
 
@@ -876,7 +968,7 @@
           spouse_nick: document.getElementById('spouseNick').value.trim(),
           spouse_role: document.getElementById('spouseRole').value,
           ocr_name: lastOcrName,
-          entry_method: manualEntryUnlocked ? '수동입력(자동인식3회실패)' : '자동인식',
+          entry_method: isManualMode() ? '수동입력' : '자동인식',
           image_base64: imageBase64,
           image_mime: selectedFile.type || 'image/jpeg',
           image_filename: selectedFile.name
