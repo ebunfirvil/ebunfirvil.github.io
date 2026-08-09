@@ -526,6 +526,9 @@
             <option value="110동">110동</option>
             <option value="111동">111동</option>
             <option value="112동">112동</option>
+            <option value="T201동">T201동</option>
+            <option value="T202동">T202동</option>
+            <option value="T203동">T203동</option>
           </select>
           <div class="hint" id="buildingHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.</div>
         </div>
@@ -630,6 +633,7 @@
     const VALID_HOUSE_TYPES = new Set(['51A', '55A', '55B', '59A', '59T']);
     const VALID_BUILDINGS = new Set(
       Array.from({ length: 12 }, (_, i) => (101 + i) + '동')
+        .concat(['T201동', 'T202동', 'T203동'])
     );
     const submitBtn = document.getElementById('submitBtn');
     const submitStatus = document.getElementById('submitStatus');
