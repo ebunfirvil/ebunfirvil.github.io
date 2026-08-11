@@ -18,7 +18,33 @@ function doGet(e) {
   if (action === 'getKakaoConfig') {
     return jsonResponse(getKakaoConfig());
   }
+  if (action === 'getVerifiedUnits') {
+    return jsonResponse(getVerifiedUnits());
+  }
+  if (action === 'checkReceiptStatus') {
+    return jsonResponse(checkReceiptStatus(e.parameter.receipt));
+  }
   return jsonResponse({ok: false, error: 'UNKNOWN_ACTION'});
+}
+
+// 접수번호가 "2-처리완료" 시트에 인증 결과=성공으로 이미 기록돼 있는지 확인한다.
+// (같은 접수번호로 여러 번 시도한 행이 섞여 있을 수 있어 하나라도 성공이면 true)
+// auth-page.html이 제출 직전에 호출해서 "이미 인증되었는데 다시 제출하시겠습니까?" 확인창을 띄우는 데 쓴다.
+function checkReceiptStatus(receipt) {
+  receipt = String(receipt || '').trim();
+  if (!receipt) return {ok: true, alreadyVerified: false};
+
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('2-처리완료');
+  if (!sheet || sheet.getLastRow() < 2) return {ok: true, alreadyVerified: false};
+
+  var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 9).getValues();
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    if (String(row[0] || '').trim() === receipt && String(row[8] || '').indexOf('성공') === 0) {
+      return {ok: true, alreadyVerified: true};
+    }
+  }
+  return {ok: true, alreadyVerified: false};
 }
 
 function doPost(e) {
@@ -104,6 +130,57 @@ function getKakaoConfig() {
   var sheet = getOrCreateKakaoConfigSheet();
   var row = sheet.getRange(2, 1, 1, 2).getValues()[0];
   return {ok: true, code: String(row[0] || ''), active: row[1] === true};
+}
+
+// 동호수 배치도(인증완료 표시)용 — 101동~112동, T201~T203동만 유효한 동으로 인정한다.
+var VALID_BUILDINGS_SET = (function () {
+  var s = {};
+  for (var n = 101; n <= 112; n++) s[n + '동'] = true;
+  s['T201동'] = true;
+  s['T202동'] = true;
+  s['T203동'] = true;
+  return s;
+})();
+
+function normalizeBuilding(v) {
+  if (!v) return null;
+  v = String(v).trim();
+  if (/^\d+$/.test(v)) v = v + '동'; // "110" 같이 '동'이 빠진 오기입 보정
+  if (v === '201동' || v === '202동' || v === '203동') v = 'T' + v; // T동 입력 시 T 접두사 누락 보정
+  return VALID_BUILDINGS_SET[v] ? v : null;
+}
+
+// 인증완료(접수번호 기준 중복 제거) 대상의 당첨동/호수 목록을 "동|호수" 문자열 배열로 반환한다.
+// 시트1(입력방식=일괄OCR검증인 행만) + 인증페이지제출(전체) 합쳐서, 같은 접수번호는 마지막(가장
+// 최근 시도)에 등장한 값으로 덮어쓴다 — 시트 행 순서가 곧 제출 순서라 재시도로 값을 고친 경우
+// 최신 값이 반영된다(auth-page.html의 동호수 배치도가 초록색 표시에 사용).
+function getVerifiedUnits() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var latestByReceipt = {};
+
+  function collect(sheetName, requireOcrOk) {
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet || sheet.getLastRow() < 2) return;
+    var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 14).getValues();
+    for (var i = 0; i < values.length; i++) {
+      var row = values[i];
+      if (requireOcrOk && row[13] !== '일괄OCR검증') continue;
+      var receipt = String(row[3] || '').trim();
+      if (!receipt) continue;
+      var building = normalizeBuilding(row[8]);
+      var unitNo = String(row[4] || '').trim();
+      latestByReceipt[receipt] = (building && unitNo) ? (building + '|' + unitNo) : null;
+    }
+  }
+
+  collect('시트1', true);
+  collect('인증페이지제출', false);
+
+  var units = {};
+  for (var receipt in latestByReceipt) {
+    if (latestByReceipt[receipt]) units[latestByReceipt[receipt]] = true;
+  }
+  return {ok: true, units: Object.keys(units)};
 }
 
 function jsonResponse(obj) {

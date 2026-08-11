@@ -526,9 +526,9 @@
             <option value="110동">110동</option>
             <option value="111동">111동</option>
             <option value="112동">112동</option>
-            <option value="T201동">T201동</option>
-            <option value="T202동">T202동</option>
-            <option value="T203동">T203동</option>
+            <option value="201동">201동</option>
+            <option value="202동">202동</option>
+            <option value="203동">203동</option>
           </select>
           <div class="hint" id="buildingHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.</div>
         </div>
@@ -633,7 +633,7 @@
     const VALID_HOUSE_TYPES = new Set(['51A', '55A', '55B', '59A', '59T']);
     const VALID_BUILDINGS = new Set(
       Array.from({ length: 12 }, (_, i) => (101 + i) + '동')
-        .concat(['T201동', 'T202동', 'T203동'])
+        .concat(['201동', '202동', '203동'])
     );
     const submitBtn = document.getElementById('submitBtn');
     const submitStatus = document.getElementById('submitStatus');
@@ -843,7 +843,9 @@
           receipt_no: data.receipt_no || '',
           unit_no: data.unit_no || '',
           house_type: data.house_type || '',
-          building: data.building || ''
+          // 당첨자 발표 이미지엔 "T201동"처럼 T가 찍혀 있어 OCR도 T를 그대로 읽어오지만,
+          // 제출 데이터는 T 없이 통일하기로 해서 여기서 벗겨낸다.
+          building: (data.building || '').replace(/^T(20[1-3]동)$/, '$1')
         };
       } catch (err) {
         result = null;
@@ -947,6 +949,17 @@
         sizeError.classList.add('show');
         setSubmitStatus('이미지 용량이 10MB를 초과합니다.', 'err', 'fa-circle-exclamation');
         return;
+      }
+
+      // 같은 접수번호가 "2-처리완료" 시트에 이미 인증 성공으로 기록돼 있으면 재제출 여부를 한 번 더 확인한다.
+      try {
+        const checkRes = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receiptNoInput.value.trim()));
+        const checkData = await checkRes.json();
+        if (checkData.ok && checkData.alreadyVerified) {
+          if (!confirm('이미 인증되었는데 다시 제출하시겠습니까?')) return;
+        }
+      } catch (err) {
+        // 조회 자체가 실패해도 제출을 막지는 않는다
       }
 
       submitBtn.disabled = true;
