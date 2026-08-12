@@ -105,6 +105,43 @@
     }
     .notice-banner i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
 
+    /* ===== 인증 결과 조회 ===== */
+    .lookup-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--beige-warm);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .lookup-card h3 {
+      font-size: 0.95rem; color: var(--navy); margin: 0 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .lookup-card h3 i { color: var(--orange); }
+    .lookup-row { display: flex; gap: 8px; }
+    .lookup-row input[type="text"] {
+      flex: 1; min-width: 0; padding: 11px 14px; border: 1.5px solid var(--beige-warm); border-radius: 8px;
+      font-size: 0.92rem; font-family: 'Noto Sans KR', sans-serif; background: var(--beige);
+      color: var(--dark); outline: none; transition: border-color 0.2s;
+    }
+    .lookup-row input[type="text"]:focus { border-color: var(--orange); background: var(--white); }
+    .lookup-row button {
+      padding: 11px 20px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.9rem;
+      color: var(--white); background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .lookup-row button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+    .lookup-row button:disabled { opacity: 0.65; cursor: not-allowed; }
+    .lookup-result {
+      margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+      display: none; align-items: center; gap: 8px;
+    }
+    .lookup-result.show { display: flex; }
+    .lookup-result.ok { background: rgba(46,160,67,0.12); color: #1e7a30; }
+    .lookup-result.no { background: rgba(200,60,60,0.1); color: #b3312c; }
+    .lookup-result.err { background: rgba(200,60,60,0.1); color: #b3312c; }
+
     /* ===== PRIVACY NOTICE ===== */
     .privacy-notice {
       background: var(--white);
@@ -348,6 +385,15 @@
     <div class="notice-banner">
       <i class="fas fa-info-circle"></i>
       <span>인증샷을 업로드하면 접수번호·호수를 사진에서 자동으로 인식해 채워드립니다(최대 4~5분 정도 걸릴 수 있습니다). 자동 인식이 3회 연속 실패하면 직접 입력할 수 있게 됩니다. 최종 확인은 제출된 원본 사진으로 관리자가 진행합니다.</span>
+    </div>
+
+    <div class="lookup-card">
+      <h3><i class="fas fa-magnifying-glass"></i> 인증 결과 조회</h3>
+      <div class="lookup-row">
+        <input type="text" id="lookupReceiptNo" placeholder="접수번호 입력" inputmode="numeric" autocomplete="off">
+        <button type="button" id="lookupBtn">조회</button>
+      </div>
+      <div class="lookup-result" id="lookupResult"></div>
     </div>
 
     <form class="form-card" id="authForm" novalidate>
@@ -669,6 +715,46 @@
     kakaoPopupClose.addEventListener('click', hideKakaoPopup);
     kakaoPopupOverlay.addEventListener('click', (e) => {
       if (e.target === kakaoPopupOverlay) hideKakaoPopup();
+    });
+
+    // ── 인증 결과 조회 ──────────────────────────────────────────────────
+    // 제출 폼과 무관하게, 접수번호만으로 "2-처리완료" 시트 기준 인증 완료 여부를 바로 보여준다.
+    const lookupReceiptNo = document.getElementById('lookupReceiptNo');
+    const lookupBtn = document.getElementById('lookupBtn');
+    const lookupResult = document.getElementById('lookupResult');
+
+    function setLookupResult(text, type) {
+      lookupResult.textContent = text;
+      lookupResult.className = 'lookup-result show' + (type ? ' ' + type : '');
+    }
+
+    async function runLookup() {
+      const receipt = lookupReceiptNo.value.trim();
+      if (!receipt) {
+        setLookupResult('접수번호를 입력해 주세요.', 'err');
+        return;
+      }
+      lookupBtn.disabled = true;
+      const prevLabel = lookupBtn.textContent;
+      lookupBtn.textContent = '조회 중...';
+      try {
+        const res = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receipt));
+        const data = await res.json();
+        if (!data.ok) throw new Error('조회 실패');
+        setLookupResult(
+          data.alreadyVerified ? '해당 접수번호는 인증이 완료되었습니다.' : '인증이 완료되지 않은 접수번호입니다.',
+          data.alreadyVerified ? 'ok' : 'no'
+        );
+      } catch (err) {
+        setLookupResult('조회 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      } finally {
+        lookupBtn.disabled = false;
+        lookupBtn.textContent = prevLabel;
+      }
+    }
+    lookupBtn.addEventListener('click', runLookup);
+    lookupReceiptNo.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runLookup();
     });
 
     // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다
