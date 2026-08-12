@@ -550,6 +550,13 @@
             <option value="아내">아내</option>
           </select>
         </div>
+
+        <div class="form-field">
+          <label for="spouseNaverId">배우자 네이버 계정<span class="optional-tag">(선택)</span><span class="field-note">(닉네임이 아닌 계정명입니다.)</span></label>
+          <input type="text" id="spouseNaverId" name="spouseNaverId" placeholder="배우자 네이버 카페 아이디 (해당 시)"
+            pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
+            title="한글은 입력할 수 없습니다">
+        </div>
       </fieldset>
 
       <fieldset>
@@ -1001,6 +1008,11 @@
       const filtered = naverIdInput.value.replace(HANGUL_RE, '');
       if (filtered !== naverIdInput.value) naverIdInput.value = filtered;
     });
+    const spouseNaverIdInput = document.getElementById('spouseNaverId');
+    spouseNaverIdInput.addEventListener('input', () => {
+      const filtered = spouseNaverIdInput.value.replace(HANGUL_RE, '');
+      if (filtered !== spouseNaverIdInput.value) spouseNaverIdInput.value = filtered;
+    });
 
     let selectedFile = null;
     let lastOcrName = ''; // 표시용(참고용) — 이름은 폼 필드가 없으므로 별도 보관
@@ -1307,6 +1319,7 @@
           naver_id: document.getElementById('naverId').value.trim(),
           spouse_nick: document.getElementById('spouseNick').value.trim(),
           spouse_role: document.getElementById('spouseRole').value,
+          spouse_naver_id: document.getElementById('spouseNaverId').value.trim(),
           ocr_name: lastOcrName,
           entry_method: isManualMode() ? '수동입력' : '자동인식',
           image_base64: imageBase64,

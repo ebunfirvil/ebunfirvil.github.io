@@ -3,7 +3,10 @@ var DRIVE_FOLDER_ID = '1Y3fAHtOeaAd3-YOxEo0dUf6e-QHIB63z0duIQJGX2jkmeIxpwHSDefyw
 
 var HEADER = ['submission_id','제출시각','이메일','접수번호','호수','청약구분','카톡닉네임',
   '주택형','당첨동','네이버ID','배우자닉네임','배우자구분',
-  'OCR판독-이름(참고용,미검증)','입력방식','Drive링크'];
+  'OCR판독-이름(참고용,미검증)','입력방식','Drive링크',
+  '등업결과','실패사유','','','배우자 네이버 계정'];
+// P~S(등업결과/실패사유/미사용 2칸)는 제출 시점엔 채우지 않고 관리자/자동화가 나중에 채우는 컬럼이라
+// HEADER에는 자리만 잡아두고(assertHeaderMatches가 시트와 어긋남을 잡아내도록) 빈 문자열로 남긴다.
 // 2026-08-05: 접수번호/호수/주택형/당첨동이 프론트에서 OCR 자동입력(3회 실패 시에만 수동입력)으로
 // 바뀌면서, "OCR판독값 vs 수동입력값 비교"라는 원래 취지의 일치여부 컬럼 2개와 OCR판독-접수번호/
 // 호수 컬럼 2개가 무의미해져 제거하고, 대신 이 행이 자동인식으로 채워졌는지 3회 실패 후 수동입력
@@ -171,7 +174,9 @@ function doPost(e) {
         data.apply_type, data.kakao_nick, data.house_type, data.building, data.naver_id,
         data.spouse_nick || '', data.spouse_role || '',
         data.ocr_name || '', data.entry_method || '',
-        '' // Drive링크는 업로드 성공 후 채움
+        '', // Drive링크는 업로드 성공 후 채움
+        '', '', '', '', // 등업결과/실패사유/미사용 2칸 — 제출 시점엔 비워둠
+        data.spouse_naver_id || ''
       ]);
       rowIndex = sheet.getLastRow();
     }
