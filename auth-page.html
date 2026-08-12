@@ -142,6 +142,22 @@
     .lookup-result.no { background: rgba(200,60,60,0.1); color: #b3312c; }
     .lookup-result.err { background: rgba(200,60,60,0.1); color: #b3312c; }
 
+    /* ===== 관리자 검수 화면 이미지 (일반 폼의 업로드 미리보기보다 훨씬 크게) ===== */
+    #mgImage { max-width: 100%; max-height: 75vh; border-radius: 8px; box-shadow: var(--shadow); cursor: zoom-in; }
+    .img-modal-overlay {
+      position: fixed; inset: 0; background: rgba(13,27,42,0.88); z-index: 300;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+      cursor: zoom-out;
+    }
+    .img-modal-overlay.show { display: flex; }
+    .img-modal-overlay img { max-width: 95vw; max-height: 95vh; border-radius: 8px; cursor: default; }
+    .img-modal-close {
+      position: absolute; top: 18px; right: 20px; border: none; background: rgba(255,255,255,0.15);
+      color: var(--white); font-size: 1.2rem; cursor: pointer; padding: 10px 14px; border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .img-modal-close:hover { background: rgba(255,255,255,0.28); }
+
     /* ===== PRIVACY NOTICE ===== */
     .privacy-notice {
       background: var(--white);
@@ -373,6 +389,9 @@
       <span class="top-bar-title">당첨자 인증</span>
     </div>
   </div>
+
+  <!-- ?mode=manage가 아닐 때만 보이는 일반 제출 화면 전체 -->
+  <div id="normalModeWrap">
 
   <!-- PAGE HEADER -->
   <div class="page-header">
@@ -619,6 +638,80 @@
     </div>
   </div>
 
+  </div> <!-- /normalModeWrap -->
+
+  <!-- ?mode=manage 전용 관리자 검수 화면 — "1-처리중" 시트를 한 건씩 성공/실패 처리 -->
+  <div id="manageModeWrap" style="display:none">
+    <div class="page-header">
+      <h1>인증 검수</h1>
+      <p>1-처리중 항목을 한 건씩 확인하고 성공/실패를 기록합니다.</p>
+    </div>
+    <div class="content-wrap">
+
+      <div class="lookup-card" id="mgLoginCard">
+        <h3><i class="fas fa-lock"></i> 관리자 로그인</h3>
+        <div class="form-field">
+          <label for="mgId">아이디</label>
+          <input type="text" id="mgId" autocomplete="username">
+        </div>
+        <div class="form-field">
+          <label for="mgPw">비밀번호</label>
+          <input type="password" id="mgPw" autocomplete="current-password">
+        </div>
+        <div class="lookup-row">
+          <button type="button" id="mgLoginBtn" style="width:100%">로그인</button>
+        </div>
+        <div class="lookup-result" id="mgLoginResult"></div>
+      </div>
+
+      <div class="form-card" id="mgReviewCard" style="display:none">
+        <div class="form-field" id="mgImageField">
+          <label>인증샷</label>
+          <div class="file-preview" id="mgImageWrap">
+            <img id="mgImage" src="" alt="인증샷" style="display:none">
+            <div id="mgNoImage" style="display:none; color:var(--gray); font-size:0.85rem;">이미지 없음</div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>접수번호</label>
+          <input type="text" id="mgReceiptNo" readonly>
+        </div>
+        <div class="form-field">
+          <label>청약구분</label>
+          <input type="text" id="mgApplyType" readonly>
+        </div>
+        <div class="form-field">
+          <label>당첨동</label>
+          <input type="text" id="mgBuilding" readonly>
+        </div>
+        <div class="form-field">
+          <label>호수</label>
+          <input type="text" id="mgUnitNo" readonly>
+        </div>
+        <div class="form-field">
+          <label for="mgName">이름</label>
+          <input type="text" id="mgName" placeholder="이름을 입력하세요 (예: 홍*동)">
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" id="mgFailBtn" class="btn-submit" style="background:linear-gradient(135deg,#b3312c,#d9524b)">실패</button>
+          <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
+        </div>
+        <div class="lookup-result" id="mgReviewStatus" style="margin-top:14px;"></div>
+      </div>
+
+      <div class="lookup-card" id="mgDoneCard" style="display:none">
+        <h3><i class="fas fa-circle-check"></i> 처리할 항목이 없습니다</h3>
+      </div>
+
+    </div>
+
+    <!-- 인증샷 클릭 시 확대해서 보여주는 모달 -->
+    <div class="img-modal-overlay" id="mgImageModalOverlay">
+      <button type="button" class="img-modal-close" id="mgImageModalClose" aria-label="닫기"><i class="fas fa-times"></i></button>
+      <img id="mgImageModalImg" src="" alt="인증샷 확대">
+    </div>
+  </div>
+
   <script>
     // ── 배포 시 채워야 할 값 ──────────────────────────────────────────────
     // OCR_API_URLS: OCR 서버 후보 목록, 앞에서부터 순서대로 시도한다.
@@ -756,6 +849,150 @@
     lookupReceiptNo.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') runLookup();
     });
+
+    // ── 관리자 검수 모드 (?mode=manage) ─────────────────────────────────
+    // "1-처리중" 시트를 한 건씩 받아와 성공/실패를 기록하고 다음 건으로 넘어간다.
+    // 인증 정보(아이디/비밀번호)는 세션 동안만 메모리에 두고 매 요청마다 같이 보낸다(별도 토큰 없음
+    // — "기능 검증" 단계용 최소 구현이라, 실제로 널리 쓰게 되면 더 안전한 인증으로 바꿔야 함).
+    if (new URLSearchParams(location.search).get('mode') === 'manage') {
+      document.getElementById('normalModeWrap').style.display = 'none';
+      const manageWrap = document.getElementById('manageModeWrap');
+      manageWrap.style.display = 'block';
+
+      const mgLoginCard = document.getElementById('mgLoginCard');
+      const mgReviewCard = document.getElementById('mgReviewCard');
+      const mgDoneCard = document.getElementById('mgDoneCard');
+      const mgId = document.getElementById('mgId');
+      const mgPw = document.getElementById('mgPw');
+      const mgLoginBtn = document.getElementById('mgLoginBtn');
+      const mgLoginResult = document.getElementById('mgLoginResult');
+      const mgImage = document.getElementById('mgImage');
+      const mgNoImage = document.getElementById('mgNoImage');
+      const mgReceiptNo = document.getElementById('mgReceiptNo');
+      const mgApplyType = document.getElementById('mgApplyType');
+      const mgBuilding = document.getElementById('mgBuilding');
+      const mgUnitNo = document.getElementById('mgUnitNo');
+      const mgName = document.getElementById('mgName');
+      const mgSuccessBtn = document.getElementById('mgSuccessBtn');
+      const mgFailBtn = document.getElementById('mgFailBtn');
+      const mgReviewStatus = document.getElementById('mgReviewStatus');
+      const mgImageModalOverlay = document.getElementById('mgImageModalOverlay');
+      const mgImageModalImg = document.getElementById('mgImageModalImg');
+      const mgImageModalClose = document.getElementById('mgImageModalClose');
+
+      mgImage.addEventListener('click', () => {
+        mgImageModalImg.src = mgImage.src;
+        mgImageModalOverlay.classList.add('show');
+      });
+      mgImageModalClose.addEventListener('click', () => mgImageModalOverlay.classList.remove('show'));
+      mgImageModalOverlay.addEventListener('click', (e) => {
+        if (e.target === mgImageModalOverlay) mgImageModalOverlay.classList.remove('show');
+      });
+
+      let adminCreds = null; // {admin_id, admin_pw}
+      let currentItem = null;
+
+      function setMgLoginResult(text, type) {
+        mgLoginResult.textContent = text;
+        mgLoginResult.className = 'lookup-result show' + (type ? ' ' + type : '');
+      }
+      function setMgReviewStatus(text, type) {
+        mgReviewStatus.textContent = text;
+        mgReviewStatus.className = 'lookup-result show' + (type ? ' ' + type : '');
+      }
+
+      async function callManageApi(payload) {
+        const res = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(Object.assign({}, adminCreds, payload))
+        });
+        return res.json();
+      }
+
+      async function loadNextItem() {
+        mgReviewCard.style.display = 'none';
+        mgDoneCard.style.display = 'none';
+        setMgReviewStatus('', '');
+        const data = await callManageApi({ action: 'getNextPending' });
+        if (!data.ok) {
+          setMgLoginResult('조회 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+          return;
+        }
+        if (data.done) {
+          mgDoneCard.style.display = 'block';
+          return;
+        }
+        currentItem = data;
+        mgReceiptNo.value = data.receipt_no || '';
+        mgApplyType.value = data.apply_type || '';
+        mgBuilding.value = data.building || '';
+        mgUnitNo.value = data.unit_no || '';
+        mgName.value = '';
+        if (data.image) {
+          mgImage.src = data.image;
+          mgImage.style.display = 'block';
+          mgNoImage.style.display = 'none';
+        } else {
+          mgImage.style.display = 'none';
+          mgNoImage.style.display = 'block';
+        }
+        mgReviewCard.style.display = 'block';
+      }
+
+      async function decide(result) {
+        if (!currentItem) return;
+        mgSuccessBtn.disabled = true;
+        mgFailBtn.disabled = true;
+        const data = await callManageApi({
+          action: 'submitReview',
+          submission_id: currentItem.submission_id,
+          name: mgName.value.trim(),
+          result: result
+        });
+        mgSuccessBtn.disabled = false;
+        mgFailBtn.disabled = false;
+        if (!data.ok) {
+          setMgReviewStatus('저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+          return;
+        }
+        loadNextItem();
+      }
+
+      mgLoginBtn.addEventListener('click', async () => {
+        const id = mgId.value.trim();
+        const pw = mgPw.value;
+        if (!id || !pw) {
+          setMgLoginResult('아이디와 비밀번호를 입력해 주세요.', 'err');
+          return;
+        }
+        mgLoginBtn.disabled = true;
+        mgLoginBtn.textContent = '로그인 중...';
+        try {
+          const res = await fetch(SUBMIT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'adminLogin', admin_id: id, admin_pw: pw })
+          });
+          const data = await res.json();
+          if (!data.ok) {
+            setMgLoginResult('아이디 또는 비밀번호가 올바르지 않습니다.', 'err');
+            return;
+          }
+          adminCreds = { admin_id: id, admin_pw: pw };
+          mgLoginCard.style.display = 'none';
+          loadNextItem();
+        } catch (err) {
+          setMgLoginResult('로그인 중 오류가 발생했습니다: ' + err.message, 'err');
+        } finally {
+          mgLoginBtn.disabled = false;
+          mgLoginBtn.textContent = '로그인';
+        }
+      });
+
+      mgSuccessBtn.addEventListener('click', () => decide('성공'));
+      mgFailBtn.addEventListener('click', () => decide('실패'));
+    }
 
     // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다
     const naverIdInput = document.getElementById('naverId');

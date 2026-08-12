@@ -47,8 +47,107 @@ function checkReceiptStatus(receipt) {
   return {ok: true, alreadyVerified: false};
 }
 
+// "1-처리중" 시트 컬럼 — 관리자 검수 화면(auth-page.html?mode=manage)이 읽고 쓰는 대상.
+// 인증페이지제출과는 별도 시트/헤더라 COL과 분리해서 관리한다.
+var PROCESSING_COL = {
+  '접수번호': 1, '제출시각': 2, '이메일': 3, '청약구분': 4, '주택형': 5, '당첨동': 6, '호수': 7,
+  '이름': 8, '인증 결과': 9, 'Drive링크': 10, 'submission_id': 19
+};
+
+// 관리자 계정 확인 — "관리자계정" 시트(아이디, 비밀번호 2열)와 평문 대조.
+// 검수 화면 접근을 막는 최소한의 문턱일 뿐, 강한 보안이 필요하면(관리자 여러 명 등) 나중에 강화 필요.
+function checkAdminCredentials(id, pw) {
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('관리자계정');
+  if (!sheet || sheet.getLastRow() < 2) return false;
+  var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues();
+  for (var i = 0; i < values.length; i++) {
+    if (String(values[i][0]) === String(id) && String(values[i][1]) === String(pw)) return true;
+  }
+  return false;
+}
+
+// "1-처리중"에서 인증 결과가 아직 비어있는 첫 행을 반환한다(관리자 검수 대기 큐).
+// 이미지가 있으면 Drive에서 직접 읽어 base64로 함께 내려준다 — Drive 파일 자체는 비공개로 두고
+// (제3자 미제공 원칙), 로그인된 관리자 화면을 통해서만 이미지를 볼 수 있게 하기 위함.
+function getNextPending(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('1-처리중');
+  if (!sheet || sheet.getLastRow() < 2) return {ok: true, done: true};
+
+  var lastRow = sheet.getLastRow();
+  var values = sheet.getRange(2, 1, lastRow - 1, 20).getValues();
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    var result = String(row[PROCESSING_COL['인증 결과'] - 1] || '').trim();
+    if (result === '성공' || result === '실패') continue; // 이미 결정된 행만 건너뜀 (빈 값/"확인 필요"는 대기로 취급)
+
+    var driveLink = String(row[PROCESSING_COL['Drive링크'] - 1] || '');
+    var imageDataUrl = null;
+    var fileIdMatch = driveLink.match(/\/d\/([^/]+)/);
+    if (fileIdMatch) {
+      try {
+        var file = DriveApp.getFileById(fileIdMatch[1]);
+        var blob = file.getBlob();
+        imageDataUrl = 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
+      } catch (imgErr) {
+        imageDataUrl = null; // 이미지 로드 실패해도 나머지 필드는 보여줌
+      }
+    }
+
+    return {
+      ok: true, done: false,
+      submission_id: row[PROCESSING_COL['submission_id'] - 1],
+      receipt_no: row[PROCESSING_COL['접수번호'] - 1],
+      apply_type: row[PROCESSING_COL['청약구분'] - 1],
+      building: row[PROCESSING_COL['당첨동'] - 1],
+      unit_no: row[PROCESSING_COL['호수'] - 1],
+      image: imageDataUrl
+    };
+  }
+  return {ok: true, done: true};
+}
+
+// 관리자가 검수 화면에서 이름 입력 + 성공/실패 버튼을 누르면 호출됨 — "1-처리중"의 해당 행에
+// 이름/인증 결과를 기록한다(다음 항목으로 넘어가는 건 프론트에서 getNextPending을 다시 부르는 식).
+function submitReview(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  if (data.result !== '성공' && data.result !== '실패') {
+    return {ok: false, error: 'INVALID_RESULT'};
+  }
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('1-처리중');
+  var rowIndex = findRowBySubmissionId2(sheet, data.submission_id, PROCESSING_COL['submission_id']);
+  if (!rowIndex) return {ok: false, error: 'NOT_FOUND'};
+
+  sheet.getRange(rowIndex, PROCESSING_COL['이름']).setValue(data.name || '');
+  sheet.getRange(rowIndex, PROCESSING_COL['인증 결과']).setValue(data.result);
+  return {ok: true};
+}
+
+function findRowBySubmissionId2(sheet, submissionId, colIndex) {
+  if (sheet.getLastRow() < 2) return null;
+  var ids = sheet.getRange(2, colIndex, sheet.getLastRow() - 1, 1).getValues();
+  for (var i = 0; i < ids.length; i++) {
+    if (ids[i][0] === submissionId) return i + 2;
+  }
+  return null;
+}
+
 function doPost(e) {
   var data = JSON.parse(e.postData.contents);
+
+  if (data.action === 'adminLogin') {
+    return jsonResponse({ok: checkAdminCredentials(data.admin_id, data.admin_pw)});
+  }
+  if (data.action === 'getNextPending') {
+    return jsonResponse(getNextPending(data));
+  }
+  if (data.action === 'submitReview') {
+    return jsonResponse(submitReview(data));
+  }
 
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(30000)) {
