@@ -237,6 +237,15 @@
       background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
       padding-right: 40px;
     }
+    /* 네이버ID 입력창 뒤에 "@naver.com"을 붙여서 계정명만 입력하면 되는 것을 시각적으로 보여준다 */
+    .input-with-suffix { display: flex; }
+    .input-with-suffix input[type="text"] { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .input-with-suffix .input-suffix {
+      display: flex; align-items: center; white-space: nowrap; flex-shrink: 0;
+      padding: 0 14px; border: 1.5px solid var(--beige-warm); border-left: none;
+      border-top-right-radius: 8px; border-bottom-right-radius: 8px;
+      background: var(--beige-dark); color: var(--gray); font-size: 0.92rem;
+    }
     .form-field .hint { font-size: 0.78rem; color: var(--gray); margin-top: 6px; }
 
     .file-drop {
@@ -427,7 +436,7 @@
             <li>실제 청약 당첨자 본인 확인</li>
             <li>동일인의 중복 신청·중복 당첨 여부 검토 (동/호수 대조)</li>
             <li>카카오톡 오픈채팅방 참여자 매칭</li>
-            <li>네이버 카페 정회원(등업) 자격 부여</li>
+            <li>네이버 카페 일반회원(등업) 자격부여</li>
           </ol>
 
           <div class="pn-section">수집 항목</div>
@@ -528,9 +537,12 @@
 
         <div class="form-field">
           <label for="naverId">네이버ID<span class="req">*</span><span class="field-note">(닉네임이 아닌 계정명입니다.)</span></label>
-          <input type="text" id="naverId" name="naverId" required placeholder="네이버 카페 아이디"
-            pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
-            title="한글은 입력할 수 없습니다">
+          <div class="input-with-suffix">
+            <input type="text" id="naverId" name="naverId" required placeholder="네이버 카페 아이디"
+              pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
+              title="한글은 입력할 수 없습니다">
+            <span class="input-suffix">@naver.com</span>
+          </div>
         </div>
       </fieldset>
 
@@ -553,9 +565,12 @@
 
         <div class="form-field">
           <label for="spouseNaverId">배우자 네이버 계정<span class="optional-tag">(선택)</span><span class="field-note">(닉네임이 아닌 계정명입니다.)</span></label>
-          <input type="text" id="spouseNaverId" name="spouseNaverId" placeholder="배우자 네이버 카페 아이디 (해당 시)"
-            pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
-            title="한글은 입력할 수 없습니다">
+          <div class="input-with-suffix">
+            <input type="text" id="spouseNaverId" name="spouseNaverId" placeholder="배우자 네이버 카페 아이디 (해당 시)"
+              pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
+              title="한글은 입력할 수 없습니다">
+            <span class="input-suffix">@naver.com</span>
+          </div>
         </div>
       </fieldset>
 
