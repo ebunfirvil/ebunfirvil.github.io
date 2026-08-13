@@ -30,31 +30,44 @@ function doGet(e) {
   return jsonResponse({ok: false, error: 'UNKNOWN_ACTION'});
 }
 
-// 접수번호가 "2-처리완료" 시트에 인증 결과=성공으로 이미 기록돼 있는지 확인한다.
-// (같은 접수번호로 여러 번 시도한 행이 섞여 있을 수 있어 하나라도 성공이면 true)
-// auth-page.html이 제출 직전에 호출해서 "이미 인증되었는데 다시 제출하시겠습니까?" 확인창을 띄우는 데 쓴다.
+// 접수번호 상태 확인 — "1-처리중"에 있으면 그 결과를 최우선으로 보고 status:'processing'을 반환하고
+// (아직 최종 처리 전이라는 뜻), 없으면 기존처럼 "2-처리완료"에서 인증 결과=성공 여부를 본다.
+// (같은 접수번호로 여러 번 시도한 행이 섞여 있을 수 있어 하나라도 매칭되면 그걸로 판단)
+// alreadyVerified는 하위호환용 — auth-page.html이 제출 직전 "이미 인증되었는데 다시 제출하시겠습니까?"
+// 확인창을 띄울 때는 여전히 이 필드(= status가 'verified'일 때만 true)를 쓴다.
 function checkReceiptStatus(receipt) {
   receipt = String(receipt || '').trim();
-  if (!receipt) return {ok: true, alreadyVerified: false};
+  if (!receipt) return {ok: true, status: 'none', alreadyVerified: false};
+
+  var processingSheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('1-처리중');
+  if (processingSheet && processingSheet.getLastRow() >= 2) {
+    var pValues = processingSheet.getRange(2, 1, processingSheet.getLastRow() - 1, 1).getValues();
+    for (var j = 0; j < pValues.length; j++) {
+      if (String(pValues[j][0] || '').trim() === receipt) {
+        return {ok: true, status: 'processing', alreadyVerified: false};
+      }
+    }
+  }
 
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('2-처리완료');
-  if (!sheet || sheet.getLastRow() < 2) return {ok: true, alreadyVerified: false};
+  if (!sheet || sheet.getLastRow() < 2) return {ok: true, status: 'none', alreadyVerified: false};
 
   var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 9).getValues();
   for (var i = 0; i < values.length; i++) {
     var row = values[i];
     if (String(row[0] || '').trim() === receipt && String(row[8] || '').indexOf('성공') === 0) {
-      return {ok: true, alreadyVerified: true};
+      return {ok: true, status: 'verified', alreadyVerified: true};
     }
   }
-  return {ok: true, alreadyVerified: false};
+  return {ok: true, status: 'none', alreadyVerified: false};
 }
 
 // "1-처리중" 시트 컬럼 — 관리자 검수 화면(auth-page.html?mode=manage)이 읽고 쓰는 대상.
 // 인증페이지제출과는 별도 시트/헤더라 COL과 분리해서 관리한다.
 var PROCESSING_COL = {
   '접수번호': 1, '제출시각': 2, '이메일': 3, '청약구분': 4, '주택형': 5, '당첨동': 6, '호수': 7,
-  '이름': 8, '인증 결과': 9, 'Drive링크': 10, 'submission_id': 19
+  '이름': 8, '인증 결과': 9, 'Drive링크': 10, '카톡닉네임': 11, '네이버ID': 12, '등업결과': 16,
+  'submission_id': 19
 };
 
 // 관리자 계정 확인 — "관리자계정" 시트(아이디, 비밀번호 2열)와 평문 대조.
@@ -130,6 +143,58 @@ function submitReview(data) {
   return {ok: true};
 }
 
+// 관리자 검수 화면의 "이력 조회" 탭 — 접수번호 또는 당첨동/호수로 "1-처리중"+"2-처리완료"를
+// 뒤져서 지금까지의 신청 이력을 전부 반환한다(이미지는 링크만 내려주고 base64로는 안 읽음 —
+// getNextPending과 달리 여러 건을 한 번에 보여줘서 매번 Drive를 읽으면 느려짐).
+function searchHistory(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  var receipt = String(data.receipt || '').trim();
+  var building = String(data.building || '').trim();
+  var unit = String(data.unit_no || '').trim();
+  if (!receipt && !building && !unit) {
+    return {ok: false, error: 'EMPTY_QUERY'};
+  }
+
+  var results = [];
+  function collect(sheetName, source) {
+    var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(sheetName);
+    if (!sheet || sheet.getLastRow() < 2) return;
+    var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 20).getValues();
+    for (var i = 0; i < values.length; i++) {
+      var row = values[i];
+      var rReceipt = String(row[PROCESSING_COL['접수번호'] - 1] || '').trim();
+      var rBuilding = String(row[PROCESSING_COL['당첨동'] - 1] || '').trim();
+      var rUnit = String(row[PROCESSING_COL['호수'] - 1] || '').trim();
+      if (receipt && rReceipt !== receipt) continue;
+      if (building && rBuilding !== building) continue;
+      if (unit && rUnit.indexOf(unit) === -1) continue;
+
+      results.push({
+        source: source,
+        receipt_no: rReceipt,
+        submitted_at: row[PROCESSING_COL['제출시각'] - 1],
+        apply_type: row[PROCESSING_COL['청약구분'] - 1],
+        house_type: row[PROCESSING_COL['주택형'] - 1],
+        building: rBuilding,
+        unit_no: rUnit,
+        name: row[PROCESSING_COL['이름'] - 1],
+        result: row[PROCESSING_COL['인증 결과'] - 1],
+        drive_link: row[PROCESSING_COL['Drive링크'] - 1],
+        kakao_nick: row[PROCESSING_COL['카톡닉네임'] - 1],
+        naver_id: row[PROCESSING_COL['네이버ID'] - 1],
+        upgrade_result: row[PROCESSING_COL['등업결과'] - 1]
+      });
+    }
+  }
+
+  collect('1-처리중', '처리중');
+  collect('2-처리완료', '처리완료');
+
+  return {ok: true, results: results};
+}
+
 function findRowBySubmissionId2(sheet, submissionId, colIndex) {
   if (sheet.getLastRow() < 2) return null;
   var ids = sheet.getRange(2, colIndex, sheet.getLastRow() - 1, 1).getValues();
@@ -150,6 +215,9 @@ function doPost(e) {
   }
   if (data.action === 'submitReview') {
     return jsonResponse(submitReview(data));
+  }
+  if (data.action === 'searchHistory') {
+    return jsonResponse(searchHistory(data));
   }
 
   var lock = LockService.getScriptLock();

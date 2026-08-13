@@ -141,6 +141,7 @@
     .lookup-result.ok { background: rgba(46,160,67,0.12); color: #1e7a30; }
     .lookup-result.no { background: rgba(200,60,60,0.1); color: #b3312c; }
     .lookup-result.err { background: rgba(200,60,60,0.1); color: #b3312c; }
+    .lookup-result.processing { background: rgba(232,98,46,0.12); color: var(--orange-dark); }
 
     /* ===== 관리자 검수 화면 이미지 (일반 폼의 업로드 미리보기보다 훨씬 크게) ===== */
     #mgImage { max-width: 100%; max-height: 75vh; border-radius: 8px; box-shadow: var(--shadow); cursor: zoom-in; }
@@ -157,6 +158,32 @@
       transition: background 0.2s;
     }
     .img-modal-close:hover { background: rgba(255,255,255,0.28); }
+
+    /* ===== 관리자 화면 탭 ===== */
+    #mgTabNav { display: flex; gap: 8px; margin-bottom: 16px; }
+    .mg-tab-btn {
+      flex: 1; padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--beige-warm);
+      background: var(--white); color: var(--gray); font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .mg-tab-btn.mg-tab-active {
+      background: linear-gradient(135deg, var(--orange), var(--orange-light));
+      color: var(--white); border-color: transparent;
+    }
+    .mg-result-card {
+      background: var(--white); border-radius: 12px; border: 1px solid var(--beige-warm);
+      box-shadow: var(--shadow); padding: 16px 18px; margin-bottom: 14px;
+    }
+    .mg-result-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.76rem;
+      font-weight: 700; margin-bottom: 10px;
+    }
+    .mg-result-badge.processing { background: rgba(232,98,46,0.12); color: var(--orange-dark); }
+    .mg-result-badge.done { background: rgba(46,160,67,0.12); color: #1e7a30; }
+    .mg-result-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.86rem; gap: 12px; }
+    .mg-result-row span:first-child { color: var(--gray); flex-shrink: 0; }
+    .mg-result-row span:last-child { text-align: right; word-break: break-all; }
+    .mg-result-row a { color: var(--orange-dark); font-weight: 600; }
 
     /* ===== PRIVACY NOTICE ===== */
     .privacy-notice {
@@ -686,43 +713,74 @@
         <div class="lookup-result" id="mgLoginResult"></div>
       </div>
 
-      <div class="form-card" id="mgReviewCard" style="display:none">
-        <div class="form-field" id="mgImageField">
-          <label>인증샷</label>
-          <div class="file-preview" id="mgImageWrap">
-            <img id="mgImage" src="" alt="인증샷" style="display:none">
-            <div id="mgNoImage" style="display:none; color:var(--gray); font-size:0.85rem;">이미지 없음</div>
-          </div>
-        </div>
-        <div class="form-field">
-          <label>접수번호</label>
-          <input type="text" id="mgReceiptNo" readonly>
-        </div>
-        <div class="form-field">
-          <label>청약구분</label>
-          <input type="text" id="mgApplyType" readonly>
-        </div>
-        <div class="form-field">
-          <label>당첨동</label>
-          <input type="text" id="mgBuilding" readonly>
-        </div>
-        <div class="form-field">
-          <label>호수</label>
-          <input type="text" id="mgUnitNo" readonly>
-        </div>
-        <div class="form-field">
-          <label for="mgName">이름</label>
-          <input type="text" id="mgName" placeholder="이름을 입력하세요 (예: 홍*동)">
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button type="button" id="mgFailBtn" class="btn-submit" style="background:linear-gradient(135deg,#b3312c,#d9524b)">실패</button>
-          <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
-        </div>
-        <div class="lookup-result" id="mgReviewStatus" style="margin-top:14px;"></div>
+      <div id="mgTabNav" style="display:none">
+        <button type="button" id="mgTabReviewBtn" class="mg-tab-btn mg-tab-active">검수</button>
+        <button type="button" id="mgTabHistoryBtn" class="mg-tab-btn">이력 조회</button>
       </div>
 
-      <div class="lookup-card" id="mgDoneCard" style="display:none">
-        <h3><i class="fas fa-circle-check"></i> 처리할 항목이 없습니다</h3>
+      <div id="mgReviewPanel">
+        <div class="form-card" id="mgReviewCard" style="display:none">
+          <div class="form-field" id="mgImageField">
+            <label>인증샷</label>
+            <div class="file-preview" id="mgImageWrap">
+              <img id="mgImage" src="" alt="인증샷" style="display:none">
+              <div id="mgNoImage" style="display:none; color:var(--gray); font-size:0.85rem;">이미지 없음</div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>접수번호</label>
+            <input type="text" id="mgReceiptNo" readonly>
+          </div>
+          <div class="form-field">
+            <label>청약구분</label>
+            <input type="text" id="mgApplyType" readonly>
+          </div>
+          <div class="form-field">
+            <label>당첨동</label>
+            <input type="text" id="mgBuilding" readonly>
+          </div>
+          <div class="form-field">
+            <label>호수</label>
+            <input type="text" id="mgUnitNo" readonly>
+          </div>
+          <div class="form-field">
+            <label for="mgName">이름</label>
+            <input type="text" id="mgName" placeholder="이름을 입력하세요 (예: 홍*동)">
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button type="button" id="mgFailBtn" class="btn-submit" style="background:linear-gradient(135deg,#b3312c,#d9524b)">실패</button>
+            <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
+          </div>
+          <div class="lookup-result" id="mgReviewStatus" style="margin-top:14px;"></div>
+        </div>
+
+        <div class="lookup-card" id="mgDoneCard" style="display:none">
+          <h3><i class="fas fa-circle-check"></i> 처리할 항목이 없습니다</h3>
+        </div>
+      </div>
+
+      <div id="mgHistoryPanel" style="display:none">
+        <div class="lookup-card">
+          <h3><i class="fas fa-magnifying-glass"></i> 신청 이력 조회</h3>
+          <p style="font-size:0.82rem; color:var(--gray); margin:0 0 14px;">접수번호 또는 당첨동/호수 중 아는 것만 입력해서 조회하세요. "1-처리중"과 "2-처리완료"에 있는 이력만 표시됩니다.</p>
+          <div class="form-field">
+            <label for="mgSearchReceipt">접수번호</label>
+            <input type="text" id="mgSearchReceipt" placeholder="접수번호" inputmode="numeric">
+          </div>
+          <div class="form-field">
+            <label for="mgSearchBuilding">당첨동</label>
+            <input type="text" id="mgSearchBuilding" placeholder="예: 103동">
+          </div>
+          <div class="form-field">
+            <label for="mgSearchUnit">호수</label>
+            <input type="text" id="mgSearchUnit" placeholder="예: 501">
+          </div>
+          <div class="lookup-row">
+            <button type="button" id="mgSearchBtn" style="width:100%">조회</button>
+          </div>
+          <div class="lookup-result" id="mgSearchStatus"></div>
+        </div>
+        <div id="mgSearchResults"></div>
       </div>
 
     </div>
@@ -856,10 +914,13 @@
         const res = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receipt));
         const data = await res.json();
         if (!data.ok) throw new Error('조회 실패');
-        setLookupResult(
-          data.alreadyVerified ? '해당 접수번호는 인증이 완료되었습니다.' : '인증이 완료되지 않은 접수번호입니다.',
-          data.alreadyVerified ? 'ok' : 'no'
-        );
+        if (data.status === 'processing') {
+          setLookupResult('입예협에서 인증 진행중입니다. 잠시후에 확인 해주세요.', 'processing');
+        } else if (data.status === 'verified') {
+          setLookupResult('해당 접수번호는 인증이 완료되었습니다.', 'ok');
+        } else {
+          setLookupResult('인증이 완료되지 않은 접수번호입니다.', 'no');
+        }
       } catch (err) {
         setLookupResult('조회 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'err');
       } finally {
@@ -901,6 +962,17 @@
       const mgImageModalOverlay = document.getElementById('mgImageModalOverlay');
       const mgImageModalImg = document.getElementById('mgImageModalImg');
       const mgImageModalClose = document.getElementById('mgImageModalClose');
+      const mgTabNav = document.getElementById('mgTabNav');
+      const mgTabReviewBtn = document.getElementById('mgTabReviewBtn');
+      const mgTabHistoryBtn = document.getElementById('mgTabHistoryBtn');
+      const mgReviewPanel = document.getElementById('mgReviewPanel');
+      const mgHistoryPanel = document.getElementById('mgHistoryPanel');
+      const mgSearchReceipt = document.getElementById('mgSearchReceipt');
+      const mgSearchBuilding = document.getElementById('mgSearchBuilding');
+      const mgSearchUnit = document.getElementById('mgSearchUnit');
+      const mgSearchBtn = document.getElementById('mgSearchBtn');
+      const mgSearchStatus = document.getElementById('mgSearchStatus');
+      const mgSearchResults = document.getElementById('mgSearchResults');
 
       mgImage.addEventListener('click', () => {
         mgImageModalImg.src = mgImage.src;
@@ -1003,6 +1075,7 @@
           }
           adminCreds = { admin_id: id, admin_pw: pw };
           mgLoginCard.style.display = 'none';
+          mgTabNav.style.display = 'flex';
           loadNextItem();
         } catch (err) {
           setMgLoginResult('로그인 중 오류가 발생했습니다: ' + err.message, 'err');
@@ -1014,6 +1087,93 @@
 
       mgSuccessBtn.addEventListener('click', () => decide('성공'));
       mgFailBtn.addEventListener('click', () => decide('실패'));
+
+      // ── 이력 조회 탭 ──────────────────────────────────────────────
+      function showTab(tab) {
+        const isReview = tab === 'review';
+        mgReviewPanel.style.display = isReview ? 'block' : 'none';
+        mgHistoryPanel.style.display = isReview ? 'none' : 'block';
+        mgTabReviewBtn.classList.toggle('mg-tab-active', isReview);
+        mgTabHistoryBtn.classList.toggle('mg-tab-active', !isReview);
+      }
+      mgTabReviewBtn.addEventListener('click', () => showTab('review'));
+      mgTabHistoryBtn.addEventListener('click', () => showTab('history'));
+
+      function setMgSearchStatus(text, type) {
+        mgSearchStatus.textContent = text;
+        mgSearchStatus.className = 'lookup-result show' + (type ? ' ' + type : '');
+      }
+
+      function renderSearchResults(results) {
+        mgSearchResults.innerHTML = '';
+        results.forEach((r) => {
+          const card = document.createElement('div');
+          card.className = 'mg-result-card';
+          const badgeClass = r.source === '처리완료' ? 'done' : 'processing';
+          const driveLinkHtml = r.drive_link
+            ? '<a href="' + r.drive_link + '" target="_blank" rel="noopener">이미지 링크</a>'
+            : '(없음)';
+          card.innerHTML =
+            '<span class="mg-result-badge ' + badgeClass + '">' + r.source + '</span>' +
+            mgResultRow('접수번호', r.receipt_no) +
+            mgResultRow('제출시각', r.submitted_at) +
+            mgResultRow('청약구분', r.apply_type) +
+            mgResultRow('주택형', r.house_type) +
+            mgResultRow('당첨동', r.building) +
+            mgResultRow('호수', r.unit_no) +
+            mgResultRow('이름', r.name) +
+            mgResultRow('인증결과', r.result) +
+            mgResultRow('카톡닉네임', r.kakao_nick) +
+            mgResultRow('네이버ID', r.naver_id) +
+            mgResultRow('등업결과', r.upgrade_result) +
+            mgResultRowHtml('인증샷', driveLinkHtml);
+          mgSearchResults.appendChild(card);
+        });
+      }
+      function esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+      function mgResultRow(label, value) {
+        return mgResultRowHtml(label, esc(value) || '-');
+      }
+      function mgResultRowHtml(label, html) {
+        return '<div class="mg-result-row"><span>' + esc(label) + '</span><span>' + html + '</span></div>';
+      }
+
+      async function runHistorySearch() {
+        const receipt = mgSearchReceipt.value.trim();
+        const building = mgSearchBuilding.value.trim();
+        const unit = mgSearchUnit.value.trim();
+        if (!receipt && !building && !unit) {
+          setMgSearchStatus('접수번호 또는 당첨동/호수 중 하나는 입력해 주세요.', 'err');
+          mgSearchResults.innerHTML = '';
+          return;
+        }
+        mgSearchBtn.disabled = true;
+        setMgSearchStatus('조회 중...', 'info');
+        mgSearchResults.innerHTML = '';
+        try {
+          const data = await callManageApi({ action: 'searchHistory', receipt, building, unit_no: unit });
+          if (!data.ok) {
+            setMgSearchStatus('조회 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+            return;
+          }
+          if (data.results.length === 0) {
+            setMgSearchStatus('일치하는 이력이 없습니다.', 'no');
+            return;
+          }
+          setMgSearchStatus(data.results.length + '건 조회됨', 'ok');
+          renderSearchResults(data.results);
+        } catch (err) {
+          setMgSearchStatus('조회 중 오류가 발생했습니다: ' + err.message, 'err');
+        } finally {
+          mgSearchBtn.disabled = false;
+        }
+      }
+      mgSearchBtn.addEventListener('click', runHistorySearch);
+      [mgSearchReceipt, mgSearchBuilding, mgSearchUnit].forEach((el) => {
+        el.addEventListener('keydown', (e) => { if (e.key === 'Enter') runHistorySearch(); });
+      });
     }
 
     // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다
