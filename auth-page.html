@@ -452,6 +452,9 @@
         <button type="button" id="lookupRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 조회"><i class="fas fa-rotate"></i></button>
       </div>
       <div class="lookup-result" id="lookupResult"></div>
+      <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
+        <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
+      </div>
     </div>
 
     <form class="form-card" id="authForm" novalidate>
@@ -899,11 +902,15 @@
     const lookupBtn = document.getElementById('lookupBtn');
     const lookupRefreshBtn = document.getElementById('lookupRefreshBtn');
     const lookupResult = document.getElementById('lookupResult');
+    const lookupKakaoRow = document.getElementById('lookupKakaoRow');
+    const lookupKakaoBtn = document.getElementById('lookupKakaoBtn');
 
     function setLookupResult(text, type) {
       lookupResult.textContent = text;
       lookupResult.className = 'lookup-result show' + (type ? ' ' + type : '');
     }
+
+    lookupKakaoBtn.addEventListener('click', showKakaoPopup);
 
     async function runLookup() {
       const receipt = lookupReceiptNo.value.trim();
@@ -912,6 +919,7 @@
         return;
       }
       lookupBtn.disabled = true;
+      lookupKakaoRow.style.display = 'none';
       const prevLabel = lookupBtn.textContent;
       lookupBtn.textContent = '조회 중...';
       try {
@@ -922,6 +930,8 @@
           setLookupResult('입예협에서 인증 진행중입니다. 잠시후에 확인 해주세요.', 'processing');
         } else if (data.status === 'verified') {
           setLookupResult('해당 접수번호는 인증이 완료되었습니다.', 'ok');
+          // 인증 완료된 사람만 "입장코드 확인" 버튼을 보여주고, 누를 때만 팝업을 띄운다(자동 표시 안 함)
+          if (kakaoConfig.active && kakaoConfig.code) lookupKakaoRow.style.display = 'flex';
         } else {
           setLookupResult('인증이 완료되지 않은 접수번호입니다.', 'no');
         }
@@ -1119,24 +1129,7 @@
         results.forEach((r) => {
           const card = document.createElement('div');
           card.className = 'mg-result-card';
-          const badgeClass = r.source === '처리완료' ? 'done' : 'processing';
-          const driveLinkHtml = r.drive_link
-            ? '<a href="' + r.drive_link + '" target="_blank" rel="noopener">이미지 링크</a>'
-            : '(없음)';
-          card.innerHTML =
-            '<span class="mg-result-badge ' + badgeClass + '">' + r.source + '</span>' +
-            mgResultRow('접수번호', r.receipt_no) +
-            mgResultRow('제출시각', r.submitted_at) +
-            mgResultRow('청약구분', r.apply_type) +
-            mgResultRow('주택형', r.house_type) +
-            mgResultRow('당첨동', r.building) +
-            mgResultRow('호수', r.unit_no) +
-            mgResultRow('이름', r.name) +
-            mgResultRow('인증결과', r.result) +
-            mgResultRow('카톡닉네임', r.kakao_nick) +
-            mgResultRow('네이버ID', r.naver_id) +
-            mgResultRow('등업결과', r.upgrade_result) +
-            mgResultRowHtml('인증샷', driveLinkHtml);
+          renderResultView(card, r);
           mgSearchResults.appendChild(card);
         });
       }
@@ -1148,6 +1141,112 @@
       }
       function mgResultRowHtml(label, html) {
         return '<div class="mg-result-row"><span>' + esc(label) + '</span><span>' + html + '</span></div>';
+      }
+
+      function renderResultView(card, r) {
+        const badgeClass = r.source === '처리완료' ? 'done' : 'processing';
+        const driveLinkHtml = r.drive_link
+          ? '<a href="' + esc(r.drive_link) + '" target="_blank" rel="noopener">이미지 링크</a>'
+          : '(없음)';
+        card.innerHTML =
+          '<span class="mg-result-badge ' + badgeClass + '">' + esc(r.source) + '</span>' +
+          mgResultRow('접수번호', r.receipt_no) +
+          mgResultRow('제출시각', r.submitted_at) +
+          mgResultRow('청약구분', r.apply_type) +
+          mgResultRow('주택형', r.house_type) +
+          mgResultRow('당첨동', r.building) +
+          mgResultRow('호수', r.unit_no) +
+          mgResultRow('이름', r.name) +
+          mgResultRow('인증결과', r.result) +
+          mgResultRow('카톡닉네임', r.kakao_nick) +
+          mgResultRow('네이버ID', r.naver_id) +
+          mgResultRow('배우자구분', r.spouse_role) +
+          mgResultRow('배우자닉네임', r.spouse_nick) +
+          mgResultRow('배우자 네이버 계정', r.spouse_naver_id) +
+          mgResultRow('등업결과', r.upgrade_result) +
+          mgResultRow('실패사유', r.fail_reason) +
+          mgResultRow('현재등급', r.current_grade) +
+          mgResultRowHtml('인증샷', driveLinkHtml) +
+          '<div style="margin-top:10px;"><button type="button" class="mg-edit-btn" ' +
+          'style="width:100%; padding:9px; border-radius:8px; border:1.5px solid var(--beige-warm); ' +
+          'background:var(--white); color:var(--navy); font-weight:700; font-size:0.86rem; cursor:pointer;">수정</button></div>';
+        card.querySelector('.mg-edit-btn').addEventListener('click', () => renderResultEdit(card, r));
+      }
+
+      // 편집 폼 필드 정의: [키, 라벨, 입력타입(text/select), select면 옵션 목록]
+      const MG_EDIT_FIELDS = [
+        ['receipt_no', '접수번호', 'text'],
+        ['apply_type', '청약구분', 'text'],
+        ['house_type', '주택형', 'text'],
+        ['building', '당첨동', 'text'],
+        ['unit_no', '호수', 'text'],
+        ['name', '이름', 'text'],
+        ['result', '인증결과', 'select', ['', '확인 필요', '성공', '실패']],
+        ['kakao_nick', '카톡닉네임', 'text'],
+        ['naver_id', '네이버ID', 'text'],
+        ['spouse_role', '배우자구분', 'select', ['', '남편', '아내']],
+        ['spouse_nick', '배우자닉네임', 'text'],
+        ['spouse_naver_id', '배우자 네이버 계정', 'text'],
+        ['upgrade_result', '등업결과', 'text'],
+        ['fail_reason', '실패사유', 'text'],
+        ['current_grade', '현재등급', 'text']
+      ];
+
+      function renderResultEdit(card, r) {
+        const badgeClass = r.source === '처리완료' ? 'done' : 'processing';
+        let html = '<span class="mg-result-badge ' + badgeClass + '">' + esc(r.source) + ' 수정 중</span>';
+        MG_EDIT_FIELDS.forEach(([key, label, type, options]) => {
+          const value = r[key];
+          html += '<div class="form-field" style="margin-bottom:10px;">';
+          html += '<label style="font-size:0.8rem;">' + esc(label) + '</label>';
+          if (type === 'select') {
+            html += '<select data-key="' + key + '">';
+            options.forEach((opt) => {
+              html += '<option value="' + esc(opt) + '"' + (String(value || '') === opt ? ' selected' : '') + '>' +
+                (opt || '(비어있음)') + '</option>';
+            });
+            html += '</select>';
+          } else {
+            html += '<input type="text" data-key="' + key + '" value="' + esc(value) + '">';
+          }
+          html += '</div>';
+        });
+        html += '<div style="display:flex; gap:8px;">' +
+          '<button type="button" class="mg-cancel-btn" style="flex:1; padding:10px; border-radius:8px; ' +
+          'border:1.5px solid var(--beige-warm); background:var(--white); color:var(--gray); font-weight:700; cursor:pointer;">취소</button>' +
+          '<button type="button" class="mg-save-btn btn-submit" style="flex:1;">저장</button></div>' +
+          '<div class="lookup-result" style="margin-top:10px;"></div>';
+        card.innerHTML = html;
+
+        card.querySelector('.mg-cancel-btn').addEventListener('click', () => renderResultView(card, r));
+
+        const statusEl = card.querySelector('.lookup-result');
+        const saveBtn = card.querySelector('.mg-save-btn');
+        saveBtn.addEventListener('click', async () => {
+          const fields = {};
+          MG_EDIT_FIELDS.forEach(([key]) => {
+            fields[key] = card.querySelector('[data-key="' + key + '"]').value;
+          });
+          saveBtn.disabled = true;
+          statusEl.textContent = '저장 중...';
+          statusEl.className = 'lookup-result show processing';
+          try {
+            const data = await callManageApi({
+              action: 'updateHistoryRow', source: r.source, submission_id: r.submission_id, fields: fields
+            });
+            if (!data.ok) {
+              statusEl.textContent = '저장 실패: ' + (data.error || '');
+              statusEl.className = 'lookup-result show err';
+              saveBtn.disabled = false;
+              return;
+            }
+            renderResultView(card, Object.assign({}, r, fields));
+          } catch (err) {
+            statusEl.textContent = '저장 중 오류: ' + err.message;
+            statusEl.className = 'lookup-result show err';
+            saveBtn.disabled = false;
+          }
+        });
       }
 
       async function runHistorySearch() {

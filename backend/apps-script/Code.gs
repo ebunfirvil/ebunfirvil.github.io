@@ -66,18 +66,45 @@ function checkReceiptStatus(receipt) {
 // 인증페이지제출과는 별도 시트/헤더라 COL과 분리해서 관리한다.
 var PROCESSING_COL = {
   '접수번호': 1, '제출시각': 2, '이메일': 3, '청약구분': 4, '주택형': 5, '당첨동': 6, '호수': 7,
-  '이름': 8, '인증 결과': 9, 'Drive링크': 10, '카톡닉네임': 11, '네이버ID': 12, '등업결과': 16,
-  'submission_id': 19
+  '이름': 8, '인증 결과': 9, 'Drive링크': 10, '카톡닉네임': 11, '네이버ID': 12, '배우자구분': 13,
+  '배우자닉네임': 14, '배우자 네이버 계정': 15, '등업결과': 16, '실패사유': 17, '현재등급': 18,
+  'submission_id': 19, '입력방식': 20
 };
 
 // 관리자 계정 확인 — "관리자계정" 시트(아이디, 비밀번호 2열)와 평문 대조.
 // 검수 화면 접근을 막는 최소한의 문턱일 뿐, 강한 보안이 필요하면(관리자 여러 명 등) 나중에 강화 필요.
+// 비밀번호는 시트에 평문으로 남기지 않는다 — B열(비밀번호)에 평문이 남아있으면 매 로그인 시도마다
+// 자동으로 해시를 계산해 C열(비밀번호해시)에 저장하고 B열은 지운다. 그 다음부터는 항상 C열의
+// 해시와 비교한다.
+function hashPassword(pw) {
+  var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(pw), Utilities.Charset.UTF_8);
+  return bytes.map(function (b) {
+    var v = (b < 0 ? b + 256 : b).toString(16);
+    return v.length === 1 ? '0' + v : v;
+  }).join('');
+}
+
 function checkAdminCredentials(id, pw) {
   var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('관리자계정');
   if (!sheet || sheet.getLastRow() < 2) return false;
-  var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues();
+
+  var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues(); // A:아이디, B:비밀번호(평문,레거시), C:비밀번호해시
   for (var i = 0; i < values.length; i++) {
-    if (String(values[i][0]) === String(id) && String(values[i][1]) === String(pw)) return true;
+    var plain = values[i][1];
+    if (plain) { // 평문이 남아있으면 해시로 마이그레이션하고 평문은 지운다
+      var newHash = hashPassword(plain);
+      sheet.getRange(i + 2, 3).setValue(newHash);
+      sheet.getRange(i + 2, 2).setValue('');
+      values[i][1] = '';
+      values[i][2] = newHash;
+    }
+  }
+
+  var pwHash = hashPassword(pw);
+  for (var j = 0; j < values.length; j++) {
+    if (String(values[j][0]) === String(id) && values[j][2] && String(values[j][2]) === pwHash) {
+      return true;
+    }
   }
   return false;
 }
@@ -173,6 +200,7 @@ function searchHistory(data) {
 
       results.push({
         source: source,
+        submission_id: row[PROCESSING_COL['submission_id'] - 1],
         receipt_no: rReceipt,
         submitted_at: row[PROCESSING_COL['제출시각'] - 1],
         apply_type: row[PROCESSING_COL['청약구분'] - 1],
@@ -184,7 +212,12 @@ function searchHistory(data) {
         drive_link: row[PROCESSING_COL['Drive링크'] - 1],
         kakao_nick: row[PROCESSING_COL['카톡닉네임'] - 1],
         naver_id: row[PROCESSING_COL['네이버ID'] - 1],
-        upgrade_result: row[PROCESSING_COL['등업결과'] - 1]
+        spouse_role: row[PROCESSING_COL['배우자구분'] - 1],
+        spouse_nick: row[PROCESSING_COL['배우자닉네임'] - 1],
+        spouse_naver_id: row[PROCESSING_COL['배우자 네이버 계정'] - 1],
+        upgrade_result: row[PROCESSING_COL['등업결과'] - 1],
+        fail_reason: row[PROCESSING_COL['실패사유'] - 1],
+        current_grade: row[PROCESSING_COL['현재등급'] - 1]
       });
     }
   }
@@ -193,6 +226,32 @@ function searchHistory(data) {
   collect('2-처리완료', '처리완료');
 
   return {ok: true, results: results};
+}
+
+// "이력 조회" 탭에서 결과 카드를 직접 수정해 저장할 때 호출됨 — source로 어느 시트인지 정하고
+// submission_id로 행을 찾아 전달된 필드만 덮어쓴다(안 보낸 필드는 그대로 둠).
+function updateHistoryRow(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  var sheetName = data.source === '처리완료' ? '2-처리완료' : '1-처리중';
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(sheetName);
+  var rowIndex = findRowBySubmissionId2(sheet, data.submission_id, PROCESSING_COL['submission_id']);
+  if (!rowIndex) return {ok: false, error: 'NOT_FOUND'};
+
+  var fieldMap = {
+    receipt_no: '접수번호', apply_type: '청약구분', house_type: '주택형', building: '당첨동',
+    unit_no: '호수', name: '이름', result: '인증 결과', kakao_nick: '카톡닉네임', naver_id: '네이버ID',
+    spouse_role: '배우자구분', spouse_nick: '배우자닉네임', spouse_naver_id: '배우자 네이버 계정',
+    upgrade_result: '등업결과', fail_reason: '실패사유', current_grade: '현재등급'
+  };
+  var fields = data.fields || {};
+  for (var key in fieldMap) {
+    if (Object.prototype.hasOwnProperty.call(fields, key)) {
+      sheet.getRange(rowIndex, PROCESSING_COL[fieldMap[key]]).setValue(fields[key]);
+    }
+  }
+  return {ok: true};
 }
 
 function findRowBySubmissionId2(sheet, submissionId, colIndex) {
@@ -218,6 +277,9 @@ function doPost(e) {
   }
   if (data.action === 'searchHistory') {
     return jsonResponse(searchHistory(data));
+  }
+  if (data.action === 'updateHistoryRow') {
+    return jsonResponse(updateHistoryRow(data));
   }
 
   var lock = LockService.getScriptLock();
