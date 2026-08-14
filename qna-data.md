@@ -9,7 +9,7 @@
 >[LH청약플러스](https://apply.lh.or.kr) > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 [바로가기](https://apply.lh.or.kr/lhapply/apply/pr/przwin/selectPrzwinRdList.do?mi=1110)
 
 >업로드는 이미지 파일만 가능합니다.
->[인증 링크](https://forms.gle/bBe4odMSAsrq93Ac8)
+>[인증 링크](https://ebunfirvil.github.io/auth-page.html)
 
 ## 카페 등업은 언제되나요?
 

@@ -25,25 +25,37 @@ function doGet(e) {
     return jsonResponse(getVerifiedUnits());
   }
   if (action === 'checkReceiptStatus') {
-    return jsonResponse(checkReceiptStatus(e.parameter.receipt));
+    return jsonResponse(checkReceiptStatus(e.parameter.receipt, e.parameter.building, e.parameter.unit_no));
   }
   return jsonResponse({ok: false, error: 'UNKNOWN_ACTION'});
 }
 
-// 접수번호 상태 확인 — "1-처리중"에 있으면 그 결과를 최우선으로 보고 status:'processing'을 반환하고
-// (아직 최종 처리 전이라는 뜻), 없으면 기존처럼 "2-처리완료"에서 인증 결과=성공 여부를 본다.
-// (같은 접수번호로 여러 번 시도한 행이 섞여 있을 수 있어 하나라도 매칭되면 그걸로 판단)
+function normalizeBuildingForMatch(v) {
+  return String(v || '').trim().replace(/동$/, '');
+}
+function normalizeUnitForMatch(v) {
+  return String(v || '').replace(/[^0-9]/g, '');
+}
+
+// 접수번호+당첨동+호수 세 개가 전부 일치해야 조회되도록 한다(접수번호만으로 무작위 대입해서
+// 남의 인증 상태를 훑어보는 걸 막기 위한 최소한의 문턱). "1-처리중"에 있으면 status:'processing'을
+// 최우선으로 반환하고(아직 최종 처리 전이라는 뜻), 없으면 "2-처리완료"에서 인증 결과=성공 여부를 본다.
 // alreadyVerified는 하위호환용 — auth-page.html이 제출 직전 "이미 인증되었는데 다시 제출하시겠습니까?"
 // 확인창을 띄울 때는 여전히 이 필드(= status가 'verified'일 때만 true)를 쓴다.
-function checkReceiptStatus(receipt) {
+function checkReceiptStatus(receipt, building, unitNo) {
   receipt = String(receipt || '').trim();
-  if (!receipt) return {ok: true, status: 'none', alreadyVerified: false};
+  var bKey = normalizeBuildingForMatch(building);
+  var uKey = normalizeUnitForMatch(unitNo);
+  if (!receipt || !bKey || !uKey) return {ok: true, status: 'none', alreadyVerified: false};
 
   var processingSheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('1-처리중');
   if (processingSheet && processingSheet.getLastRow() >= 2) {
-    var pValues = processingSheet.getRange(2, 1, processingSheet.getLastRow() - 1, 1).getValues();
+    var pValues = processingSheet.getRange(2, 1, processingSheet.getLastRow() - 1, 7).getValues();
     for (var j = 0; j < pValues.length; j++) {
-      if (String(pValues[j][0] || '').trim() === receipt) {
+      var pRow = pValues[j];
+      if (String(pRow[0] || '').trim() === receipt &&
+          normalizeBuildingForMatch(pRow[5]) === bKey &&
+          normalizeUnitForMatch(pRow[6]) === uKey) {
         return {ok: true, status: 'processing', alreadyVerified: false};
       }
     }
@@ -55,7 +67,10 @@ function checkReceiptStatus(receipt) {
   var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 9).getValues();
   for (var i = 0; i < values.length; i++) {
     var row = values[i];
-    if (String(row[0] || '').trim() === receipt && String(row[8] || '').indexOf('성공') === 0) {
+    if (String(row[0] || '').trim() === receipt &&
+        normalizeBuildingForMatch(row[5]) === bKey &&
+        normalizeUnitForMatch(row[6]) === uKey &&
+        String(row[8] || '').indexOf('성공') === 0) {
       return {ok: true, status: 'verified', alreadyVerified: true};
     }
   }

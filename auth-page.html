@@ -446,9 +446,22 @@
 
     <div class="lookup-card">
       <h3><i class="fas fa-magnifying-glass"></i> 인증 결과 조회</h3>
+      <p style="font-size:0.82rem; color:var(--gray); margin:0 0 10px;">접수번호와 당첨동/호수를 모두 입력해야 조회됩니다.</p>
       <div class="lookup-row">
-        <input type="text" id="lookupReceiptNo" placeholder="접수번호 입력" inputmode="numeric" autocomplete="off">
-        <button type="button" id="lookupBtn">조회</button>
+        <input type="text" id="lookupReceiptNo" placeholder="접수번호" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="lookup-row" style="margin-top:8px;">
+        <div class="input-with-suffix" style="flex:1; min-width:0;">
+          <input type="text" id="lookupBuilding" placeholder="103" inputmode="numeric" autocomplete="off">
+          <span class="input-suffix">동</span>
+        </div>
+        <div class="input-with-suffix" style="flex:1; min-width:0;">
+          <input type="text" id="lookupUnitNo" placeholder="501" inputmode="numeric" autocomplete="off">
+          <span class="input-suffix">호</span>
+        </div>
+      </div>
+      <div class="lookup-row" style="margin-top:8px;">
+        <button type="button" id="lookupBtn" style="flex:1">조회</button>
         <button type="button" id="lookupRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 조회"><i class="fas fa-rotate"></i></button>
       </div>
       <div class="lookup-result" id="lookupResult"></div>
@@ -897,8 +910,11 @@
     });
 
     // ── 인증 결과 조회 ──────────────────────────────────────────────────
-    // 제출 폼과 무관하게, 접수번호만으로 "2-처리완료" 시트 기준 인증 완료 여부를 바로 보여준다.
+    // 제출 폼과 무관하게, 접수번호+당첨동+호수 세 개가 다 맞아야 "2-처리완료"/"1-처리중" 기준
+    // 인증 상태를 보여준다(접수번호만으로 무작위 대입 조회하는 것을 막기 위함).
     const lookupReceiptNo = document.getElementById('lookupReceiptNo');
+    const lookupBuilding = document.getElementById('lookupBuilding');
+    const lookupUnitNo = document.getElementById('lookupUnitNo');
     const lookupBtn = document.getElementById('lookupBtn');
     const lookupRefreshBtn = document.getElementById('lookupRefreshBtn');
     const lookupResult = document.getElementById('lookupResult');
@@ -914,8 +930,10 @@
 
     async function runLookup() {
       const receipt = lookupReceiptNo.value.trim();
-      if (!receipt) {
-        setLookupResult('접수번호를 입력해 주세요.', 'err');
+      const building = lookupBuilding.value.trim();
+      const unitNo = lookupUnitNo.value.trim();
+      if (!receipt || !building || !unitNo) {
+        setLookupResult('접수번호, 당첨동, 호수를 모두 입력해 주세요.', 'err');
         return;
       }
       lookupBtn.disabled = true;
@@ -923,7 +941,8 @@
       const prevLabel = lookupBtn.textContent;
       lookupBtn.textContent = '조회 중...';
       try {
-        const res = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receipt));
+        const res = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receipt) +
+          '&building=' + encodeURIComponent(building) + '&unit_no=' + encodeURIComponent(unitNo));
         const data = await res.json();
         if (!data.ok) throw new Error('조회 실패');
         if (data.status === 'processing') {
@@ -1572,7 +1591,9 @@
 
       // 같은 접수번호가 "2-처리완료" 시트에 이미 인증 성공으로 기록돼 있으면 재제출 여부를 한 번 더 확인한다.
       try {
-        const checkRes = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receiptNoInput.value.trim()));
+        const checkRes = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receiptNoInput.value.trim()) +
+          '&building=' + encodeURIComponent(document.getElementById('building').value) +
+          '&unit_no=' + encodeURIComponent(unitNoInput.value.trim()));
         const checkData = await checkRes.json();
         if (checkData.ok && checkData.alreadyVerified) {
           if (!confirm('이미 인증되었는데 다시 제출하시겠습니까?')) return;
