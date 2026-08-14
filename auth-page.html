@@ -738,6 +738,9 @@
       </div>
 
       <div id="mgReviewPanel">
+        <div class="lookup-row" id="mgReviewToolbar" style="display:none; justify-content:flex-end; margin-bottom:10px;">
+          <button type="button" id="mgReviewRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 불러오기"><i class="fas fa-rotate"></i></button>
+        </div>
         <div class="form-card" id="mgReviewCard" style="display:none">
           <div class="form-field" id="mgImageField">
             <label>인증샷</label>
@@ -997,6 +1000,8 @@
       const mgName = document.getElementById('mgName');
       const mgSuccessBtn = document.getElementById('mgSuccessBtn');
       const mgFailBtn = document.getElementById('mgFailBtn');
+      const mgReviewRefreshBtn = document.getElementById('mgReviewRefreshBtn');
+      const mgReviewToolbar = document.getElementById('mgReviewToolbar');
       const mgReviewStatus = document.getElementById('mgReviewStatus');
       const mgImageModalOverlay = document.getElementById('mgImageModalOverlay');
       const mgImageModalImg = document.getElementById('mgImageModalImg');
@@ -1115,6 +1120,7 @@
           adminCreds = { admin_id: id, admin_pw: pw };
           mgLoginCard.style.display = 'none';
           mgTabNav.style.display = 'flex';
+          mgReviewToolbar.style.display = 'flex';
           loadNextItem();
         } catch (err) {
           setMgLoginResult('로그인 중 오류가 발생했습니다: ' + err.message, 'err');
@@ -1126,6 +1132,12 @@
 
       mgSuccessBtn.addEventListener('click', () => decide('성공'));
       mgFailBtn.addEventListener('click', () => decide('실패'));
+      mgReviewRefreshBtn.addEventListener('click', () => {
+        mgReviewRefreshBtn.classList.remove('spinning');
+        void mgReviewRefreshBtn.offsetWidth; // 애니메이션 재시작을 위한 강제 리플로우
+        mgReviewRefreshBtn.classList.add('spinning');
+        loadNextItem();
+      });
 
       // ── 이력 조회 탭 ──────────────────────────────────────────────
       function showTab(tab) {

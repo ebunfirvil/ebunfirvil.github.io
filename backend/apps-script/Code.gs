@@ -138,6 +138,8 @@ function getNextPending(data) {
   var values = sheet.getRange(2, 1, lastRow - 1, 20).getValues();
   for (var i = 0; i < values.length; i++) {
     var row = values[i];
+    var receiptNo = String(row[PROCESSING_COL['접수번호'] - 1] || '').trim();
+    if (!receiptNo) continue; // 접수번호가 없는 완전히 빈 행(트레일링 빈 행 등)은 대기 항목이 아니므로 건너뜀
     var result = String(row[PROCESSING_COL['인증 결과'] - 1] || '').trim();
     if (result === '성공' || result === '실패') continue; // 이미 결정된 행만 건너뜀 (빈 값/"확인 필요"는 대기로 취급)
 
@@ -193,9 +195,9 @@ function searchHistory(data) {
     return {ok: false, error: 'UNAUTHORIZED'};
   }
   var receipt = String(data.receipt || '').trim();
-  var building = String(data.building || '').trim();
-  var unit = String(data.unit_no || '').trim();
-  if (!receipt && !building && !unit) {
+  var buildingKey = normalizeBuildingForMatch(data.building);
+  var unitKey = normalizeUnitForMatch(data.unit_no);
+  if (!receipt && !buildingKey && !unitKey) {
     return {ok: false, error: 'EMPTY_QUERY'};
   }
 
@@ -210,8 +212,8 @@ function searchHistory(data) {
       var rBuilding = String(row[PROCESSING_COL['당첨동'] - 1] || '').trim();
       var rUnit = String(row[PROCESSING_COL['호수'] - 1] || '').trim();
       if (receipt && rReceipt !== receipt) continue;
-      if (building && rBuilding !== building) continue;
-      if (unit && rUnit.indexOf(unit) === -1) continue;
+      if (buildingKey && normalizeBuildingForMatch(rBuilding) !== buildingKey) continue;
+      if (unitKey && normalizeUnitForMatch(rUnit).indexOf(unitKey) === -1) continue;
 
       results.push({
         source: source,
