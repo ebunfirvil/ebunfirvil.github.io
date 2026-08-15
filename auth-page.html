@@ -834,7 +834,7 @@
           <h3><i class="fas fa-gear"></i> 관리 설정</h3>
           <div class="form-field" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
             <label for="mgSelfEditToggle" style="margin:0;">셀프 정보 수정 기능 (카톡닉네임/네이버ID)</label>
-            <input type="checkbox" id="mgSelfEditToggle" style="width:20px; height:20px; flex-shrink:0;">
+            <input type="checkbox" id="mgSelfEditToggle" checked style="width:20px; height:20px; flex-shrink:0;">
           </div>
           <p style="font-size:0.8rem; color:var(--gray); margin:6px 0 0;">끄면 일반 조회 화면의 "카톡닉네임/네이버ID 수정" 기능이 즉시 비활성화됩니다. 수정 이력이 비정상적으로 몰릴 때 임시로 꺼두는 용도입니다.</p>
           <div class="lookup-result" id="mgSettingsStatus" style="margin-top:10px;"></div>
@@ -991,7 +991,7 @@
       lookupBtn.disabled = true;
       lookupKakaoRow.style.display = 'none';
       editInfoRow.style.display = 'none';
-      editInfoCard.style.display = 'none';
+      closeEditInfoCard();
       const prevLabel = lookupBtn.textContent;
       lookupBtn.textContent = '조회 중...';
       try {
@@ -1019,9 +1019,20 @@
     }
 
     // ── 카톡닉네임/네이버ID 셀프 수정 (접수번호+당첨동+호수 3종으로 본인 확인, 관리자 로그인 불필요) ──
+    // 조회에 성공한 시점의 접수번호/당첨동/호수를 스냅샷으로 고정해서 저장 시 재사용한다 — 폼이
+    // 열려있는 동안 조회 입력칸 값이 바뀌어도(사용자가 실수로 건드리는 경우 등) 엉뚱한 행에
+    // 저장되지 않도록. 폼이 열려있는 동안은 조회 입력칸 자체도 잠가서 애초에 못 바꾸게 막는다.
+    let editInfoIdentity = null;
+    function closeEditInfoCard() {
+      editInfoCard.style.display = 'none';
+      editInfoIdentity = null;
+      lookupReceiptNo.disabled = false;
+      lookupBuilding.disabled = false;
+      lookupUnitNo.disabled = false;
+    }
     editInfoToggleBtn.addEventListener('click', async () => {
       if (editInfoCard.style.display === 'block') {
-        editInfoCard.style.display = 'none';
+        closeEditInfoCard();
         return;
       }
       const receipt = lookupReceiptNo.value.trim();
@@ -1040,14 +1051,22 @@
           setEditInfoStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다.', 'err');
           return;
         }
-        if (!data.ok || !data.found) {
+        if (!data.ok) {
           setEditInfoStatus('정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+          return;
+        }
+        if (!data.found) {
+          setEditInfoStatus('해당 접수번호/당첨동/호수로 등록된 신청 내역을 찾지 못했습니다. 입력값을 확인해 주세요.', 'no');
           return;
         }
         editKakaoNick.value = data.kakao_nick || '';
         editNaverId.value = data.naver_id || '';
         editSpouseNick.value = data.spouse_nick || '';
         editSpouseNaverId.value = data.spouse_naver_id || '';
+        editInfoIdentity = { receipt, building, unitNo };
+        lookupReceiptNo.disabled = true;
+        lookupBuilding.disabled = true;
+        lookupUnitNo.disabled = true;
         editInfoCard.style.display = 'block';
       } catch (err) {
         setEditInfoStatus('정보를 불러오는 중 오류가 발생했습니다.', 'err');
@@ -1057,9 +1076,8 @@
     });
 
     editInfoSaveBtn.addEventListener('click', async () => {
-      const receipt = lookupReceiptNo.value.trim();
-      const building = lookupBuilding.value.trim();
-      const unitNo = lookupUnitNo.value.trim();
+      if (!editInfoIdentity) return;
+      const { receipt, building, unitNo } = editInfoIdentity;
       editInfoSaveBtn.disabled = true;
       setEditInfoStatus('저장 중...', 'processing');
       try {
@@ -1291,29 +1309,44 @@
         mgSettingsStatus.className = 'lookup-result show' + (type ? ' ' + type : '');
       }
       async function loadAdminSettings() {
+        mgSelfEditToggle.disabled = true;
+        mgSelfEditToggle.indeterminate = true;
         setMgSettingsStatus('불러오는 중...', 'processing');
-        const data = await callManageApi({ action: 'getAdminSettings' });
-        if (!data.ok) {
-          setMgSettingsStatus('설정을 불러오지 못했습니다: ' + (data.error || ''), 'err');
-          return;
+        try {
+          const data = await callManageApi({ action: 'getAdminSettings' });
+          if (!data.ok) {
+            setMgSettingsStatus('설정을 불러오지 못했습니다: ' + (data.error || ''), 'err');
+            return;
+          }
+          mgSelfEditToggle.indeterminate = false;
+          mgSelfEditToggle.checked = data.self_edit_enabled !== false;
+          setMgSettingsStatus('', '');
+        } catch (err) {
+          setMgSettingsStatus('설정을 불러오는 중 오류가 발생했습니다. 탭을 다시 눌러 재시도해 주세요.', 'err');
+        } finally {
+          mgSelfEditToggle.disabled = false;
         }
-        mgSelfEditToggle.checked = data.self_edit_enabled !== false;
-        setMgSettingsStatus('', '');
       }
       mgSelfEditToggle.addEventListener('change', async () => {
         mgSelfEditToggle.disabled = true;
         setMgSettingsStatus('저장 중...', 'processing');
-        const data = await callManageApi({
-          action: 'updateAdminSettings',
-          settings: { self_edit_enabled: mgSelfEditToggle.checked }
-        });
-        mgSelfEditToggle.disabled = false;
-        if (!data.ok) {
-          setMgSettingsStatus('저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+        try {
+          const data = await callManageApi({
+            action: 'updateAdminSettings',
+            settings: { self_edit_enabled: mgSelfEditToggle.checked }
+          });
+          if (!data.ok) {
+            setMgSettingsStatus('저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+            mgSelfEditToggle.checked = !mgSelfEditToggle.checked;
+            return;
+          }
+          setMgSettingsStatus(mgSelfEditToggle.checked ? '셀프 수정 기능이 켜졌습니다.' : '셀프 수정 기능이 꺼졌습니다.', 'ok');
+        } catch (err) {
+          setMgSettingsStatus('저장 중 오류가 발생했습니다. 다시 시도해 주세요.', 'err');
           mgSelfEditToggle.checked = !mgSelfEditToggle.checked;
-          return;
+        } finally {
+          mgSelfEditToggle.disabled = false;
         }
-        setMgSettingsStatus(mgSelfEditToggle.checked ? '셀프 수정 기능이 켜졌습니다.' : '셀프 수정 기능이 꺼졌습니다.', 'ok');
       });
 
       function setMgSearchStatus(text, type) {

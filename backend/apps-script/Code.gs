@@ -37,6 +37,14 @@ function normalizeUnitForMatch(v) {
   return String(v || '').replace(/[^0-9]/g, '');
 }
 
+// 시트 셀에 =/+/-/@로 시작하는 값을 그대로 쓰면 Sheets가 수식으로 실행해버린다(수식 인젝션).
+// 사용자가 직접 입력하는 값을 setValue/appendRow에 넣기 전에 항상 이 함수를 거친다 — 앞에
+// 작은따옴표를 붙이면 Sheets가 텍스트로 강제 처리한다.
+function sanitizeCell(v) {
+  var s = String(v == null ? '' : v).trim();
+  return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
+}
+
 // 접수번호+당첨동+호수 세 개가 전부 일치해야 조회되도록 한다(접수번호만으로 무작위 대입해서
 // 남의 인증 상태를 훑어보는 걸 막기 위한 최소한의 문턱). "1-처리중"에 있으면 status:'processing'을
 // 최우선으로 반환하고(아직 최종 처리 전이라는 뜻), 없으면 "2-처리완료"에서 인증 결과=성공 여부를 본다.
@@ -280,14 +288,17 @@ function findRowBySubmissionId2(sheet, submissionId, colIndex) {
   return null;
 }
 
-// 접수번호+당첨동+호수 세 개가 전부 일치하는 행을 "1-처리중" → "2-처리완료" 순으로 찾는다.
-// checkReceiptStatus와 동일한 신뢰 기준(이 세 값을 아는 사람 = 본인)을 셀프서비스 정보 수정에도 쓴다.
-function findOwnRow(receipt, building, unitNo) {
+// 접수번호+당첨동+호수 세 개가 전부 일치하는 행을 "1-처리중"과 "2-처리완료" 양쪽에서 전부 찾는다
+// (재제출 등으로 같은 사람이 두 시트에 걸쳐 있을 수 있어 첫 매칭만 쓰면 처리완료 쪽이 안 바뀌는
+// 채로 남을 수 있다). checkReceiptStatus와 동일한 신뢰 기준(이 세 값을 아는 사람 = 본인)을
+// 셀프서비스 정보 수정에도 쓴다.
+function findOwnRows(receipt, building, unitNo) {
   var r = String(receipt || '').trim();
   var bKey = normalizeBuildingForMatch(building);
   var uKey = normalizeUnitForMatch(unitNo);
-  if (!r || !bKey || !uKey) return null;
+  if (!r || !bKey || !uKey) return [];
 
+  var results = [];
   var sheetNames = ['1-처리중', '2-처리완료'];
   for (var s = 0; s < sheetNames.length; s++) {
     var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(sheetNames[s]);
@@ -298,11 +309,11 @@ function findOwnRow(receipt, building, unitNo) {
       if (String(row[PROCESSING_COL['접수번호'] - 1] || '').trim() === r &&
           normalizeBuildingForMatch(row[PROCESSING_COL['당첨동'] - 1]) === bKey &&
           normalizeUnitForMatch(row[PROCESSING_COL['호수'] - 1]) === uKey) {
-        return {sheetName: sheetNames[s], sheet: sheet, rowIndex: i + 2};
+        results.push({sheetName: sheetNames[s], sheet: sheet, rowIndex: i + 2});
       }
     }
   }
-  return null;
+  return results;
 }
 
 // 관리 설정 — Script Properties에 저장하는 간단한 on/off 플래그 모음. 관리 화면의 "관리 설정" 탭이
@@ -333,14 +344,17 @@ function updateAdminSettings(data) {
   return {ok: true};
 }
 
-// 조회 화면에서 "정보 수정" 폼을 열 때 현재 값을 채워주기 위한 조회 전용 액션.
+// 조회 화면에서 "정보 수정" 폼을 열 때 현재 값을 채워주기 위한 조회 전용 액션. 두 시트 모두에
+// 매칭되는 행이 있으면 "2-처리완료"(실제로 쓰이는 최종 기록) 쪽을 우선한다 — findOwnRows가
+// "1-처리중" → "2-처리완료" 순으로 채우므로 마지막 항목이 항상 처리완료 쪽이다.
 function getOwnInfo(data) {
   if (!getAdminSettingsRaw().self_edit_enabled) {
     return {ok: false, error: 'FEATURE_DISABLED'};
   }
-  var found = findOwnRow(data.receipt, data.building, data.unit_no);
-  if (!found) return {ok: true, found: false};
-  var row = found.sheet.getRange(found.rowIndex, 1, 1, 20).getValues()[0];
+  var rows = findOwnRows(data.receipt, data.building, data.unit_no);
+  if (rows.length === 0) return {ok: true, found: false};
+  var source = rows[rows.length - 1];
+  var row = source.sheet.getRange(source.rowIndex, 1, 1, 20).getValues()[0];
   return {
     ok: true, found: true,
     kakao_nick: row[PROCESSING_COL['카톡닉네임'] - 1],
@@ -357,43 +371,59 @@ var OWN_EDITABLE_FIELDS = {
   spouse_nick: '배우자닉네임', spouse_naver_id: '배우자 네이버 계정'
 };
 
+// "1-처리중"과 "2-처리완료" 양쪽에 매칭 행이 있으면 둘 다 갱신한다(재제출 등으로 두 시트에 걸쳐
+// 같은 사람 기록이 남아있을 수 있음). 행 인덱스로 쓰는 동안 다른 요청이 시트를 건드리지 못하게
+// LockService로 감싸고, 필드 하나를 쓸 때마다 바로 그 자리에서 이력을 남겨서(다음 필드에서 실패해도
+// 이미 쓴 변경은 로그에 남도록) 부분 실패 시에도 감사 기록이 비지 않게 한다.
 function updateOwnInfo(data) {
   if (!getAdminSettingsRaw().self_edit_enabled) {
     return {ok: false, error: 'FEATURE_DISABLED'};
   }
-  var found = findOwnRow(data.receipt, data.building, data.unit_no);
-  if (!found) return {ok: false, error: 'NOT_FOUND'};
+  var rows = findOwnRows(data.receipt, data.building, data.unit_no);
+  if (rows.length === 0) return {ok: false, error: 'NOT_FOUND'};
 
   var fields = data.fields || {};
-  var changed = [];
-  for (var key in OWN_EDITABLE_FIELDS) {
-    if (!Object.prototype.hasOwnProperty.call(fields, key)) continue;
-    var col = PROCESSING_COL[OWN_EDITABLE_FIELDS[key]];
-    var oldValue = String(found.sheet.getRange(found.rowIndex, col).getValue() || '');
-    var newValue = String(fields[key] || '').trim();
-    if (oldValue === newValue) continue;
-    found.sheet.getRange(found.rowIndex, col).setValue(newValue);
-    changed.push({field: OWN_EDITABLE_FIELDS[key], oldValue: oldValue, newValue: newValue});
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(30000)) return {ok: false, error: 'BUSY'};
+  var totalChanged = 0;
+  try {
+    rows.forEach(function (found) {
+      for (var key in OWN_EDITABLE_FIELDS) {
+        if (!Object.prototype.hasOwnProperty.call(fields, key)) continue;
+        var col = PROCESSING_COL[OWN_EDITABLE_FIELDS[key]];
+        var cell = found.sheet.getRange(found.rowIndex, col);
+        var cellValue = cell.getValue();
+        var oldValue = String(cellValue == null ? '' : cellValue);
+        var newValue = String(fields[key] == null ? '' : fields[key]).trim();
+        if (oldValue === newValue) continue;
+        cell.setValue(sanitizeCell(newValue)); // 수식 인젝션 방지 — =/+/-/@로 시작하면 텍스트로 강제
+        totalChanged++;
+        logOwnInfoEdit(found.sheetName, data.receipt, data.building, data.unit_no, OWN_EDITABLE_FIELDS[key], oldValue, newValue);
+      }
+    });
+  } finally {
+    lock.releaseLock();
   }
-  if (changed.length > 0) {
-    logOwnInfoEdit(found.sheetName, data.receipt, data.building, data.unit_no, changed);
-  }
-  return {ok: true, changed: changed.length};
+  return {ok: true, changed: totalChanged};
 }
 
 // 셀프서비스 수정은 관리자 로그인 없이(접수번호+당첨동+호수만으로) 이뤄지므로, 누가 뭘 언제 바꿨는지
-// "수정이력" 시트에 전부 남겨서 나중에 감사할 수 있게 한다. 시트가 없으면 처음 호출 시 자동 생성.
-function logOwnInfoEdit(sheetName, receipt, building, unitNo, changed) {
+// "수정이력" 시트에 전부 남겨서 나중에 감사할 수 있게 한다. 시트가 없으면 처음 호출 시 자동 생성하되,
+// 동시에 두 요청이 처음 생성을 시도하는 경합 상황에서도 죽지 않게 try/catch로 감싼다. 로그에 들어가는
+// 값도 sanitizeCell을 거쳐 감사 시트 자체가 수식 인젝션 통로가 되지 않게 한다.
+function logOwnInfoEdit(sheetName, receipt, building, unitNo, field, oldValue, newValue) {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var log = ss.getSheetByName('수정이력');
   if (!log) {
-    log = ss.insertSheet('수정이력');
-    log.appendRow(['타임스탬프', '시트', '접수번호', '당첨동', '호수', '필드', '이전값', '새값']);
+    try {
+      log = ss.insertSheet('수정이력');
+      log.appendRow(['타임스탬프', '시트', '접수번호', '당첨동', '호수', '필드', '이전값', '새값']);
+    } catch (e) {
+      log = ss.getSheetByName('수정이력'); // 동시 생성 경합으로 이미 만들어졌으면 그걸 그대로 씀
+    }
   }
-  var ts = new Date();
-  changed.forEach(function (c) {
-    log.appendRow([ts, sheetName, receipt, building, unitNo, c.field, c.oldValue, c.newValue]);
-  });
+  log.appendRow([new Date(), sheetName, sanitizeCell(receipt), sanitizeCell(building), sanitizeCell(unitNo),
+    field, sanitizeCell(oldValue), sanitizeCell(newValue)]);
 }
 
 function doPost(e) {
