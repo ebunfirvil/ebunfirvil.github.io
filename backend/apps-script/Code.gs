@@ -280,6 +280,122 @@ function findRowBySubmissionId2(sheet, submissionId, colIndex) {
   return null;
 }
 
+// 접수번호+당첨동+호수 세 개가 전부 일치하는 행을 "1-처리중" → "2-처리완료" 순으로 찾는다.
+// checkReceiptStatus와 동일한 신뢰 기준(이 세 값을 아는 사람 = 본인)을 셀프서비스 정보 수정에도 쓴다.
+function findOwnRow(receipt, building, unitNo) {
+  var r = String(receipt || '').trim();
+  var bKey = normalizeBuildingForMatch(building);
+  var uKey = normalizeUnitForMatch(unitNo);
+  if (!r || !bKey || !uKey) return null;
+
+  var sheetNames = ['1-처리중', '2-처리완료'];
+  for (var s = 0; s < sheetNames.length; s++) {
+    var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(sheetNames[s]);
+    if (!sheet || sheet.getLastRow() < 2) continue;
+    var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 20).getValues();
+    for (var i = 0; i < values.length; i++) {
+      var row = values[i];
+      if (String(row[PROCESSING_COL['접수번호'] - 1] || '').trim() === r &&
+          normalizeBuildingForMatch(row[PROCESSING_COL['당첨동'] - 1]) === bKey &&
+          normalizeUnitForMatch(row[PROCESSING_COL['호수'] - 1]) === uKey) {
+        return {sheetName: sheetNames[s], sheet: sheet, rowIndex: i + 2};
+      }
+    }
+  }
+  return null;
+}
+
+// 관리 설정 — Script Properties에 저장하는 간단한 on/off 플래그 모음. 관리 화면의 "관리 설정" 탭이
+// 읽고 쓰는 대상이며, 나중에 다른 관리 기능이 늘어나도 이 객체에 키만 추가하면 된다.
+function getAdminSettingsRaw() {
+  var props = PropertiesService.getScriptProperties();
+  var selfEdit = props.getProperty('self_edit_enabled');
+  return {self_edit_enabled: selfEdit === null ? true : selfEdit === 'true'};
+}
+
+function getAdminSettings(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  var settings = getAdminSettingsRaw();
+  return {ok: true, self_edit_enabled: settings.self_edit_enabled};
+}
+
+function updateAdminSettings(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  var settings = data.settings || {};
+  var props = PropertiesService.getScriptProperties();
+  if (Object.prototype.hasOwnProperty.call(settings, 'self_edit_enabled')) {
+    props.setProperty('self_edit_enabled', settings.self_edit_enabled ? 'true' : 'false');
+  }
+  return {ok: true};
+}
+
+// 조회 화면에서 "정보 수정" 폼을 열 때 현재 값을 채워주기 위한 조회 전용 액션.
+function getOwnInfo(data) {
+  if (!getAdminSettingsRaw().self_edit_enabled) {
+    return {ok: false, error: 'FEATURE_DISABLED'};
+  }
+  var found = findOwnRow(data.receipt, data.building, data.unit_no);
+  if (!found) return {ok: true, found: false};
+  var row = found.sheet.getRange(found.rowIndex, 1, 1, 20).getValues()[0];
+  return {
+    ok: true, found: true,
+    kakao_nick: row[PROCESSING_COL['카톡닉네임'] - 1],
+    naver_id: row[PROCESSING_COL['네이버ID'] - 1],
+    spouse_nick: row[PROCESSING_COL['배우자닉네임'] - 1],
+    spouse_naver_id: row[PROCESSING_COL['배우자 네이버 계정'] - 1]
+  };
+}
+
+// 본인이 조회 화면에서 직접 고칠 수 있는 필드만 화이트리스트로 제한한다 — 접수번호/당첨동/호수/인증
+// 결과 등은 여기로 못 건드리게(관리자 전용 updateHistoryRow와 분리하는 이유).
+var OWN_EDITABLE_FIELDS = {
+  kakao_nick: '카톡닉네임', naver_id: '네이버ID',
+  spouse_nick: '배우자닉네임', spouse_naver_id: '배우자 네이버 계정'
+};
+
+function updateOwnInfo(data) {
+  if (!getAdminSettingsRaw().self_edit_enabled) {
+    return {ok: false, error: 'FEATURE_DISABLED'};
+  }
+  var found = findOwnRow(data.receipt, data.building, data.unit_no);
+  if (!found) return {ok: false, error: 'NOT_FOUND'};
+
+  var fields = data.fields || {};
+  var changed = [];
+  for (var key in OWN_EDITABLE_FIELDS) {
+    if (!Object.prototype.hasOwnProperty.call(fields, key)) continue;
+    var col = PROCESSING_COL[OWN_EDITABLE_FIELDS[key]];
+    var oldValue = String(found.sheet.getRange(found.rowIndex, col).getValue() || '');
+    var newValue = String(fields[key] || '').trim();
+    if (oldValue === newValue) continue;
+    found.sheet.getRange(found.rowIndex, col).setValue(newValue);
+    changed.push({field: OWN_EDITABLE_FIELDS[key], oldValue: oldValue, newValue: newValue});
+  }
+  if (changed.length > 0) {
+    logOwnInfoEdit(found.sheetName, data.receipt, data.building, data.unit_no, changed);
+  }
+  return {ok: true, changed: changed.length};
+}
+
+// 셀프서비스 수정은 관리자 로그인 없이(접수번호+당첨동+호수만으로) 이뤄지므로, 누가 뭘 언제 바꿨는지
+// "수정이력" 시트에 전부 남겨서 나중에 감사할 수 있게 한다. 시트가 없으면 처음 호출 시 자동 생성.
+function logOwnInfoEdit(sheetName, receipt, building, unitNo, changed) {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var log = ss.getSheetByName('수정이력');
+  if (!log) {
+    log = ss.insertSheet('수정이력');
+    log.appendRow(['타임스탬프', '시트', '접수번호', '당첨동', '호수', '필드', '이전값', '새값']);
+  }
+  var ts = new Date();
+  changed.forEach(function (c) {
+    log.appendRow([ts, sheetName, receipt, building, unitNo, c.field, c.oldValue, c.newValue]);
+  });
+}
+
 function doPost(e) {
   var data = JSON.parse(e.postData.contents);
 
@@ -297,6 +413,18 @@ function doPost(e) {
   }
   if (data.action === 'updateHistoryRow') {
     return jsonResponse(updateHistoryRow(data));
+  }
+  if (data.action === 'getOwnInfo') {
+    return jsonResponse(getOwnInfo(data));
+  }
+  if (data.action === 'updateOwnInfo') {
+    return jsonResponse(updateOwnInfo(data));
+  }
+  if (data.action === 'getAdminSettings') {
+    return jsonResponse(getAdminSettings(data));
+  }
+  if (data.action === 'updateAdminSettings') {
+    return jsonResponse(updateAdminSettings(data));
   }
 
   var lock = LockService.getScriptLock();

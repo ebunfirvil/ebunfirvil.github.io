@@ -468,6 +468,29 @@
       <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
         <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
       </div>
+      <div class="lookup-row" id="editInfoRow" style="display:none; margin-top:10px;">
+        <button type="button" id="editInfoToggleBtn" style="width:100%"><i class="fas fa-pen"></i> 카톡닉네임/네이버ID 수정</button>
+      </div>
+      <div id="editInfoCard" style="display:none; margin-top:14px; border-top:1px solid var(--beige-warm); padding-top:14px;">
+        <div class="form-field">
+          <label for="editKakaoNick">카톡닉네임 (본인)</label>
+          <input type="text" id="editKakaoNick" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="editNaverId">네이버ID (본인)</label>
+          <input type="text" id="editNaverId" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="editSpouseNick">카톡닉네임 (배우자)</label>
+          <input type="text" id="editSpouseNick" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="editSpouseNaverId">네이버ID (배우자)</label>
+          <input type="text" id="editSpouseNaverId" autocomplete="off">
+        </div>
+        <button type="button" id="editInfoSaveBtn" class="btn-submit" style="width:100%">저장</button>
+        <div class="lookup-result" id="editInfoStatus" style="margin-top:10px;"></div>
+      </div>
     </div>
 
     <form class="form-card" id="authForm" novalidate>
@@ -735,6 +758,7 @@
       <div id="mgTabNav" style="display:none">
         <button type="button" id="mgTabReviewBtn" class="mg-tab-btn mg-tab-active">검수</button>
         <button type="button" id="mgTabHistoryBtn" class="mg-tab-btn">이력 조회</button>
+        <button type="button" id="mgTabSettingsBtn" class="mg-tab-btn">관리 설정</button>
       </div>
 
       <div id="mgReviewPanel">
@@ -803,6 +827,18 @@
           <div class="lookup-result" id="mgSearchStatus"></div>
         </div>
         <div id="mgSearchResults"></div>
+      </div>
+
+      <div id="mgSettingsPanel" style="display:none">
+        <div class="lookup-card">
+          <h3><i class="fas fa-gear"></i> 관리 설정</h3>
+          <div class="form-field" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <label for="mgSelfEditToggle" style="margin:0;">셀프 정보 수정 기능 (카톡닉네임/네이버ID)</label>
+            <input type="checkbox" id="mgSelfEditToggle" style="width:20px; height:20px; flex-shrink:0;">
+          </div>
+          <p style="font-size:0.8rem; color:var(--gray); margin:6px 0 0;">끄면 일반 조회 화면의 "카톡닉네임/네이버ID 수정" 기능이 즉시 비활성화됩니다. 수정 이력이 비정상적으로 몰릴 때 임시로 꺼두는 용도입니다.</p>
+          <div class="lookup-result" id="mgSettingsStatus" style="margin-top:10px;"></div>
+        </div>
       </div>
 
     </div>
@@ -923,10 +959,23 @@
     const lookupResult = document.getElementById('lookupResult');
     const lookupKakaoRow = document.getElementById('lookupKakaoRow');
     const lookupKakaoBtn = document.getElementById('lookupKakaoBtn');
+    const editInfoRow = document.getElementById('editInfoRow');
+    const editInfoToggleBtn = document.getElementById('editInfoToggleBtn');
+    const editInfoCard = document.getElementById('editInfoCard');
+    const editKakaoNick = document.getElementById('editKakaoNick');
+    const editNaverId = document.getElementById('editNaverId');
+    const editSpouseNick = document.getElementById('editSpouseNick');
+    const editSpouseNaverId = document.getElementById('editSpouseNaverId');
+    const editInfoSaveBtn = document.getElementById('editInfoSaveBtn');
+    const editInfoStatus = document.getElementById('editInfoStatus');
 
     function setLookupResult(text, type) {
       lookupResult.textContent = text;
       lookupResult.className = 'lookup-result show' + (type ? ' ' + type : '');
+    }
+    function setEditInfoStatus(text, type) {
+      editInfoStatus.textContent = text;
+      editInfoStatus.className = 'lookup-result show' + (type ? ' ' + type : '');
     }
 
     lookupKakaoBtn.addEventListener('click', showKakaoPopup);
@@ -941,6 +990,8 @@
       }
       lookupBtn.disabled = true;
       lookupKakaoRow.style.display = 'none';
+      editInfoRow.style.display = 'none';
+      editInfoCard.style.display = 'none';
       const prevLabel = lookupBtn.textContent;
       lookupBtn.textContent = '조회 중...';
       try {
@@ -950,10 +1001,12 @@
         if (!data.ok) throw new Error('조회 실패');
         if (data.status === 'processing') {
           setLookupResult('입예협에서 인증 진행중입니다. 잠시후에 확인 해주세요.', 'processing');
+          editInfoRow.style.display = 'flex';
         } else if (data.status === 'verified') {
           setLookupResult('해당 접수번호는 인증이 완료되었습니다.', 'ok');
           // 인증 완료된 사람만 "입장코드 확인" 버튼을 보여주고, 누를 때만 팝업을 띄운다(자동 표시 안 함)
           if (kakaoConfig.active && kakaoConfig.code) lookupKakaoRow.style.display = 'flex';
+          editInfoRow.style.display = 'flex';
         } else {
           setLookupResult('인증이 완료되지 않은 접수번호입니다.', 'no');
         }
@@ -964,6 +1017,81 @@
         lookupBtn.textContent = prevLabel;
       }
     }
+
+    // ── 카톡닉네임/네이버ID 셀프 수정 (접수번호+당첨동+호수 3종으로 본인 확인, 관리자 로그인 불필요) ──
+    editInfoToggleBtn.addEventListener('click', async () => {
+      if (editInfoCard.style.display === 'block') {
+        editInfoCard.style.display = 'none';
+        return;
+      }
+      const receipt = lookupReceiptNo.value.trim();
+      const building = lookupBuilding.value.trim();
+      const unitNo = lookupUnitNo.value.trim();
+      editInfoToggleBtn.disabled = true;
+      setEditInfoStatus('', '');
+      try {
+        const res = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'getOwnInfo', receipt, building, unit_no: unitNo })
+        });
+        const data = await res.json();
+        if (data.error === 'FEATURE_DISABLED') {
+          setEditInfoStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다.', 'err');
+          return;
+        }
+        if (!data.ok || !data.found) {
+          setEditInfoStatus('정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+          return;
+        }
+        editKakaoNick.value = data.kakao_nick || '';
+        editNaverId.value = data.naver_id || '';
+        editSpouseNick.value = data.spouse_nick || '';
+        editSpouseNaverId.value = data.spouse_naver_id || '';
+        editInfoCard.style.display = 'block';
+      } catch (err) {
+        setEditInfoStatus('정보를 불러오는 중 오류가 발생했습니다.', 'err');
+      } finally {
+        editInfoToggleBtn.disabled = false;
+      }
+    });
+
+    editInfoSaveBtn.addEventListener('click', async () => {
+      const receipt = lookupReceiptNo.value.trim();
+      const building = lookupBuilding.value.trim();
+      const unitNo = lookupUnitNo.value.trim();
+      editInfoSaveBtn.disabled = true;
+      setEditInfoStatus('저장 중...', 'processing');
+      try {
+        const res = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'updateOwnInfo', receipt, building, unit_no: unitNo,
+            fields: {
+              kakao_nick: editKakaoNick.value.trim(),
+              naver_id: editNaverId.value.trim(),
+              spouse_nick: editSpouseNick.value.trim(),
+              spouse_naver_id: editSpouseNaverId.value.trim()
+            }
+          })
+        });
+        const data = await res.json();
+        if (data.error === 'FEATURE_DISABLED') {
+          setEditInfoStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다.', 'err');
+          return;
+        }
+        if (!data.ok) {
+          setEditInfoStatus('저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+          return;
+        }
+        setEditInfoStatus(data.changed > 0 ? '저장되었습니다.' : '변경된 내용이 없습니다.', 'ok');
+      } catch (err) {
+        setEditInfoStatus('저장 중 오류가 발생했습니다.', 'err');
+      } finally {
+        editInfoSaveBtn.disabled = false;
+      }
+    });
     lookupBtn.addEventListener('click', runLookup);
     lookupRefreshBtn.addEventListener('click', () => {
       lookupRefreshBtn.classList.remove('spinning');
@@ -1009,14 +1137,18 @@
       const mgTabNav = document.getElementById('mgTabNav');
       const mgTabReviewBtn = document.getElementById('mgTabReviewBtn');
       const mgTabHistoryBtn = document.getElementById('mgTabHistoryBtn');
+      const mgTabSettingsBtn = document.getElementById('mgTabSettingsBtn');
       const mgReviewPanel = document.getElementById('mgReviewPanel');
       const mgHistoryPanel = document.getElementById('mgHistoryPanel');
+      const mgSettingsPanel = document.getElementById('mgSettingsPanel');
       const mgSearchReceipt = document.getElementById('mgSearchReceipt');
       const mgSearchBuilding = document.getElementById('mgSearchBuilding');
       const mgSearchUnit = document.getElementById('mgSearchUnit');
       const mgSearchBtn = document.getElementById('mgSearchBtn');
       const mgSearchStatus = document.getElementById('mgSearchStatus');
       const mgSearchResults = document.getElementById('mgSearchResults');
+      const mgSelfEditToggle = document.getElementById('mgSelfEditToggle');
+      const mgSettingsStatus = document.getElementById('mgSettingsStatus');
 
       mgImage.addEventListener('click', () => {
         mgImageModalImg.src = mgImage.src;
@@ -1139,16 +1271,50 @@
         loadNextItem();
       });
 
-      // ── 이력 조회 탭 ──────────────────────────────────────────────
+      // ── 탭 전환 (검수 / 이력 조회 / 관리 설정) ──────────────────────────────
       function showTab(tab) {
-        const isReview = tab === 'review';
-        mgReviewPanel.style.display = isReview ? 'block' : 'none';
-        mgHistoryPanel.style.display = isReview ? 'none' : 'block';
-        mgTabReviewBtn.classList.toggle('mg-tab-active', isReview);
-        mgTabHistoryBtn.classList.toggle('mg-tab-active', !isReview);
+        mgReviewPanel.style.display = tab === 'review' ? 'block' : 'none';
+        mgHistoryPanel.style.display = tab === 'history' ? 'block' : 'none';
+        mgSettingsPanel.style.display = tab === 'settings' ? 'block' : 'none';
+        mgTabReviewBtn.classList.toggle('mg-tab-active', tab === 'review');
+        mgTabHistoryBtn.classList.toggle('mg-tab-active', tab === 'history');
+        mgTabSettingsBtn.classList.toggle('mg-tab-active', tab === 'settings');
+        if (tab === 'settings') loadAdminSettings();
       }
       mgTabReviewBtn.addEventListener('click', () => showTab('review'));
       mgTabHistoryBtn.addEventListener('click', () => showTab('history'));
+      mgTabSettingsBtn.addEventListener('click', () => showTab('settings'));
+
+      // ── 관리 설정 탭 ──────────────────────────────────────────────
+      function setMgSettingsStatus(text, type) {
+        mgSettingsStatus.textContent = text;
+        mgSettingsStatus.className = 'lookup-result show' + (type ? ' ' + type : '');
+      }
+      async function loadAdminSettings() {
+        setMgSettingsStatus('불러오는 중...', 'processing');
+        const data = await callManageApi({ action: 'getAdminSettings' });
+        if (!data.ok) {
+          setMgSettingsStatus('설정을 불러오지 못했습니다: ' + (data.error || ''), 'err');
+          return;
+        }
+        mgSelfEditToggle.checked = data.self_edit_enabled !== false;
+        setMgSettingsStatus('', '');
+      }
+      mgSelfEditToggle.addEventListener('change', async () => {
+        mgSelfEditToggle.disabled = true;
+        setMgSettingsStatus('저장 중...', 'processing');
+        const data = await callManageApi({
+          action: 'updateAdminSettings',
+          settings: { self_edit_enabled: mgSelfEditToggle.checked }
+        });
+        mgSelfEditToggle.disabled = false;
+        if (!data.ok) {
+          setMgSettingsStatus('저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+          mgSelfEditToggle.checked = !mgSelfEditToggle.checked;
+          return;
+        }
+        setMgSettingsStatus(mgSelfEditToggle.checked ? '셀프 수정 기능이 켜졌습니다.' : '셀프 수정 기능이 꺼졌습니다.', 'ok');
+      });
 
       function setMgSearchStatus(text, type) {
         mgSearchStatus.textContent = text;
