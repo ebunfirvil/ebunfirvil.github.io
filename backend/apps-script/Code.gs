@@ -77,9 +77,14 @@ function checkReceiptStatus(receipt, building, unitNo) {
     var row = values[i];
     if (String(row[0] || '').trim() === receipt &&
         normalizeBuildingForMatch(row[5]) === bKey &&
-        normalizeUnitForMatch(row[6]) === uKey &&
-        String(row[8] || '').indexOf('성공') === 0) {
-      return {ok: true, status: 'verified', alreadyVerified: true};
+        normalizeUnitForMatch(row[6]) === uKey) {
+      var result = String(row[8] || '');
+      if (result.indexOf('성공') === 0) {
+        return {ok: true, status: 'verified', alreadyVerified: true};
+      }
+      if (result.indexOf('실패') === 0) {
+        return {ok: true, status: 'failed', alreadyVerified: false};
+      }
     }
   }
   return {ok: true, status: 'none', alreadyVerified: false};

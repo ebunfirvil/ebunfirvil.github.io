@@ -1029,6 +1029,9 @@
           // 인증 완료된 사람만 "입장코드 확인" 버튼을 보여주고, 누를 때만 팝업을 띄운다(자동 표시 안 함)
           if (kakaoConfig.active && kakaoConfig.code) lookupKakaoRow.style.display = 'flex';
           editInfoRow.style.display = 'flex';
+        } else if (data.status === 'failed') {
+          // 실패 처리된 신청은 정보만 고쳐서 될 일이 아니라 재제출이 필요하므로 정보 수정 버튼은 띄우지 않는다
+          setLookupResult('인증이 실패 처리되었습니다. 다시 제출해주세요.', 'no');
         } else {
           setLookupResult('인증이 완료되지 않은 접수번호입니다.', 'no');
         }
