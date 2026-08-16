@@ -137,7 +137,7 @@
     .lookup-row button.lookup-refresh-btn.spinning i { animation: spin 0.6s linear; }
     .lookup-result {
       margin-top: 12px; padding: 12px 14px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
-      display: none; align-items: center; gap: 8px;
+      display: none; align-items: center; gap: 8px; white-space: pre-line;
     }
     .lookup-result.show { display: flex; }
     .lookup-result.ok { background: rgba(46,160,67,0.12); color: #1e7a30; }
@@ -1031,7 +1031,7 @@
           editInfoRow.style.display = 'flex';
         } else if (data.status === 'failed') {
           // 실패 처리된 신청은 정보만 고쳐서 될 일이 아니라 재제출이 필요하므로 정보 수정 버튼은 띄우지 않는다
-          setLookupResult('인증이 실패 처리되었습니다. 다시 제출해주세요.', 'no');
+          setLookupResult('인증에 실패하였습니다. 동호수가 보이도록 다시 제출해주세요.\n* LH청약플러스 > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 에서 동호수를 가리지 말고 캡쳐하여 제출해주세요', 'no');
         } else {
           setLookupResult('인증이 완료되지 않은 접수번호입니다.', 'no');
         }
