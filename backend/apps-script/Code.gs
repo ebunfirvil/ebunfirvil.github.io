@@ -179,6 +179,8 @@ function getNextPending(data) {
 
 // 관리자가 검수 화면에서 이름 입력 + 성공/실패 버튼을 누르면 호출됨 — "1-처리중"의 해당 행에
 // 이름/인증 결과를 기록한다(다음 항목으로 넘어가는 건 프론트에서 getNextPending을 다시 부르는 식).
+// 실패 처리 시에는 사유를 실패사유 컬럼에 남기고, 신청자 이메일로 재제출 안내 메일을 보낸다
+// (메일 발송이 실패해도 검수 처리 자체는 그대로 성공 처리 — 재발송은 관리자가 수동으로).
 function submitReview(data) {
   if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
     return {ok: false, error: 'UNAUTHORIZED'};
@@ -190,9 +192,41 @@ function submitReview(data) {
   var rowIndex = findRowBySubmissionId2(sheet, data.submission_id, PROCESSING_COL['submission_id']);
   if (!rowIndex) return {ok: false, error: 'NOT_FOUND'};
 
-  sheet.getRange(rowIndex, PROCESSING_COL['이름']).setValue(data.name || '');
+  sheet.getRange(rowIndex, PROCESSING_COL['이름']).setValue(sanitizeCell(data.name || ''));
   sheet.getRange(rowIndex, PROCESSING_COL['인증 결과']).setValue(data.result);
+
+  if (data.result === '실패') {
+    var reason = String(data.fail_reason || '').trim();
+    sheet.getRange(rowIndex, PROCESSING_COL['실패사유']).setValue(sanitizeCell(reason));
+    var email = sheet.getRange(rowIndex, PROCESSING_COL['이메일']).getValue();
+    var receiptNo = sheet.getRange(rowIndex, PROCESSING_COL['접수번호']).getValue();
+    if (email) {
+      try {
+        sendFailureEmail(email, receiptNo, reason);
+      } catch (mailErr) {
+        // 메일 발송 실패해도 검수 처리 자체는 성공으로 본다
+      }
+    }
+  }
   return {ok: true};
+}
+
+// 인증 실패 시 신청자에게 재제출을 안내하는 메일을 보낸다.
+function sendFailureEmail(email, receiptNo, reason) {
+  var subject = '[e편한세상 분당 퍼스트빌리지 입주예정자협의회] 본인인증 재제출 안내';
+  var body =
+    '안녕하세요, e편한세상 분당 퍼스트빌리지 입주예정자협의회입니다.\n\n' +
+    '제출해 주신 본인인증 신청(접수번호: ' + receiptNo + ')이 아래 사유로 확인되지 않아 재제출이 필요합니다.\n\n' +
+    '----------------------------------------\n' +
+    reason + '\n' +
+    '----------------------------------------\n\n' +
+    '아래 링크에서 다시 인증을 진행해 주시기 바랍니다.\n' +
+    'https://ebunfirvil.github.io/auth-page.html\n\n' +
+    '문의사항이 있으시면 카카오톡 오픈채팅방으로 편하게 연락해 주세요.\n' +
+    'https://open.kakao.com/o/g3bb1i9d\n\n' +
+    '감사합니다.\n' +
+    'e편한세상 분당 퍼스트빌리지 입주예정자협의회';
+  MailApp.sendEmail(email, subject, body);
 }
 
 // 관리자 검수 화면의 "이력 조회" 탭 — 접수번호 또는 당첨동/호수로 "1-처리중"+"2-처리완료"를

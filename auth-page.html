@@ -797,6 +797,28 @@
             <button type="button" id="mgFailBtn" class="btn-submit" style="background:linear-gradient(135deg,#b3312c,#d9524b)">실패</button>
             <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
           </div>
+
+          <div id="mgFailReasonPanel" style="display:none; margin-top:14px; padding:14px; background:var(--beige); border-radius:10px; border:1px solid var(--beige-warm);">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--navy); margin-bottom:10px;">실패 사유 선택 (신청자 이메일로 발송됩니다)</div>
+            <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
+              <input type="radio" name="mgFailReasonChoice" value="preset1" checked style="margin-top:3px; flex-shrink:0;">
+              <span>동호수가 확인되지 않습니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
+            </label>
+            <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
+              <input type="radio" name="mgFailReasonChoice" value="preset2" style="margin-top:3px; flex-shrink:0;">
+              <span>이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
+            </label>
+            <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; font-size:0.85rem; cursor:pointer;">
+              <input type="radio" name="mgFailReasonChoice" value="custom" style="margin-top:3px; flex-shrink:0;">
+              <span>기타 (직접 입력)</span>
+            </label>
+            <textarea id="mgFailReasonCustom" placeholder="사유를 직접 입력하세요" style="display:none; width:100%; min-height:70px; margin-top:6px; padding:10px; border:1.5px solid var(--beige-warm); border-radius:8px; font-family:inherit; font-size:0.85rem;"></textarea>
+            <div style="display:flex; gap:8px; margin-top:14px;">
+              <button type="button" id="mgFailCancelBtn" style="flex:1; padding:11px; border-radius:8px; border:1.5px solid var(--beige-warm); background:var(--white); color:var(--gray); font-weight:700; cursor:pointer;">취소</button>
+              <button type="button" id="mgFailConfirmBtn" class="btn-submit" style="flex:1; background:linear-gradient(135deg,#b3312c,#d9524b);">실패 처리 확정</button>
+            </div>
+          </div>
+
           <div class="lookup-result" id="mgReviewStatus" style="margin-top:14px;"></div>
         </div>
 
@@ -1146,6 +1168,10 @@
       const mgName = document.getElementById('mgName');
       const mgSuccessBtn = document.getElementById('mgSuccessBtn');
       const mgFailBtn = document.getElementById('mgFailBtn');
+      const mgFailReasonPanel = document.getElementById('mgFailReasonPanel');
+      const mgFailReasonCustom = document.getElementById('mgFailReasonCustom');
+      const mgFailCancelBtn = document.getElementById('mgFailCancelBtn');
+      const mgFailConfirmBtn = document.getElementById('mgFailConfirmBtn');
       const mgReviewRefreshBtn = document.getElementById('mgReviewRefreshBtn');
       const mgReviewToolbar = document.getElementById('mgReviewToolbar');
       const mgReviewStatus = document.getElementById('mgReviewStatus');
@@ -1201,6 +1227,7 @@
       async function loadNextItem() {
         mgReviewCard.style.display = 'none';
         mgDoneCard.style.display = 'none';
+        mgFailReasonPanel.style.display = 'none';
         setMgReviewStatus('', '');
         const data = await callManageApi({ action: 'getNextPending' });
         if (!data.ok) {
@@ -1228,24 +1255,44 @@
         mgReviewCard.style.display = 'block';
       }
 
-      async function decide(result) {
+      async function decide(result, failReason) {
         if (!currentItem) return;
         mgSuccessBtn.disabled = true;
         mgFailBtn.disabled = true;
-        const data = await callManageApi({
+        mgFailConfirmBtn.disabled = true;
+        const payload = {
           action: 'submitReview',
           submission_id: currentItem.submission_id,
           name: mgName.value.trim(),
           result: result
-        });
+        };
+        if (result === '실패') payload.fail_reason = failReason || '';
+        const data = await callManageApi(payload);
         mgSuccessBtn.disabled = false;
         mgFailBtn.disabled = false;
+        mgFailConfirmBtn.disabled = false;
         if (!data.ok) {
           setMgReviewStatus('저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
           return;
         }
         loadNextItem();
       }
+
+      const MG_FAIL_REASON_PRESETS = {
+        preset1: '동호수가 확인되지 않습니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.',
+        preset2: '이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.'
+      };
+
+      function getMgFailReasonChoice() {
+        const checked = document.querySelector('input[name="mgFailReasonChoice"]:checked');
+        return checked ? checked.value : 'preset1';
+      }
+
+      document.querySelectorAll('input[name="mgFailReasonChoice"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+          mgFailReasonCustom.style.display = getMgFailReasonChoice() === 'custom' ? 'block' : 'none';
+        });
+      });
 
       mgLoginBtn.addEventListener('click', async () => {
         const id = mgId.value.trim();
@@ -1280,8 +1327,26 @@
         }
       });
 
-      mgSuccessBtn.addEventListener('click', () => decide('성공'));
-      mgFailBtn.addEventListener('click', () => decide('실패'));
+      mgSuccessBtn.addEventListener('click', () => {
+        mgFailReasonPanel.style.display = 'none';
+        decide('성공');
+      });
+      mgFailBtn.addEventListener('click', () => {
+        mgFailReasonPanel.style.display = 'block';
+      });
+      mgFailCancelBtn.addEventListener('click', () => {
+        mgFailReasonPanel.style.display = 'none';
+      });
+      mgFailConfirmBtn.addEventListener('click', () => {
+        const choice = getMgFailReasonChoice();
+        const reason = choice === 'custom' ? mgFailReasonCustom.value.trim() : MG_FAIL_REASON_PRESETS[choice];
+        if (choice === 'custom' && !reason) {
+          setMgReviewStatus('실패 사유를 입력해 주세요.', 'err');
+          return;
+        }
+        mgFailReasonPanel.style.display = 'none';
+        decide('실패', reason);
+      });
       mgReviewRefreshBtn.addEventListener('click', () => {
         mgReviewRefreshBtn.classList.remove('spinning');
         void mgReviewRefreshBtn.offsetWidth; // 애니메이션 재시작을 위한 강제 리플로우
