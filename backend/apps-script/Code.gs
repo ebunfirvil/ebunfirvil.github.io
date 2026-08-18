@@ -200,11 +200,12 @@ function submitReview(data) {
   sheet.getRange(rowIndex, PROCESSING_COL['이름']).setValue(sanitizeCell(data.name || ''));
   sheet.getRange(rowIndex, PROCESSING_COL['인증 결과']).setValue(data.result);
 
+  var email = sheet.getRange(rowIndex, PROCESSING_COL['이메일']).getValue();
+  var receiptNo = sheet.getRange(rowIndex, PROCESSING_COL['접수번호']).getValue();
+
   if (data.result === '실패') {
     var reason = String(data.fail_reason || '').trim();
     sheet.getRange(rowIndex, PROCESSING_COL['실패사유']).setValue(sanitizeCell(reason));
-    var email = sheet.getRange(rowIndex, PROCESSING_COL['이메일']).getValue();
-    var receiptNo = sheet.getRange(rowIndex, PROCESSING_COL['접수번호']).getValue();
     if (email) {
       try {
         sendFailureEmail(email, receiptNo, reason);
@@ -212,8 +213,33 @@ function submitReview(data) {
         // 메일 발송 실패해도 검수 처리 자체는 성공으로 본다
       }
     }
+  } else if (data.result === '성공' && email) {
+    try {
+      sendApprovalEmail(email, receiptNo);
+    } catch (mailErr) {
+      // 메일 발송 실패해도 검수 처리 자체는 성공으로 본다
+    }
   }
   return {ok: true};
+}
+
+// 인증 승인 시 신청자에게 카톡 입장코드를 안내하는 메일을 보낸다. 이제 auth-page.html은 제출 직후
+// 코드를 바로 보여주지 않고 이 메일로만 전달한다 — "카톡인증코드" 탭이 비활성화(active=false) 상태면
+// 발송하지 않는다.
+function sendApprovalEmail(email, receiptNo) {
+  var kakaoConfig = getKakaoConfig();
+  if (!kakaoConfig.active || !kakaoConfig.code) return;
+
+  var subject = '[e편한세상 분당 퍼스트빌리지 입주예정자협의회] 본인인증 완료 및 입장코드 안내';
+  var body =
+    '안녕하세요, e편한세상 분당 퍼스트빌리지 입주예정자협의회입니다.\n\n' +
+    '제출해 주신 본인인증 신청(접수번호: ' + receiptNo + ')이 확인되어 인증이 완료되었습니다.\n\n' +
+    '아래 오픈채팅방에 입장하신 후, 인증코드를 입력해 주세요.\n\n' +
+    '오픈채팅방: https://open.kakao.com/o/g3bb1i9d\n' +
+    '인증코드: ' + kakaoConfig.code + '\n\n' +
+    '감사합니다.\n' +
+    'e편한세상 분당 퍼스트빌리지 입주예정자협의회';
+  MailApp.sendEmail(email, subject, body);
 }
 
 // 인증 실패 시 신청자에게 재제출을 안내하는 메일을 보낸다.
@@ -232,6 +258,59 @@ function sendFailureEmail(email, receiptNo, reason) {
     '감사합니다.\n' +
     'e편한세상 분당 퍼스트빌리지 입주예정자협의회';
   MailApp.sendEmail(email, subject, body);
+}
+
+// 관리 설정 탭의 "실패자 재알림 메일 발송" 버튼 — "2-처리완료"에서 접수번호 기준으로 실패 기록만
+// 있고 성공 기록이 한 번도 없는 사람들에게 sendFailureEmail을 재사용해 재제출 안내를 다시 보낸다
+// (submitReview가 실패 처리 시점에 이미 한 번 보내지만, 그걸 놓쳤거나 오래돼 잊은 사람 대상 리마인더).
+// MailApp 일일 발송 한도(개인 Gmail 기준 100통)를 넘지 않도록 남은 할당량만큼만 보내고 멈춘다.
+function sendFailureReminders(data) {
+  if (!checkAdminCredentials(data.admin_id, data.admin_pw)) {
+    return {ok: false, error: 'UNAUTHORIZED'};
+  }
+  var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('2-처리완료');
+  if (!sheet || sheet.getLastRow() < 2) {
+    return {ok: true, total: 0, sent: 0, failed: 0, quotaStopped: false, quotaBefore: MailApp.getRemainingDailyQuota()};
+  }
+
+  var values = sheet.getRange(2, 1, sheet.getLastRow() - 1, 20).getValues();
+  var byReceipt = {};
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    var receipt = String(row[PROCESSING_COL['접수번호'] - 1] || '').trim();
+    if (!receipt) continue;
+    if (!byReceipt[receipt]) byReceipt[receipt] = {hasSuccess: false, hasFail: false, email: '', reason: ''};
+    var result = String(row[PROCESSING_COL['인증 결과'] - 1] || '').trim();
+    if (result === '성공') byReceipt[receipt].hasSuccess = true;
+    if (result === '실패') {
+      byReceipt[receipt].hasFail = true;
+      byReceipt[receipt].email = row[PROCESSING_COL['이메일'] - 1];
+      byReceipt[receipt].reason = row[PROCESSING_COL['실패사유'] - 1];
+    }
+  }
+
+  var targets = [];
+  for (var receipt in byReceipt) {
+    var info = byReceipt[receipt];
+    var email = String(info.email || '').trim();
+    if (info.hasFail && !info.hasSuccess && email) {
+      targets.push({receipt: receipt, email: email, reason: String(info.reason || '').trim() || '사유 미기재'});
+    }
+  }
+
+  var quotaBefore = MailApp.getRemainingDailyQuota();
+  var sent = 0, failed = 0, quotaStopped = false;
+  for (var t = 0; t < targets.length; t++) {
+    if (sent >= quotaBefore) { quotaStopped = true; break; }
+    var target = targets[t];
+    try {
+      sendFailureEmail(target.email, target.receipt, target.reason);
+      sent++;
+    } catch (e) {
+      failed++;
+    }
+  }
+  return {ok: true, total: targets.length, sent: sent, failed: failed, quotaStopped: quotaStopped, quotaBefore: quotaBefore};
 }
 
 // 관리자 검수 화면의 "이력 조회" 탭 — 접수번호 또는 당첨동/호수로 "1-처리중"+"2-처리완료"를
