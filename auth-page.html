@@ -1683,7 +1683,9 @@
 
     manualModeSwitch.addEventListener('change', () => {
       const manual = isManualMode();
-      const justSwitchedOn = manual && !prevManualMode;
+      // 이미 업로드된 이미지가 있으면(selectedFile) 재업로드 문구를 띄우지 않는다 — 실제로도
+      // selectedFile은 모드 전환과 무관하게 그대로 제출에 쓰이므로, 다시 올릴 필요가 없다.
+      const justSwitchedOn = manual && !prevManualMode && !selectedFile;
       applyManualMode(justSwitchedOn);
       prevManualMode = manual;
     });

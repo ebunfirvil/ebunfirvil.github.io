@@ -659,6 +659,30 @@ function getKakaoConfig() {
   return {ok: true, code: String(row[0] || ''), active: row[1] === true};
 }
 
+// "카톡인증코드" 시트의 A2(코드 값)가 수정될 때마다 C2에 변경 시각을 자동으로 기록한다 —
+// 버튼/체크박스 없이 코드 자체를 바꾸는 순간을 그대로 이벤트로 잡는다.
+function onKakaoCodeChanged(e) {
+  if (!e || !e.range) return;
+  var sheet = e.range.getSheet();
+  if (sheet.getName() !== '카톡인증코드') return;
+  if (e.range.getA1Notation() !== 'A2') return;
+  sheet.getRange('C2').setValue(new Date());
+}
+
+// 위 트리거를 한 번 등록하는 설치용 함수 — Apps Script 편집기에서 수동으로 한 번 실행해서
+// 트리거 생성 권한(script.scriptapp) 승인을 받아야 한다(MailApp 때와 같은 종류의 1회성 승인).
+function setupKakaoCodeTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'onKakaoCodeCheckboxEdit' || t.getHandlerFunction() === 'onKakaoCodeChanged') {
+      ScriptApp.deleteTrigger(t);
+    }
+  });
+  ScriptApp.newTrigger('onKakaoCodeChanged')
+    .forSpreadsheet(SPREADSHEET_ID)
+    .onEdit()
+    .create();
+}
+
 // 동호수 배치도(인증완료 표시)용 — 101동~112동, T201~T203동만 유효한 동으로 인정한다.
 var VALID_BUILDINGS_SET = (function () {
   var s = {};
