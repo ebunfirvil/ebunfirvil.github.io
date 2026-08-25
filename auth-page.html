@@ -311,6 +311,17 @@
     .file-drop i { font-size: 1.6rem; color: var(--orange); margin-bottom: 8px; display: block; }
     .file-drop .file-drop-text { font-size: 0.88rem; color: var(--gray); }
     .file-drop input[type="file"] { display: none; }
+    .file-drop-guide {
+      margin-top: 12px; text-align: left; background: var(--white);
+      border: 1.5px solid var(--orange-warm); border-radius: 8px; padding: 10px 12px;
+    }
+    .file-drop-guide .guide-title {
+      font-size: 0.82rem; font-weight: 700; color: var(--orange-dark); margin-bottom: 6px;
+    }
+    .file-drop-guide ol { margin: 0; padding-left: 20px; }
+    .file-drop-guide li { font-size: 0.82rem; color: var(--dark); font-weight: 500; line-height: 1.5; }
+    .file-drop-guide li + li { margin-top: 4px; }
+    .file-drop-guide li::marker { color: var(--orange); font-weight: 700; }
     .file-preview { margin-top: 12px; text-align: center; }
     .file-preview img { max-width: 100%; max-height: 220px; border-radius: 8px; box-shadow: var(--shadow); }
     .file-preview .file-name { font-size: 0.82rem; color: var(--gray); margin-top: 8px; }
@@ -533,6 +544,13 @@
           <label class="file-drop" for="imageInput">
             <i class="fas fa-camera"></i>
             <div class="file-drop-text">당첨 화면 캡쳐 이미지를 선택하세요 (jpg/png/heic, 최대 10MB)</div>
+            <div class="file-drop-guide">
+              <div class="guide-title">아래 두 화면 중 하나로 캡쳐해 주세요 (접수번호·동·호수가 잘리지 않아야 합니다)</div>
+              <ol>
+                <li>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면 — 접수번호·동·호수 포함</li>
+                <li>당첨 문자(SMS) — 발신자번호·접수번호·동/호수 포함</li>
+              </ol>
+            </div>
             <input type="file" id="imageInput" name="image" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" required>
           </label>
           <div class="file-preview" id="filePreview" style="display:none;">
@@ -911,23 +929,17 @@
 
   <script>
     // ── 배포 시 채워야 할 값 ──────────────────────────────────────────────
-    // OCR_API_URLS: OCR 서버 후보 목록, 앞에서부터 순서대로 시도한다.
+    // OCR_API_URL: OCR 서버. 2026-08-25 맥미니(192.168.1.3) 완전 종료로 이 Mac(192.168.1.4)
+    // 단일 서버 체제로 전환 — 더 이상 후보 목록/부하 기반 폴백이 필요 없다.
     // chat.html의 API_URL(Cloudflare Quick Tunnel)과는 다른 경로를 쓴다 — Cloudflare Quick
     // Tunnel은 100초 하드 타임아웃이 있어 OCR(9~125초+ 소요)에는 자주 524로 끊긴다.
     // 대신 Synology NAS(leeopklop.synology.me) 리버스 프록시를 거치도록 전용 경로를 만들었다
     // (2026-08-05). chat.html은 그대로 Cloudflare 유지.
-    // 1순위: 192.168.1.4(성능 더 좋은 Mac, 포트 7001) — 2026-08-05 추가
-    // 2순위: 192.168.1.3(기존 서버, 포트 7000) — 1순위가 통신 안 되면 자동 폴백
-    // auth-page.html?mode=test 로 열면 같은 LAN 안에서 두 서버에 직접 연결해 테스트 가능.
+    // auth-page.html?mode=test 로 열면 같은 LAN 안에서 서버에 직접 연결해 테스트 가능.
     const IS_TEST_MODE = new URLSearchParams(location.search).get('mode') === 'test';
-    const OCR_API_URLS = IS_TEST_MODE
-      ? ['http://192.168.1.4:8001/api/auth-page/ocr', 'http://192.168.1.3:8000/api/auth-page/ocr']
-      : ['https://leeopklop.synology.me:7001/api/auth-page/ocr', 'https://leeopklop.synology.me:7000/api/auth-page/ocr'];
-    // OCR_API_URLS와 같은 순서의 /health 엔드포인트. 192.168.1.4는 최근 5분 요청 수를 세서
-    // overloaded 여부를 알려준다(서버 쪽 구현, 2026-08-05).
-    const OCR_HEALTH_URLS = IS_TEST_MODE
-      ? ['http://192.168.1.4:8001/health', 'http://192.168.1.3:8000/health']
-      : ['https://leeopklop.synology.me:7001/health', 'https://leeopklop.synology.me:7000/health'];
+    const OCR_API_URL = IS_TEST_MODE
+      ? 'http://192.168.1.4:8001/api/auth-page/ocr'
+      : 'https://leeopklop.synology.me:7001/api/auth-page/ocr';
 
     // SUBMIT_URL: Google Apps Script Web App 배포 URL(.../exec). 이미지(base64) + 폼필드 +
     // submission_id를 이 URL 한 곳으로만 전송하며, Drive 업로드+Sheets 기록을 전담함.
@@ -956,10 +968,8 @@
     })();
 
     const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
-    // 실측 기준(192.168.1.3, qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초.
-    // 서버가 두 개(1순위/폴백)로 늘어나면서, 후보당 타임아웃을 150초로 낮춰 최악의 경우에도
-    // 총 대기시간이 무한정 늘어나지 않게 함(150초×2 = 최대 5분) — DSM 리버스 프록시
-    // 타임아웃(300초)보다는 항상 짧아서 우리 쪽이 먼저 다음 후보로 넘어감(2026-08-05).
+    // 실측 기준(qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초. DSM 리버스
+    // 프록시 타임아웃(300초)보다는 항상 짧게 잡아 서버가 응답 없이 계속 붙들지 않게 함.
     const OCR_TIMEOUT_MS = 150000;
 
     const submissionId = (crypto.randomUUID ? crypto.randomUUID() :
@@ -1759,51 +1769,21 @@
       });
     }
 
-    // 부하 기반 라우팅 — 동시 요청이 많이 몰릴 일은 잘 없다고 보고, 기본은 항상
-    // 192.168.1.4(7001)를 우선 시도한다. 다만 7001의 /health가 "최근 5분간 5건 이상
-    // 처리 중(overloaded)"이라고 보고하거나 헬스체크 자체가 실패(서버 다운)하면 그때만
-    // 192.168.1.3(7000)을 먼저 시도한다. 헬스체크는 이미지 없이 가볍게 도는 요청이라
-    // 4초 안에 끝나지 않으면 바로 포기하고 폴백 판단한다(2026-08-05).
-    const OCR_HEALTH_CHECK_TIMEOUT_MS = 4000;
-    async function pickOcrOrder() {
+    // 서버가 OCR_API_URL 하나뿐이라(2026-08-25, 맥미니 완전 종료) 그대로 호출한다.
+    async function fetchOcr(file) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
       try {
-        const controller = new AbortController();
-        const t = setTimeout(() => controller.abort(), OCR_HEALTH_CHECK_TIMEOUT_MS);
-        const res = await fetch(OCR_HEALTH_URLS[0], { signal: controller.signal });
-        clearTimeout(t);
-        if (res.ok) {
-          const data = await res.json();
-          if (!data.overloaded) return OCR_API_URLS.slice(); // 정상 → 7001 우선
-        }
+        const fd = new FormData();
+        fd.append('image', file);
+        const res = await fetch(OCR_API_URL, { method: 'POST', body: fd, signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error('OCR 서버 오류: ' + res.status);
+        return await res.json();
       } catch (err) {
-        // 헬스체크 실패(다운/타임아웃) → 아래에서 7000 우선으로 전환
+        clearTimeout(timeoutId);
+        throw err;
       }
-      return OCR_API_URLS.slice().reverse();
-    }
-
-    // 매 요청마다 pickOcrOrder()로 뽑힌 순서대로 시도한다. 하나가 실패(네트워크 오류/타임아웃/5xx)
-    // 하면 다음 서버로 자동 넘어가고, 전부 실패해야만 최종 실패로 처리한다.
-    async function fetchOcrWithFailover(file) {
-      const urls = await pickOcrOrder();
-      let lastErr = null;
-      for (let i = 0; i < urls.length; i++) {
-        const url = urls[i];
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
-        try {
-          const fd = new FormData();
-          fd.append('image', file);
-          const res = await fetch(url, { method: 'POST', body: fd, signal: controller.signal });
-          clearTimeout(timeoutId);
-          if (!res.ok) throw new Error('OCR 서버 오류: ' + res.status);
-          return await res.json();
-        } catch (err) {
-          clearTimeout(timeoutId);
-          lastErr = err;
-          // 다음 후보 서버로 계속 — 마지막 후보였다면 아래에서 던져서 호출부가 실패로 처리
-        }
-      }
-      throw lastErr || new Error('모든 OCR 서버 연결 실패');
     }
 
     async function runOcrPreview(file) {
@@ -1814,7 +1794,7 @@
 
       let result = null;
       try {
-        const data = await fetchOcrWithFailover(file);
+        const data = await fetchOcr(file);
         result = {
           name: data.name || '',
           receipt_no: data.receipt_no || '',
@@ -1916,6 +1896,19 @@
 
       if (!form.checkValidity()) {
         form.reportValidity();
+        return;
+      }
+      // checkValidity()만으로는 부족하다 — receiptNo/unitNo는 readonly가 걸리면 required 제약이
+      // 통째로 면제되는 HTML5 스펙 동작 때문에(자동인식 모드에서 정확히 이 상태), OCR이 값을 못
+      // 채웠어도 네이티브 검증을 그냥 통과해버릴 수 있다. 접수번호/주택형/당첨동/호수 네 값은
+      // 자동인식이든 수동입력이든 무조건 다 채워져 있어야 제출 가능해야 하므로 여기서 직접 확인한다.
+      if (!receiptNoInput.value.trim() || !unitNoInput.value.trim() || !houseTypeSelect.value || !buildingSelect.value) {
+        setSubmitStatus(
+          isManualMode()
+            ? '접수번호·주택형·당첨동·호수를 모두 입력해 주세요.'
+            : '접수번호·주택형·당첨동·호수가 자동 인식되지 않았습니다. 다시 시도하시거나, 위의 \'자동입력\' 스위치를 끄고 직접 입력해 주세요.',
+          'err', 'fa-circle-exclamation'
+        );
         return;
       }
       if (!selectedFile) {
