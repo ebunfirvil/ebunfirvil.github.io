@@ -464,9 +464,12 @@
             scrollToBottom();
           }
         }
-        if (!bubble) {
+        const finalVisible = full.replace(/​/g, '').trim();
+        if (!bubble || finalVisible.length === 0) {
           removeTypingIndicator();
-          bubble = addBotMessage();
+          if (!bubble) bubble = addBotMessage();
+          bubble.innerHTML = '⚠️ 답변을 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+          bubble.style.color = '#e53e3e';
         }
 
       } catch (err) {
