@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /Users/leeopklop/e-park-hansang-bundang\\ngit push origin main\"}",
-  "error": "Exit code 1\nTo https://github.com/ebunfirvil/ebunfirvil.github.io.git\n ! [rejected]        main -> main (fetch first)\nerror: failed to push some refs to 'https://github.com/ebunfirvil/ebunfirvil.github.io.git'\nhint: Updates were rejected because the remote contains work that you do not\nhint: have locally. This is usually caused by another repository pushing to\nhint: the same ref. If you want to integrate the remote changes, use\nhint: 'git pull' before pushing again.\nhint: See the 'Note about fas...",
-  "timestamp": "2026-07-09T02:46:29.591Z",
-  "retry_count": 1
-}
