@@ -105,6 +105,32 @@
     }
     .notice-banner i { color: var(--orange); margin-top: 2px; flex-shrink: 0; }
 
+    /* ===== 탭 ===== */
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 1.5px solid var(--beige-warm);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 12px 10px;
+      border: none;
+      background: none;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gray);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1.5px;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .auth-tab:hover { color: var(--navy); }
+    .auth-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+    .auth-tab-panel { display: none; }
+    .auth-tab-panel.active { display: block; }
+
     /* ===== 인증 결과 조회 ===== */
     .lookup-card {
       background: var(--white);
@@ -439,58 +465,16 @@
 
   <div class="content-wrap">
 
+    <div class="auth-tabs" role="tablist">
+      <button type="button" class="auth-tab active" id="tabBtnSubmit" data-tab="submit" role="tab" aria-selected="true">당첨자 인증</button>
+      <button type="button" class="auth-tab" id="tabBtnLookup" data-tab="lookup" role="tab" aria-selected="false">인증결과 조회</button>
+    </div>
+
+    <div class="auth-tab-panel active" id="tabPanelSubmit" role="tabpanel">
+
     <div class="notice-banner">
       <i class="fas fa-info-circle"></i>
       <span>인증샷을 업로드하면 접수번호·호수를 사진에서 자동으로 인식해 채워드립니다(최대 4~5분 정도 걸릴 수 있습니다). 자동 인식이 3회 연속 실패하면 직접 입력할 수 있게 됩니다. 최종 확인은 제출된 원본 사진으로 관리자가 진행합니다.</span>
-    </div>
-
-    <div class="lookup-card">
-      <h3><i class="fas fa-magnifying-glass"></i> 인증 결과 조회</h3>
-      <p style="font-size:0.82rem; color:var(--gray); margin:0 0 10px;">접수번호와 당첨동/호수를 모두 입력해야 조회됩니다.</p>
-      <div class="lookup-row">
-        <input type="text" id="lookupReceiptNo" placeholder="접수번호" inputmode="numeric" autocomplete="off">
-      </div>
-      <div class="lookup-row" style="margin-top:8px;">
-        <div class="input-with-suffix" style="flex:1; min-width:0;">
-          <input type="text" id="lookupBuilding" placeholder="103" inputmode="numeric" autocomplete="off">
-          <span class="input-suffix">동</span>
-        </div>
-        <div class="input-with-suffix" style="flex:1; min-width:0;">
-          <input type="text" id="lookupUnitNo" placeholder="501" inputmode="numeric" autocomplete="off">
-          <span class="input-suffix">호</span>
-        </div>
-      </div>
-      <div class="lookup-row" style="margin-top:8px;">
-        <button type="button" id="lookupBtn" style="flex:1">조회</button>
-        <button type="button" id="lookupRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 조회"><i class="fas fa-rotate"></i></button>
-      </div>
-      <div class="lookup-result" id="lookupResult"></div>
-      <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
-        <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
-      </div>
-      <div class="lookup-row" id="editInfoRow" style="display:none; margin-top:10px;">
-        <button type="button" id="editInfoToggleBtn" style="width:100%"><i class="fas fa-pen"></i> 카톡닉네임/네이버ID 수정</button>
-      </div>
-      <div id="editInfoCard" style="display:none; margin-top:14px; border-top:1px solid var(--beige-warm); padding-top:14px;">
-        <div class="form-field">
-          <label for="editKakaoNick">카톡닉네임 (본인)</label>
-          <input type="text" id="editKakaoNick" autocomplete="off">
-        </div>
-        <div class="form-field">
-          <label for="editNaverId">네이버ID (본인)</label>
-          <input type="text" id="editNaverId" autocomplete="off">
-        </div>
-        <div class="form-field">
-          <label for="editSpouseNick">카톡닉네임 (배우자)</label>
-          <input type="text" id="editSpouseNick" autocomplete="off">
-        </div>
-        <div class="form-field">
-          <label for="editSpouseNaverId">네이버ID (배우자)</label>
-          <input type="text" id="editSpouseNaverId" autocomplete="off">
-        </div>
-        <button type="button" id="editInfoSaveBtn" class="btn-submit" style="width:100%">저장</button>
-        <div class="lookup-result" id="editInfoStatus" style="margin-top:10px;"></div>
-      </div>
     </div>
 
     <form class="form-card" id="authForm" novalidate>
@@ -567,7 +551,7 @@
             </label>
             <span class="mode-switch-text">
               <strong>자동입력</strong>
-              <span>켜져 있으면 인증샷에서 자동으로 인식합니다. 끄면 접수번호·주택형·당첨동·호수를 직접 입력합니다.</span>
+              <span>켜져 있으면 인증샷에서 자동으로 인식합니다.<br>비활성화시 접수번호·주택형·당첨동·호수를 직접 입력 가능합니다.</span>
             </span>
           </div>
           <div class="mode-switch-note" id="modeSwitchNote">
@@ -707,6 +691,59 @@
       </div>
 
     </form>
+
+    </div> <!-- /tabPanelSubmit -->
+
+    <div class="auth-tab-panel" id="tabPanelLookup" role="tabpanel">
+    <div class="lookup-card">
+      <h3><i class="fas fa-magnifying-glass"></i> 인증 결과 조회</h3>
+      <p style="font-size:0.82rem; color:var(--gray); margin:0 0 10px;">접수번호와 당첨동/호수를 모두 입력해야 조회됩니다.</p>
+      <div class="lookup-row">
+        <input type="text" id="lookupReceiptNo" placeholder="접수번호" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="lookup-row" style="margin-top:8px;">
+        <div class="input-with-suffix" style="flex:1; min-width:0;">
+          <input type="text" id="lookupBuilding" placeholder="103" inputmode="numeric" autocomplete="off">
+          <span class="input-suffix">동</span>
+        </div>
+        <div class="input-with-suffix" style="flex:1; min-width:0;">
+          <input type="text" id="lookupUnitNo" placeholder="501" inputmode="numeric" autocomplete="off">
+          <span class="input-suffix">호</span>
+        </div>
+      </div>
+      <div class="lookup-row" style="margin-top:8px;">
+        <button type="button" id="lookupBtn" style="flex:1">조회</button>
+        <button type="button" id="lookupRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 조회"><i class="fas fa-rotate"></i></button>
+      </div>
+      <div class="lookup-result" id="lookupResult"></div>
+      <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
+        <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
+      </div>
+      <div class="lookup-row" id="editInfoRow" style="display:none; margin-top:10px;">
+        <button type="button" id="editInfoToggleBtn" style="width:100%"><i class="fas fa-pen"></i> 카톡닉네임/네이버ID 수정</button>
+      </div>
+      <div id="editInfoCard" style="display:none; margin-top:14px; border-top:1px solid var(--beige-warm); padding-top:14px;">
+        <div class="form-field">
+          <label for="editKakaoNick">카톡닉네임 (본인)</label>
+          <input type="text" id="editKakaoNick" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="editNaverId">네이버ID (본인)</label>
+          <input type="text" id="editNaverId" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="editSpouseNick">카톡닉네임 (배우자)</label>
+          <input type="text" id="editSpouseNick" autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="editSpouseNaverId">네이버ID (배우자)</label>
+          <input type="text" id="editSpouseNaverId" autocomplete="off">
+        </div>
+        <button type="button" id="editInfoSaveBtn" class="btn-submit" style="width:100%">저장</button>
+        <div class="lookup-result" id="editInfoStatus" style="margin-top:10px;"></div>
+      </div>
+    </div>
+    </div> <!-- /tabPanelLookup -->
 
   </div>
 
@@ -896,6 +933,27 @@
     // submission_id를 이 URL 한 곳으로만 전송하며, Drive 업로드+Sheets 기록을 전담함.
     const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
     // ──────────────────────────────────────────────────────────────────────
+
+    // ── 탭 전환 (당첨자 인증 / 인증결과 조회) ────────────────────────────
+    (function () {
+      const tabBtns = document.querySelectorAll('.auth-tab');
+      const panels = {
+        submit: document.getElementById('tabPanelSubmit'),
+        lookup: document.getElementById('tabPanelLookup'),
+      };
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.tab;
+          tabBtns.forEach(b => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          Object.entries(panels).forEach(([key, el]) => {
+            el.classList.toggle('active', key === target);
+          });
+        });
+      });
+    })();
 
     const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
     // 실측 기준(192.168.1.3, qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초.
