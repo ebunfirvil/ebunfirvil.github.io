@@ -497,6 +497,8 @@
       text-align: center;
       position: relative;
       box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      word-break: keep-all;
+      overflow-wrap: break-word;
     }
 
     .notice-popup-close {
@@ -528,7 +530,30 @@
       color: var(--gray);
       font-size: 0.95rem;
       line-height: 1.6;
-      margin: 0 0 22px;
+      margin: 0 0 16px;
+    }
+
+    .notice-popup-highlight {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #FCEFE6, #F8DFCB);
+      border: 1px solid var(--orange-light);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 0 0 20px;
+      text-align: left;
+    }
+    .notice-popup-highlight .hl-num {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--orange-dark);
+      flex-shrink: 0;
+    }
+    .notice-popup-highlight .hl-txt {
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: #6B3E1D;
     }
 
     .notice-popup-btn {
@@ -2204,6 +2229,76 @@
 
       function showPopup() {
         var popup = document.getElementById('verifyNoticePopup');
+        if (popup) popup.classList.add('active');
+      }
+
+      if (document.readyState === 'complete') {
+        setTimeout(showPopup, 500);
+      } else {
+        window.addEventListener('load', function () {
+          setTimeout(showPopup, 500);
+        });
+      }
+    })();
+  </script>
+
+  <!-- ===== 위임장·정회원 안내 팝업 ===== -->
+  <div class="notice-popup" id="memberGuideNoticePopup">
+    <div class="notice-popup-content">
+      <button class="notice-popup-close" onclick="closeMemberGuideNotice()" aria-label="닫기">&times;</button>
+      <i class="fas fa-file-contract notice-popup-icon"></i>
+      <h3>위임장 · 정회원 안내</h3>
+      <p>더 나은 우리 집을 위해<br>"위임장 제출"과 "정회원 가입"이 필요합니다.</p>
+      <div class="notice-popup-highlight">
+        <span class="hl-num">100%</span>
+        <span class="hl-txt">위임장·정회원이 많이 모일수록<br>시공사·LH와의 협의력이 커지고,<br>더 나은 설계·품질·혜택으로 이어집니다.</span>
+      </div>
+      <a href="delegate-member-guide.html" class="notice-popup-btn" onclick="closeMemberGuideNotice()">자세히 보기</a>
+      <div class="notice-popup-footer">
+        <span class="notice-popup-dismiss" onclick="hideMemberGuideNotice('today')">오늘 하루 보지 않기</span>
+        <span class="notice-popup-divider">|</span>
+        <span class="notice-popup-dismiss" onclick="hideMemberGuideNotice('7days')">7일간 보지 않기</span>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 위임장·정회원 안내 팝업 (2026-08-28 추가, 상시 노출 — 종료일 없음)
+    (function () {
+      var HIDE_KEY = 'memberGuideNoticeHideDate';
+      var KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+      function dateStrFromMs(ms) {
+        // KST 기준 날짜 (기기 시간대와 무관)
+        var kst = new Date(ms + KST_OFFSET_MS);
+        var y = kst.getUTCFullYear();
+        var m = String(kst.getUTCMonth() + 1).padStart(2, '0');
+        var day = String(kst.getUTCDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+      }
+
+      function todayStr() { return dateStrFromMs(Date.now()); }
+
+      var today = todayStr();
+      // HIDE_KEY에는 "이 날짜까지는 다시 보여주지 않음"을 뜻하는 날짜 문자열을 저장한다
+      // (ISO 형식이라 문자열 비교로도 날짜 순서 비교가 됨).
+      var hiddenUntil = localStorage.getItem(HIDE_KEY);
+      if (hiddenUntil && hiddenUntil >= today) return;
+
+      window.closeMemberGuideNotice = function () {
+        var popup = document.getElementById('memberGuideNoticePopup');
+        popup.classList.remove('active');
+      };
+
+      window.hideMemberGuideNotice = function (type) {
+        var popup = document.getElementById('memberGuideNoticePopup');
+        popup.classList.remove('active');
+        // "7일간"은 오늘 포함 7일이므로 6일치를 더 얹는다(오늘 하루=0일 추가와 동일한 규칙)
+        var untilMs = type === '7days' ? Date.now() + 6 * 24 * 60 * 60 * 1000 : Date.now();
+        localStorage.setItem(HIDE_KEY, dateStrFromMs(untilMs));
+      };
+
+      function showPopup() {
+        var popup = document.getElementById('memberGuideNoticePopup');
         if (popup) popup.classList.add('active');
       }
 
