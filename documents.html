@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>자료실 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e; --orange-dark: #c44e1e; --orange-light: #f0864e;
+      --navy: #1a3a5c; --navy-light: #2a5a8c; --navy-dark: #0d1b2a;
+      --beige: #fdf8f5; --beige-dark: #f5efe8; --beige-warm: #f0e6d8;
+      --dark: #2c1810; --gray: #6b5b52; --white: #ffffff;
+      --green: #4caf7d; --green-dark: #2f8a5c; --red: #c0392b; --gold: #b8860b;
+      --shadow: 0 4px 20px rgba(26,58,92,0.1); --shadow-lg: 0 8px 28px rgba(26,58,92,0.18);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; font-family: 'Noto Sans KR', sans-serif; background: var(--beige); color: var(--dark); }
+    .top-bar { background: linear-gradient(135deg, var(--orange), var(--orange-dark)); padding: 12px 20px; display: flex; align-items: center; gap: 14px; }
+    .top-bar a { color: var(--white); text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+    .page-header { background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light)); color: var(--white); text-align: center; padding: 28px 20px; }
+    .page-header h1 { margin: 0 0 8px; font-size: 1.6rem; }
+    .page-header p { margin: 0; opacity: .78; font-size: .88rem; }
+    main { max-width: 880px; margin: 0 auto; padding: 22px 16px 60px; }
+    .card { background: var(--white); border-radius: 14px; box-shadow: var(--shadow); padding: 20px 22px; margin-bottom: 18px; }
+    .card h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+    .card .desc { font-size: 0.83rem; color: var(--gray); margin: 0 0 14px; line-height: 1.55; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row + .row { margin-top: 8px; }
+    .row > * { flex: 1; min-width: 0; }
+    input[type="text"], input[type="password"], select {
+      width: 100%; padding: 11px 13px; border: 1.5px solid var(--beige-warm); border-radius: 8px; font-size: 0.95rem;
+      font-family: inherit; background: var(--white); color: var(--dark); outline: none;
+    }
+    input:focus, select:focus { border-color: var(--navy-light); box-shadow: 0 0 0 3px rgba(42,90,140,0.12); }
+    .suffix { position: relative; }
+    .suffix input { padding-right: 34px; }
+    .suffix span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 0.9rem; pointer-events: none; }
+    .btn { padding: 11px 20px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.92rem; font-family: inherit;
+      color: var(--white); background: linear-gradient(135deg, var(--orange), var(--orange-light)); cursor: pointer; white-space: nowrap; transition: all .2s; }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+    .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn.ghost { background: var(--beige-dark); color: var(--navy); }
+    .btn.navy { background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+    .btn.sm { padding: 7px 12px; font-size: 0.82rem; }
+    .msg { margin-top: 12px; font-size: 0.86rem; line-height: 1.55; padding: 10px 12px; border-radius: 8px; display: none; }
+    .msg.show { display: block; }
+    .msg.err { background: #fdecea; color: var(--red); }
+    .msg.ok { background: #e9f7ef; color: var(--green-dark); }
+    .msg.info { background: var(--beige-dark); color: var(--gray); }
+    .msg a { color: inherit; font-weight: 700; }
+
+    .identity { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .identity .who { font-size: 0.92rem; }
+    .identity .who b { color: var(--navy); }
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; vertical-align: middle; }
+    .badge.g0 { background: var(--beige-dark); color: var(--gray); }
+    .badge.g1 { background: #e6f0fa; color: var(--navy); }
+    .badge.g2 { background: #fbf1dc; color: var(--gold); }
+    .banner { background: #fff7ed; border-left: 4px solid var(--orange); border-radius: 10px; padding: 12px 14px; font-size: 0.85rem; line-height: 1.6; margin-bottom: 18px; }
+    .banner a { color: var(--orange-dark); font-weight: 700; }
+
+    .doc-list { display: flex; flex-direction: column; gap: 10px; }
+    .doc { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1.5px solid var(--beige-warm); border-radius: 12px; background: var(--white); cursor: pointer; transition: all .15s; text-align: left; font-family: inherit; width: 100%; }
+    .doc:hover { border-color: var(--navy-light); box-shadow: var(--shadow); }
+    .doc .ic { width: 40px; height: 40px; border-radius: 10px; background: var(--navy); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+    .doc.locked .ic { background: var(--beige-dark); color: var(--gray); }
+    .doc .t { flex: 1; min-width: 0; }
+    .doc .t .title { font-weight: 700; font-size: 0.97rem; color: var(--dark); overflow-wrap: anywhere; }
+    .doc.locked .t .title { color: var(--gray); }
+    .doc .t .meta { font-size: 0.78rem; color: var(--gray); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .doc .arrow { color: var(--gray); }
+    .empty { text-align: center; color: var(--gray); font-size: 0.88rem; padding: 24px 0; }
+
+    /* ---- 뷰어 (N18) ---- */
+    .viewer { position: fixed; inset: 0; background: #2b2b2b; z-index: 100; display: flex; flex-direction: column; }
+    .viewer, .viewer * { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    .viewer .bar { background: var(--navy-dark); color: var(--white); padding: 10px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .viewer .bar .title { flex: 1; min-width: 0; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .viewer .bar .pg { font-size: 0.82rem; opacity: .8; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .viewer .bar button { background: rgba(255,255,255,.12); color: var(--white); border: none; border-radius: 8px; padding: 8px 12px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+    .viewer .scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px 8px 40px; position: relative; }
+    .viewer .page { position: relative; max-width: 900px; margin: 0 auto 14px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.4); }
+    .viewer .page canvas { display: block; width: 100%; height: auto; pointer-events: none; }
+    .viewer .page .ph { display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.85rem; aspect-ratio: 1 / 1.414; }
+    .viewer .page .ph.err { color: var(--red); }
+    .viewer .wm-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; background-repeat: repeat; opacity: .9; }
+    .viewer .notice { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,.65); color: #fff; font-size: 0.75rem; padding: 6px 12px; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+    @media print { body > * { display: none !important; } body::after { content: '이 자료는 인쇄할 수 없습니다.'; display: block; padding: 40px; font-size: 18px; } }
+
+    /* ---- 등급 안내 모달 (N14) ---- */
+    .modal-bg { position: fixed; inset: 0; background: rgba(13,27,42,.55); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
+    .modal-bg.show { display: flex; }
+    .modal { background: var(--white); border-radius: 16px; max-width: 460px; width: 100%; padding: 24px 22px; box-shadow: var(--shadow-lg); }
+    .modal h3 { margin: 0 0 10px; color: var(--navy); font-size: 1.1rem; }
+    .modal p { font-size: 0.86rem; color: var(--gray); line-height: 1.6; margin: 0 0 10px; }
+    .grade-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin: 10px 0 14px; }
+    .grade-table td { padding: 8px 6px; border-bottom: 1px solid var(--beige-warm); vertical-align: top; }
+    .grade-table td:first-child { white-space: nowrap; width: 72px; }
+    .modal .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
+    /* ---- 업로드 (mode=upload) ---- */
+    .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 12px; }
+    .thumb { position: relative; border: 1.5px solid var(--beige-warm); border-radius: 10px; background: var(--beige-dark); overflow: hidden; cursor: grab; }
+    .thumb.dragging { opacity: .4; }
+    .thumb.over { border-color: var(--orange); }
+    .thumb img { display: block; width: 100%; aspect-ratio: 1 / 1.3; object-fit: contain; background: #fff; pointer-events: none; }
+    .thumb .n { position: absolute; top: 6px; left: 6px; background: var(--navy); color: #fff; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
+    .thumb .tools { display: flex; justify-content: space-between; padding: 4px; background: var(--white); }
+    .thumb .tools button { border: none; background: var(--beige-dark); border-radius: 6px; width: 30px; height: 26px; cursor: pointer; color: var(--navy); font-size: 0.8rem; }
+    .thumb .tools button.del { color: var(--red); }
+    .progress { height: 8px; background: var(--beige-dark); border-radius: 999px; overflow: hidden; margin-top: 12px; display: none; }
+    .progress.show { display: block; }
+    .progress div { height: 100%; width: 0; background: linear-gradient(90deg, var(--orange), var(--orange-light)); transition: width .2s; }
+    .drop { display: block; border: 2px dashed var(--beige-warm); border-radius: 12px; padding: 22px; text-align: center; color: var(--gray); font-size: 0.86rem; cursor: pointer; margin-top: 10px; }
+    .drop.over { border-color: var(--orange); background: #fff7ed; }
+    .drop input { display: none; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .admin-table th { text-align: left; color: var(--gray); font-weight: 500; font-size: 0.76rem; padding: 6px 8px; border-bottom: 1px solid var(--beige-warm); white-space: nowrap; }
+    .admin-table td { padding: 8px; border-bottom: 1px solid var(--beige-warm); vertical-align: middle; }
+    .admin-table td.title { overflow-wrap: anywhere; }
+    .admin-table .hidden-row td { color: var(--gray); }
+    .tw { overflow-x: auto; }
+    label.f { display: block; font-size: 0.8rem; color: var(--gray); margin: 0 0 4px; font-weight: 500; }
+    .field { margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="index.html"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+</div>
+
+<div class="page-header">
+  <h1><i class="fas fa-folder-open"></i> 자료실</h1>
+  <p id="headerDesc">청약 인증을 마친 입주예정자만 열람할 수 있습니다. 화면에는 열람자 정보가 표시됩니다.</p>
+</div>
+
+<!-- ================= 열람 (기본 모드) ================= -->
+<main id="readerView">
+  <section class="card" id="authCard">
+    <h3><i class="fas fa-user-check"></i> 본인 확인</h3>
+    <p class="desc">청약 인증 때 사용한 접수번호와 당첨동/호수를 입력해 주세요. 세 가지가 모두 일치해야 조회됩니다.</p>
+    <div class="row">
+      <input type="text" id="receipt" placeholder="접수번호" inputmode="numeric" autocomplete="off">
+    </div>
+    <div class="row">
+      <div class="suffix"><input type="text" id="building" placeholder="103" inputmode="numeric" autocomplete="off"><span>동</span></div>
+      <div class="suffix"><input type="text" id="unitNo" placeholder="501" inputmode="numeric" autocomplete="off"><span>호</span></div>
+    </div>
+    <div class="row">
+      <button type="button" class="btn" id="authBtn"><i class="fas fa-magnifying-glass"></i> 확인</button>
+    </div>
+    <div class="msg" id="authMsg"></div>
+  </section>
+
+  <section id="listSection" hidden>
+    <div class="card identity">
+      <div class="who"><i class="fas fa-circle-user" style="color:var(--navy)"></i> <b id="whoName"></b> · <span id="whoUnit"></span> <span class="badge" id="whoGrade"></span></div>
+      <button type="button" class="btn ghost sm" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> 나가기</button>
+    </div>
+    <div class="banner" id="gradeBanner" hidden></div>
+    <section class="card">
+      <h3><i class="fas fa-file-lines"></i> 문서 목록</h3>
+      <p class="desc">등급이 맞지 않는 문서는 잠금 표시됩니다. 열람 중 화면에는 본인 정보가 워터마크로 표시되며, 열람 기록이 남습니다.</p>
+      <div class="doc-list" id="docList"></div>
+    </section>
+  </section>
+</main>
+
+<!-- ================= 관리자 업로드 (?mode=upload) ================= -->
+<main id="uploadView" hidden>
+  <section class="card" id="adminLoginCard">
+    <h3><i class="fas fa-lock"></i> 관리자 로그인</h3>
+    <p class="desc">인증 검수 화면과 같은 관리자 계정을 사용합니다.</p>
+    <div class="row"><input type="text" id="adminId" placeholder="아이디" autocomplete="username"></div>
+    <div class="row"><input type="password" id="adminPw" placeholder="비밀번호" autocomplete="current-password"></div>
+    <div class="row"><button type="button" class="btn navy" id="adminLoginBtn">로그인</button></div>
+    <div class="msg" id="adminMsg"></div>
+  </section>
+
+  <section id="adminSection" hidden>
+    <section class="card">
+      <h3><i class="fas fa-cloud-arrow-up"></i> 문서 올리기</h3>
+      <p class="desc">PDF 1개 또는 이미지 여러 장을 고르면 페이지 이미지로 변환됩니다. 순서를 바꾼 뒤 올리면 한 문서로 묶입니다. 원본 PDF는 저장되지 않습니다.</p>
+      <div class="field"><label class="f" for="docTitle">제목</label><input type="text" id="docTitle" placeholder="예: 2026년 9월 입예협 정기총회 자료"></div>
+      <div class="field"><label class="f" for="docGrade">최소 열람 등급</label>
+        <select id="docGrade">
+          <option value="일반">일반 — 청약 인증을 마친 모든 세대</option>
+          <option value="정회원">정회원 — 동의서를 제출한 세대</option>
+          <option value="VIP">VIP — 회원비를 납부한 세대</option>
+        </select>
+      </div>
+      <label class="drop" id="drop"><i class="fas fa-file-arrow-up"></i> 여기를 눌러 PDF 또는 이미지를 고르거나 끌어다 놓으세요<input type="file" id="fileInput" accept="application/pdf,image/*" multiple></label>
+      <div class="msg" id="convMsg"></div>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="progress" id="progress"><div></div></div>
+      <div class="row" style="margin-top:14px">
+        <button type="button" class="btn" id="uploadBtn" disabled><i class="fas fa-upload"></i> <span id="uploadBtnText">올리기</span></button>
+        <button type="button" class="btn ghost" id="clearBtn">비우기</button>
+      </div>
+      <div class="msg" id="uploadMsg"></div>
+    </section>
+
+    <section class="card">
+      <h3><i class="fas fa-list"></i> 올린 문서 <button type="button" class="btn ghost sm" id="adminRefreshBtn" style="margin-left:auto"><i class="fas fa-rotate"></i></button></h3>
+      <p class="desc">숨김으로 바꾸면 목록에서 사라지고 열람이 막힙니다. 파일은 지워지지 않으니 다시 공개할 수 있습니다.</p>
+      <div class="tw"><table class="admin-table"><thead><tr><th>제목</th><th>등급</th><th>쪽</th><th>업로드</th><th>상태</th><th></th></tr></thead><tbody id="adminDocs"></tbody></table></div>
+    </section>
+  </section>
+</main>
+
+<!-- ================= 뷰어 ================= -->
+<div class="viewer" id="viewer" hidden>
+  <div class="bar">
+    <button type="button" id="viewerClose"><i class="fas fa-xmark"></i> 닫기</button>
+    <div class="title" id="viewerTitle"></div>
+    <div class="pg" id="viewerPg"></div>
+  </div>
+  <div class="scroll" id="viewerScroll">
+    <div class="wm-layer" id="wmLayer"></div>
+    <div id="viewerPages"></div>
+  </div>
+  <div class="notice" id="viewerNotice"></div>
+</div>
+
+<!-- ================= 등급 안내 모달 (N14) ================= -->
+<div class="modal-bg" id="gradeModal">
+  <div class="modal">
+    <h3><i class="fas fa-lock" style="color:var(--gray)"></i> 이 문서는 <span id="modalGrade"></span> 이상만 볼 수 있어요</h3>
+    <p>현재 등급은 <b id="modalMyGrade"></b>입니다. 등급은 아래 순서로 올라갑니다.</p>
+    <table class="grade-table">
+      <tr><td><span class="badge g0">일반</span></td><td>청약 인증을 마친 세대</td></tr>
+      <tr><td><span class="badge g1">정회원</span></td><td>동의서를 제출한 세대</td></tr>
+      <tr><td><span class="badge g2">VIP</span></td><td>회원비를 납부한 세대</td></tr>
+    </table>
+    <p>동의서 제출·회원비 납부 후 반영까지 시간이 걸릴 수 있습니다. 반영이 안 된 것 같으면 입예협에 문의해 주세요.</p>
+    <div class="actions">
+      <a class="btn navy" href="delegate-member-guide.html" target="_blank" rel="noopener">안내 보기</a>
+      <button type="button" class="btn ghost" id="modalClose">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // auth-page.html과 같은 Apps Script 배포. 문서열람 요청은 action이 'doc'로 시작하며 Documents.gs가 처리한다.
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
+  const GRADE_RANK = { '일반': 0, '정회원': 1, 'VIP': 2 };
+  const $ = (id) => document.getElementById(id);
+
+  async function api(payload) {
+    const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+    return res.json();
+  }
+  function showMsg(el, text, kind) {
+    el.className = 'msg' + (text ? ' show ' + kind : '');
+    el.innerHTML = text || '';
+  }
+  function gradeBadge(g) { return `<span class="badge g${GRADE_RANK[g] || 0}">${g}</span>`; }
+  function fmtNow() {
+    const d = new Date(), p = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  const mode = new URLSearchParams(location.search).get('mode');
+  if (mode === 'upload') { $('readerView').hidden = true; $('uploadView').hidden = false; $('headerDesc').textContent = '관리자용 — 문서를 페이지 이미지로 변환해 올리고, 열람 등급을 지정합니다.'; initUpload(); }
+  else { initReader(); }
+
+  // =========================================================
+  // 열람 모드 (N4 → N16 → N17 → N13 → N18)
+  // =========================================================
+  function initReader() {
+    let session = null; // {token, grade, display:{name, unit}}
+    try { session = JSON.parse(sessionStorage.getItem('docSession') || 'null'); } catch (e) { session = null; }
+
+    const authBtn = $('authBtn'), authMsg = $('authMsg');
+    authBtn.addEventListener('click', doAuth);
+    ['receipt', 'building', 'unitNo'].forEach((id) => $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') doAuth(); }));
+    $('logoutBtn').addEventListener('click', () => { clearSession(); });
+    $('modalClose').addEventListener('click', () => $('gradeModal').classList.remove('show'));
+    $('gradeModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); });
+
+    if (session && session.token) refreshList();
+
+    async function doAuth() {
+      const receipt = $('receipt').value.trim(), building = $('building').value.trim(), unit_no = $('unitNo').value.trim();
+      if (!receipt || !building || !unit_no) { showMsg(authMsg, '접수번호, 동, 호수를 모두 입력해 주세요.', 'err'); return; }
+      authBtn.disabled = true; showMsg(authMsg, '확인 중…', 'info');
+      try {
+        const r = await api({ action: 'docAuth', receipt, building, unit_no });
+        if (r.ok) {
+          session = { token: r.token, grade: r.grade, display: r.display };
+          sessionStorage.setItem('docSession', JSON.stringify(session));
+          showMsg(authMsg, '', '');
+          renderList(r);
+        } else if (r.error === 'LOCKED') {
+          showMsg(authMsg, `여러 번 틀려서 잠시 잠겼습니다. ${Math.ceil((r.retry_after_sec || 600) / 60)}분 뒤에 다시 시도해 주세요.`, 'err');
+        } else if (r.error === 'NOT_VERIFIED') {
+          // N10 인증 절차 안내
+          showMsg(authMsg, `일치하는 인증 완료 세대가 없습니다${r.remaining ? ` (남은 시도 ${r.remaining}회)` : ''}.<br>아직 청약 인증을 하지 않으셨다면 <a href="auth-page.html">청약 인증 페이지</a>에서 먼저 인증해 주세요. 인증 처리에는 시간이 걸릴 수 있습니다.`, 'err');
+        } else {
+          showMsg(authMsg, '확인에 실패했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+        }
+      } catch (e) {
+        showMsg(authMsg, '서버에 연결하지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.', 'err');
+      } finally { authBtn.disabled = false; }
+    }
+
+    async function refreshList() {
+      try {
+        const r = await api({ action: 'docList', token: session.token });
+        if (r.ok) { session.grade = r.grade; session.display = r.display; renderList(r); }
+        else clearSession(r.error === 'EXPIRED' ? '열람 시간이 지나 다시 본인 확인이 필요합니다.' : '');
+      } catch (e) { /* 네트워크 실패 시 인증 화면 유지 */ }
+    }
+
+    function clearSession(note) {
+      session = null; sessionStorage.removeItem('docSession');
+      $('listSection').hidden = true; $('authCard').hidden = false;
+      closeViewer();
+      showMsg(authMsg, note || '', note ? 'info' : '');
+    }
+
+    function renderList(r) {
+      $('authCard').hidden = true; $('listSection').hidden = false;
+      $('whoName').textContent = r.display.name || '이름 미등록';
+      $('whoUnit').textContent = r.display.unit;
+      $('whoGrade').className = 'badge g' + (GRADE_RANK[r.grade] || 0); $('whoGrade').textContent = r.grade;
+      const banner = $('gradeBanner');
+      if (r.grade === '일반') { // 구 N12 — 일반등급에만 노출
+        banner.hidden = false;
+        banner.innerHTML = '<i class="fas fa-circle-info"></i> 동의서를 제출하면 <b>정회원</b> 문서를, 회원비를 납부하면 <b>VIP</b> 문서까지 볼 수 있습니다. <a href="delegate-member-guide.html" target="_blank" rel="noopener">안내 보기 →</a>';
+      } else banner.hidden = true;
+
+      const list = $('docList'); list.innerHTML = '';
+      if (!r.docs.length) { list.innerHTML = '<div class="empty">아직 올라온 문서가 없습니다.</div>'; return; }
+      r.docs.forEach((d) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'doc' + (d.locked ? ' locked' : '');
+        b.innerHTML = `<div class="ic"><i class="fas ${d.locked ? 'fa-lock' : 'fa-file-lines'}"></i></div>
+          <div class="t"><div class="title"></div><div class="meta">${gradeBadge(d.min_grade)}<span>${d.pages}쪽</span><span>${d.uploaded}</span></div></div>
+          <div class="arrow"><i class="fas fa-chevron-right"></i></div>`;
+        b.querySelector('.title').textContent = d.title;
+        b.addEventListener('click', () => d.locked ? showGradeModal(d.min_grade) : openViewer(d));
+        list.appendChild(b);
+      });
+    }
+
+    function showGradeModal(minGrade) { // N14
+      $('modalGrade').textContent = minGrade; $('modalMyGrade').textContent = session ? session.grade : '';
+      $('gradeModal').classList.add('show');
+    }
+
+    // ---------------- 뷰어 (N18) ----------------
+    const viewer = $('viewer'), scroll = $('viewerScroll'), pagesEl = $('viewerPages');
+    let observer = null, currentDoc = null, loaded = 0;
+    $('viewerClose').addEventListener('click', closeViewer);
+
+    function wmText() { return `${session.display.name || ''} · ${session.display.unit} · ${fmtNow()}`; }
+
+    function openViewer(doc) {
+      currentDoc = doc; loaded = 0;
+      $('viewerTitle').textContent = doc.title; $('viewerPg').textContent = `0 / ${doc.pages}쪽`;
+      $('viewerNotice').textContent = `${session.display.name || ''} · ${session.display.unit} 열람 중 — 이 화면은 열람 기록이 남습니다`;
+      pagesEl.innerHTML = '';
+      const text = wmText();
+      // 보조 워터마크 레이어(CSS 타일). 주 워터마크는 각 페이지 캔버스 픽셀에 직접 그린다.
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='360' height='220'><text x='180' y='120' fill='rgba(255,255,255,0.10)' font-family='sans-serif' font-size='15' text-anchor='middle' transform='rotate(-25 180 120)'>${text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/'/g, '&#39;')}</text></svg>`;
+      $('wmLayer').style.backgroundImage = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+
+      for (let p = 1; p <= doc.pages; p++) {
+        const d = document.createElement('div'); d.className = 'page'; d.dataset.page = p;
+        d.innerHTML = `<div class="ph">${p}쪽 불러오는 중…</div>`;
+        pagesEl.appendChild(d);
+      }
+      viewer.hidden = false; document.body.style.overflow = 'hidden';
+      scroll.scrollTop = 0;
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach((en) => { if (en.isIntersecting) loadPage(en.target); });
+      }, { root: scroll, rootMargin: '900px 0px' });
+      pagesEl.querySelectorAll('.page').forEach((el) => observer.observe(el));
+      addGuards();
+    }
+
+    function closeViewer() {
+      if (viewer.hidden) return;
+      viewer.hidden = true; document.body.style.overflow = '';
+      if (observer) observer.disconnect(); observer = null;
+      pagesEl.innerHTML = ''; currentDoc = null;
+      removeGuards();
+    }
+
+    async function loadPage(el) {
+      if (el.dataset.state) return;
+      el.dataset.state = 'loading';
+      const page = parseInt(el.dataset.page, 10), doc = currentDoc;
+      try {
+        const r = await api({ action: 'docPage', token: session.token, doc_id: doc.id, page });
+        if (!currentDoc || currentDoc.id !== doc.id) return;
+        if (!r.ok) {
+          if (r.error === 'EXPIRED') { clearSession('열람 시간이 지나 다시 본인 확인이 필요합니다.'); return; }
+          if (r.error === 'FORBIDDEN') { closeViewer(); showGradeModal(r.min_grade); return; }
+          el.dataset.state = ''; el.innerHTML = `<div class="ph err">${page}쪽을 불러오지 못했습니다. 스크롤하면 다시 시도합니다.</div>`;
+          return;
+        }
+        const img = new Image();
+        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = r.image; });
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        burnWatermark(ctx, canvas.width, canvas.height); // N18_7
+        el.innerHTML = ''; el.appendChild(canvas); el.dataset.state = 'done';
+        loaded++; $('viewerPg').textContent = `${loaded} / ${doc.pages}쪽`;
+      } catch (e) {
+        el.dataset.state = ''; el.innerHTML = `<div class="ph err">${page}쪽을 불러오지 못했습니다. 스크롤하면 다시 시도합니다.</div>`;
+      }
+    }
+
+    // 워터마크를 페이지 픽셀에 직접 그린다 — DOM 레이어를 지워도 남고, 캔버스를 캡쳐해도 남는다.
+    function burnWatermark(ctx, w, h) {
+      const text = wmText();
+      const size = Math.max(14, Math.round(w / 30));
+      ctx.save();
+      ctx.font = `700 ${size}px 'Noto Sans KR', sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.translate(w / 2, h / 2); ctx.rotate(-Math.PI / 7);
+      const stepX = ctx.measureText(text).width + size * 5, stepY = size * 7; // 타일끼리 겹치지 않게 실제 글자 폭 기준
+      for (let y = -h; y <= h; y += stepY) {
+        for (let x = -w * 1.2; x <= w * 1.2; x += stepX) {
+          const ox = (Math.round(y / stepY) % 2) ? stepX / 2 : 0;
+          ctx.fillStyle = 'rgba(0,0,0,0.11)'; ctx.fillText(text, x + ox, y);
+        }
+      }
+      ctx.restore();
+    }
+
+    // N18_8 차단 — 일반 사용자 억제용. 캡쳐·촬영은 막을 수 없으므로 워터마크와 열람 기록이 실제 대응책.
+    const guards = {
+      contextmenu: (e) => e.preventDefault(),
+      dragstart: (e) => e.preventDefault(),
+      selectstart: (e) => e.preventDefault(),
+      copy: (e) => e.preventDefault(),
+      cut: (e) => e.preventDefault(),
+      keydown: (e) => {
+        const k = e.key.toLowerCase();
+        if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u', 'c', 'a', 'i', 'j'].includes(k)) e.preventDefault();
+        if (e.key === 'F12' || e.key === 'PrintScreen') e.preventDefault();
+        if (e.key === 'Escape') closeViewer();
+      },
+      beforeprint: () => closeViewer()
+    };
+    function addGuards() { Object.keys(guards).forEach((ev) => (ev === 'beforeprint' ? window : document).addEventListener(ev, guards[ev])); }
+    function removeGuards() { Object.keys(guards).forEach((ev) => (ev === 'beforeprint' ? window : document).removeEventListener(ev, guards[ev])); }
+  }
+
+  // =========================================================
+  // 업로드 모드 (N6 → N7 → N22 → N23/N24 → N25 → N26)
+  // =========================================================
+  function initUpload() {
+    let admin = null; // {admin_token}
+    try { admin = JSON.parse(sessionStorage.getItem('docAdmin') || 'null'); } catch (e) { admin = null; }
+    const adminMsg = $('adminMsg'), convMsg = $('convMsg'), uploadMsg = $('uploadMsg');
+    let pages = []; // [{blob, url}] — 업로드할 페이지 이미지, 배열 순서 = 페이지 순서
+    const MAX_EDGE = 1600, JPEG_Q = 0.8;
+
+    $('adminLoginBtn').addEventListener('click', login);
+    $('adminPw').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+    $('adminRefreshBtn').addEventListener('click', refreshAdminList);
+    $('fileInput').addEventListener('change', (e) => { addFiles(e.target.files); e.target.value = ''; });
+    const drop = $('drop');
+    ['dragenter', 'dragover'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+    ['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
+    drop.addEventListener('drop', (e) => addFiles(e.dataTransfer.files));
+    $('clearBtn').addEventListener('click', () => { pages.forEach((p) => URL.revokeObjectURL(p.url)); pages = []; renderThumbs(); showMsg(uploadMsg, '', ''); });
+    $('uploadBtn').addEventListener('click', upload);
+
+    if (admin && admin.admin_token) { $('adminLoginCard').hidden = true; $('adminSection').hidden = false; refreshAdminList(); }
+
+    async function login() {
+      const id = $('adminId').value.trim(), pw = $('adminPw').value;
+      if (!id || !pw) { showMsg(adminMsg, '아이디와 비밀번호를 입력해 주세요.', 'err'); return; }
+      $('adminLoginBtn').disabled = true;
+      try {
+        const r = await api({ action: 'docAdminLogin', admin_id: id, admin_pw: pw });
+        if (!r.ok) { showMsg(adminMsg, '아이디 또는 비밀번호가 맞지 않습니다.', 'err'); return; }
+        admin = { admin_token: r.admin_token }; sessionStorage.setItem('docAdmin', JSON.stringify(admin));
+        $('adminLoginCard').hidden = true; $('adminSection').hidden = false; renderAdminDocs(r.docs);
+      } catch (e) { showMsg(adminMsg, '서버에 연결하지 못했습니다.', 'err'); }
+      finally { $('adminLoginBtn').disabled = false; }
+    }
+    function adminExpired() {
+      admin = null; sessionStorage.removeItem('docAdmin');
+      $('adminSection').hidden = true; $('adminLoginCard').hidden = false;
+      showMsg(adminMsg, '로그인 시간이 지났습니다. 다시 로그인해 주세요.', 'info');
+    }
+    async function refreshAdminList() {
+      try { const r = await api({ action: 'docAdminList', admin_token: admin.admin_token }); if (r.ok) renderAdminDocs(r.docs); else if (r.error === 'UNAUTHORIZED') adminExpired(); } catch (e) { /* 무시 */ }
+    }
+    function renderAdminDocs(docs) {
+      const tb = $('adminDocs'); tb.innerHTML = '';
+      if (!docs.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">올린 문서가 없습니다.</td></tr>'; return; }
+      docs.slice().reverse().forEach((d) => {
+        const tr = document.createElement('tr'); if (d.status !== '공개') tr.className = 'hidden-row';
+        tr.innerHTML = `<td class="title"></td><td>${gradeBadge(d.min_grade)}</td><td>${d.pages}</td><td>${d.uploaded}</td><td>${d.status}</td><td><button type="button" class="btn ghost sm">${d.status === '공개' ? '숨기기' : '공개하기'}</button></td>`;
+        tr.querySelector('.title').textContent = d.title;
+        tr.querySelector('button').addEventListener('click', async (e) => {
+          e.target.disabled = true;
+          try { const r = await api({ action: 'docSetStatus', admin_token: admin.admin_token, doc_id: d.id, status: d.status === '공개' ? '숨김' : '공개' }); if (r.ok) renderAdminDocs(r.docs); else if (r.error === 'UNAUTHORIZED') adminExpired(); }
+          catch (err) { e.target.disabled = false; }
+        });
+        tb.appendChild(tr);
+      });
+    }
+
+    // ---- N22 문서 종류 분기 → N23 PDF 변환 / 이미지 정규화 → N24 묶기 ----
+    async function addFiles(files) {
+      const list = Array.from(files || []);
+      if (!list.length) return;
+      showMsg(convMsg, '변환 중…', 'info');
+      try {
+        for (const f of list) {
+          if (f.type === 'application/pdf' || /\.pdf$/i.test(f.name)) await addPdf(f);
+          else if (f.type.startsWith('image/')) await addImage(f);
+        }
+        showMsg(convMsg, `${pages.length}쪽 준비됨. 순서를 확인한 뒤 올리기를 누르세요. 글자가 깨진 쪽이 있으면 맥의 미리보기 앱에서 이미지로 내보낸 뒤 이미지로 올려 주세요.`, 'ok');
+      } catch (e) {
+        showMsg(convMsg, '변환에 실패했습니다: ' + (e && e.message ? e.message : e), 'err');
+      }
+      renderThumbs();
+    }
+
+    let pdfjsReady = null;
+    function loadPdfjs() { // 업로드 모드에서만 필요하므로 그때 로드
+      if (pdfjsReady) return pdfjsReady;
+      pdfjsReady = new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; res(window.pdfjsLib); };
+        s.onerror = () => rej(new Error('PDF 변환 라이브러리를 불러오지 못했습니다'));
+        document.head.appendChild(s);
+      });
+      return pdfjsReady;
+    }
+    async function addPdf(file) { // N23_1 ~ N23_4
+      const pdfjsLib = await loadPdfjs();
+      const data = new Uint8Array(await file.arrayBuffer());
+      const pdf = await pdfjsLib.getDocument({ data, cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/', cMapPacked: true,
+        standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/' }).promise;
+      for (let i = 1; i <= pdf.numPages; i++) {
+        showMsg(convMsg, `${file.name} 변환 중… ${i} / ${pdf.numPages}`, 'info');
+        const page = await pdf.getPage(i);
+        const v1 = page.getViewport({ scale: 1 });
+        const scale = MAX_EDGE / Math.max(v1.width, v1.height);
+        const vp = page.getViewport({ scale });
+        const canvas = document.createElement('canvas'); canvas.width = Math.round(vp.width); canvas.height = Math.round(vp.height);
+        const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+        await pushCanvas(canvas);
+        page.cleanup();
+      }
+      await pdf.destroy();
+    }
+    async function addImage(file) {
+      const img = new Image(); const url = URL.createObjectURL(file);
+      try { await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error(file.name + ' 을(를) 열 수 없습니다')); img.src = url; }); }
+      finally { URL.revokeObjectURL(url); }
+      const scale = Math.min(1, MAX_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
+      const canvas = document.createElement('canvas'); canvas.width = Math.round(img.naturalWidth * scale); canvas.height = Math.round(img.naturalHeight * scale);
+      const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      await pushCanvas(canvas);
+    }
+    function pushCanvas(canvas) {
+      return new Promise((res) => canvas.toBlob((blob) => { pages.push({ blob, url: URL.createObjectURL(blob) }); res(); }, 'image/jpeg', JPEG_Q));
+    }
+
+    // ---- N24 페이지 묶기 UI: 드래그 순서 변경, 앞/뒤 이동, 삭제 ----
+    let dragFrom = null;
+    function renderThumbs() {
+      const wrap = $('thumbs'); wrap.innerHTML = '';
+      pages.forEach((p, i) => {
+        const t = document.createElement('div'); t.className = 'thumb'; t.draggable = true; t.dataset.i = i;
+        t.innerHTML = `<span class="n">${i + 1}</span><img alt="${i + 1}쪽"><div class="tools"><button type="button" title="앞으로">◀</button><button type="button" class="del" title="삭제">✕</button><button type="button" title="뒤로">▶</button></div>`;
+        t.querySelector('img').src = p.url;
+        const [prev, del, next] = t.querySelectorAll('button');
+        prev.addEventListener('click', () => move(i, i - 1)); next.addEventListener('click', () => move(i, i + 1));
+        del.addEventListener('click', () => { URL.revokeObjectURL(p.url); pages.splice(i, 1); renderThumbs(); });
+        t.addEventListener('dragstart', () => { dragFrom = i; t.classList.add('dragging'); });
+        t.addEventListener('dragend', () => { dragFrom = null; t.classList.remove('dragging'); });
+        t.addEventListener('dragover', (e) => { e.preventDefault(); t.classList.add('over'); });
+        t.addEventListener('dragleave', () => t.classList.remove('over'));
+        t.addEventListener('drop', (e) => { e.preventDefault(); if (dragFrom !== null && dragFrom !== i) move(dragFrom, i); });
+        wrap.appendChild(t);
+      });
+      $('uploadBtn').disabled = pages.length === 0;
+      $('uploadBtnText').textContent = pages.length ? `${pages.length}쪽 올리기` : '올리기';
+    }
+    function move(from, to) {
+      if (to < 0 || to >= pages.length) return;
+      const [it] = pages.splice(from, 1); pages.splice(to, 0, it); renderThumbs();
+    }
+
+    // ---- N25 페이지당 1회 업로드 → N26 등록 ----
+    function blobToBase64(blob) {
+      return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+    }
+    async function upload() {
+      const title = $('docTitle').value.trim(), min_grade = $('docGrade').value;
+      if (!title) { showMsg(uploadMsg, '제목을 입력해 주세요.', 'err'); $('docTitle').focus(); return; }
+      if (!pages.length) return;
+      const docId = 'D' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const btn = $('uploadBtn'), bar = $('progress'); btn.disabled = true; $('clearBtn').disabled = true; bar.classList.add('show');
+      showMsg(uploadMsg, '올리는 중…', 'info');
+      try {
+        for (let i = 0; i < pages.length; i++) {
+          const image = await blobToBase64(pages[i].blob);
+          let r = null;
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try { r = await api({ action: 'docUploadPage', admin_token: admin.admin_token, doc_id: docId, page: i + 1, image }); } catch (e) { r = { ok: false, error: 'NETWORK' }; }
+            if (r.ok || r.error === 'UNAUTHORIZED') break;
+          }
+          if (!r.ok) { if (r.error === 'UNAUTHORIZED') { adminExpired(); return; } throw new Error(`${i + 1}쪽 업로드 실패 (${r.error})`); }
+          bar.firstElementChild.style.width = Math.round(((i + 1) / (pages.length + 1)) * 100) + '%';
+          showMsg(uploadMsg, `올리는 중… ${i + 1} / ${pages.length}쪽`, 'info');
+        }
+        const fin = await api({ action: 'docFinalize', admin_token: admin.admin_token, doc_id: docId, title, min_grade, pages: pages.length });
+        if (!fin.ok) throw new Error('목록 등록 실패 (' + fin.error + (fin.missing ? ': ' + fin.missing.join(',') + '쪽 없음' : '') + ')');
+        bar.firstElementChild.style.width = '100%';
+        showMsg(uploadMsg, `"${title}" ${pages.length}쪽을 ${min_grade} 등급으로 올렸습니다.`, 'ok');
+        pages.forEach((p) => URL.revokeObjectURL(p.url)); pages = []; renderThumbs(); $('docTitle').value = '';
+        renderAdminDocs(fin.docs);
+      } catch (e) {
+        showMsg(uploadMsg, (e && e.message ? e.message : '업로드 실패') + ' — 같은 파일로 다시 올리기를 누르면 처음부터 다시 올립니다.', 'err');
+      } finally {
+        btn.disabled = pages.length === 0; $('clearBtn').disabled = false;
+        setTimeout(() => { bar.classList.remove('show'); bar.firstElementChild.style.width = '0'; }, 1200);
+      }
+    }
+  }
+})();
+</script>
+</body>
+</html>
