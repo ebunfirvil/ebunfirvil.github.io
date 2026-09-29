@@ -19,7 +19,15 @@
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- 2026-09-29 보안: 버전 미고정 + SRI 없음이던 걸 고정 버전 + 무결성 해시로 교체.
+       이 페이지는 ?mode=edit에서 GitHub 토큰을 다루므로, CDN이 오염되면 토큰이 통째로 털린다.
+       DOMPurify는 qna-data.md를 innerHTML에 넣기 전에 살균하는 용도(저장 XSS 차단). -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"
+          integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"
+          integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a"
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     :root {
       --orange: #e8622e;
@@ -224,8 +232,8 @@
             <code>ebunfirvil/ebunfirvil.github.io</code> 저장소 하나만 선택하고 Contents 권한을 Read/Write로 설정하세요.
           </div>
           <label class="edit-checkbox">
-            <input type="checkbox" id="rememberToken" checked>
-            이 브라우저에 토큰 저장 (localStorage)
+            <input type="checkbox" id="rememberToken">
+            이 탭에서만 토큰 기억 (탭을 닫으면 삭제됩니다)
           </label>
         </div>
 
@@ -256,6 +264,10 @@
     const FILE_PATH = 'qna-data.md';
     const BRANCH = 'main';
     const TOKEN_STORAGE_KEY = 'qna_gh_pat';
+    // 2026-09-29 보안: 저장소 쓰기 권한 토큰을 localStorage에 영구 보관하던 걸 sessionStorage로 바꿨다
+    // (탭을 닫으면 사라짐). 예전에 localStorage에 남아있던 토큰은 페이지를 열 때 즉시 지운다.
+    const tokenStore = window.sessionStorage;
+    try { localStorage.removeItem(TOKEN_STORAGE_KEY); } catch (e) {}
 
     const qnaContent = document.getElementById('qnaContent');
     const isEditMode = new URLSearchParams(location.search).get('mode') === 'edit';
@@ -273,8 +285,14 @@
       return btoa(binary);
     }
 
+    // qna-data.md는 저장소에 쓰기 권한이 있으면 누구나 고칠 수 있는 파일이므로, 그 내용을 그대로
+    // innerHTML에 넣으면 저장 XSS가 된다(스크립트가 이 페이지의 토큰까지 읽어간다). 반드시 살균한다.
     function renderMarkdown(md) {
-      qnaContent.innerHTML = marked.parse(md);
+      const html = marked.parse(md);
+      qnaContent.innerHTML = (window.DOMPurify ? DOMPurify.sanitize(html) : '');
+      if (!window.DOMPurify) {
+        qnaContent.textContent = '보안 모듈을 불러오지 못해 내용을 표시할 수 없습니다. 새로고침해 주세요.';
+      }
     }
 
     let currentSha = null;
@@ -310,7 +328,7 @@
       document.getElementById('editArea').style.display = 'block';
 
       const tokenInput = document.getElementById('ghToken');
-      const savedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      const savedToken = tokenStore.getItem(TOKEN_STORAGE_KEY);
       if (savedToken) tokenInput.value = savedToken;
 
       const statusEl = document.getElementById('editStatus');
@@ -334,7 +352,7 @@
       });
 
       document.getElementById('btnClearToken').addEventListener('click', () => {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        tokenStore.removeItem(TOKEN_STORAGE_KEY);
         tokenInput.value = '';
         setStatus('저장된 토큰을 삭제했습니다.', 'info');
       });
@@ -392,9 +410,9 @@
           currentSha = data.content.sha;
 
           if (remember) {
-            localStorage.setItem(TOKEN_STORAGE_KEY, token);
+            tokenStore.setItem(TOKEN_STORAGE_KEY, token);
           } else {
-            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            tokenStore.removeItem(TOKEN_STORAGE_KEY);
           }
 
           setStatus('저장되었습니다! GitHub Pages 캐시 특성상 실제 화면 반영까지 최대 10분 정도 걸릴 수 있습니다.', 'ok');

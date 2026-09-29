@@ -491,7 +491,17 @@
       $('adminLoginBtn').disabled = true;
       try {
         const r = await api({ action: 'docAdminLogin', admin_id: id, admin_pw: pw });
-        if (!r.ok) { showMsg(adminMsg, '아이디 또는 비밀번호가 맞지 않습니다.', 'err'); return; }
+        if (!r.ok) {
+          // 서버가 5회 실패 시 10분 잠근다(Code.gs adminAuthStatus) — 사유를 그대로 안내
+          if (r.error === 'LOCKED') {
+            showMsg(adminMsg, '로그인 시도가 너무 많습니다. ' + Math.ceil((r.retry_after_sec || 600) / 60) + '분 후 다시 시도해 주세요.', 'err');
+          } else if (typeof r.remaining === 'number') {
+            showMsg(adminMsg, '아이디 또는 비밀번호가 맞지 않습니다. (남은 시도 ' + r.remaining + '회)', 'err');
+          } else {
+            showMsg(adminMsg, '아이디 또는 비밀번호가 맞지 않습니다.', 'err');
+          }
+          return;
+        }
         admin = { admin_token: r.admin_token }; sessionStorage.setItem('docAdmin', JSON.stringify(admin));
         $('adminLoginCard').hidden = true; $('adminSection').hidden = false; renderAdminDocs(r.docs);
       } catch (e) { showMsg(adminMsg, '서버에 연결하지 못했습니다.', 'err'); }
