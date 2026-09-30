@@ -326,53 +326,7 @@
     .file-preview img { max-width: 100%; max-height: 220px; border-radius: 8px; box-shadow: var(--shadow); }
     .file-preview .file-name { font-size: 0.82rem; color: var(--gray); margin-top: 8px; }
 
-    .ocr-box {
-      margin-top: 14px; padding: 14px 16px; border-radius: 10px;
-      background: rgba(26,58,92,0.05); border: 1px solid var(--beige-warm);
-      font-size: 0.85rem; display: none;
-    }
-    .ocr-box.show { display: block; }
-    .ocr-box .ocr-title { font-weight: 700; color: var(--navy); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .ocr-box .ocr-row { display: flex; justify-content: space-between; padding: 3px 0; color: var(--dark); }
-    .ocr-box .ocr-row span:first-child { color: var(--gray); }
-    .ocr-box.loading .ocr-title i { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .ocr-fail-warning {
-      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
-      background: rgba(196,78,30,0.1); color: var(--orange-dark); font-size: 0.82rem;
-      display: none; align-items: flex-start; gap: 8px;
-    }
-    .ocr-fail-warning.show { display: flex; }
-    .ocr-fail-warning i { margin-top: 2px; flex-shrink: 0; }
-
-    .mode-switch-row {
-      margin-top: 14px; padding: 12px 14px; border-radius: 10px;
-      background: var(--beige); border: 1px solid var(--beige-warm);
-      display: flex; align-items: center; gap: 12px;
-    }
-    .mode-switch { position: relative; display: inline-block; width: 44px; height: 25px; flex-shrink: 0; }
-    .mode-switch input { opacity: 0; width: 0; height: 0; }
-    .mode-switch-slider {
-      position: absolute; cursor: pointer; inset: 0; background: var(--beige-warm);
-      border-radius: 25px; transition: 0.2s;
-    }
-    .mode-switch-slider::before {
-      content: ""; position: absolute; height: 19px; width: 19px; left: 3px; bottom: 3px;
-      background: var(--white); border-radius: 50%; transition: 0.2s; box-shadow: var(--shadow);
-    }
-    .mode-switch input:checked + .mode-switch-slider { background: var(--orange); }
-    .mode-switch input:checked + .mode-switch-slider::before { transform: translateX(19px); }
-    .mode-switch-text { font-size: 0.85rem; color: var(--navy); }
-    .mode-switch-text strong { font-weight: 700; }
-    .mode-switch-text span { display: block; color: var(--gray); font-size: 0.78rem; margin-top: 2px; font-weight: 400; }
-    .mode-switch-note {
-      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
-      background: rgba(26,58,92,0.06); color: var(--navy); font-size: 0.82rem;
-      display: none; align-items: flex-start; gap: 8px;
-    }
-    .mode-switch-note.show { display: flex; }
-    .mode-switch-note i { margin-top: 2px; flex-shrink: 0; color: var(--orange); }
 
     .size-error {
       margin-top: 10px; padding: 10px 14px; border-radius: 8px;
@@ -485,7 +439,7 @@
 
     <div class="notice-banner">
       <i class="fas fa-info-circle"></i>
-      <span>인증샷을 업로드하면 접수번호·호수를 사진에서 자동으로 인식해 채워드립니다(최대 4~5분 정도 걸릴 수 있습니다). 자동 인식이 3회 연속 실패하면 직접 입력할 수 있게 됩니다. 최종 확인은 제출된 원본 사진으로 관리자가 진행합니다.</span>
+      <span>인증샷을 업로드하신 뒤, 사진에 나온 접수번호·주택형·당첨동·호수를 그대로 입력해 주세요. 제출된 원본 사진으로 관리자가 확인한 뒤 신청하신 메일로 입장 코드를 보내드립니다.</span>
     </div>
 
     <form class="form-card" id="authForm" novalidate>
@@ -562,29 +516,6 @@
             <span>이미지 용량이 10MB를 초과합니다. 더 작은 용량의 이미지를 선택해 주세요.</span>
           </div>
 
-          <div class="mode-switch-row">
-            <label class="mode-switch">
-              <input type="checkbox" id="manualModeSwitch" checked>
-              <span class="mode-switch-slider"></span>
-            </label>
-            <span class="mode-switch-text">
-              <strong>자동입력</strong>
-              <span>켜져 있으면 인증샷에서 자동으로 인식합니다.<br>비활성화시 접수번호·주택형·당첨동·호수를 직접 입력 가능합니다.</span>
-            </span>
-          </div>
-          <div class="mode-switch-note" id="modeSwitchNote">
-            <i class="fas fa-circle-info"></i>
-            <span id="modeSwitchNoteText"></span>
-          </div>
-
-          <div class="ocr-box" id="ocrBox">
-            <div class="ocr-title"><i class="fas fa-spinner"></i> <span id="ocrTitleText">자동 판독 중... (최대 4~5분 정도 걸릴 수 있습니다)</span></div>
-            <div id="ocrResultRows"></div>
-          </div>
-          <div class="ocr-fail-warning" id="ocrFailWarning">
-            <i class="fas fa-triangle-exclamation"></i>
-            <span id="ocrFailText"></span>
-          </div>
         </div>
 
         <div class="form-field">
@@ -646,32 +577,32 @@
       </fieldset>
 
       <fieldset>
-        <legend id="autoFieldsLegend">자동 인식 정보 (인증샷에서 자동으로 채워집니다)</legend>
+        <legend>접수번호 / 주택형 / 당첨동 / 호수</legend>
 
         <div class="form-field">
           <label for="receiptNo">접수번호 (5~6자리)<span class="req">*</span></label>
-          <input type="text" id="receiptNo" name="receiptNo" required readonly
-            inputmode="numeric" pattern="\d{5,6}" maxlength="6" placeholder="인증샷 업로드 시 자동으로 채워집니다">
-          <div class="hint" id="receiptNoHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 채워집니다.</div>
+          <input type="text" id="receiptNo" name="receiptNo" required
+            inputmode="numeric" pattern="\d{5,6}" maxlength="6" placeholder="예: 123456">
+          <div class="hint" id="receiptNoHint">인증샷을 보고 직접 입력해 주세요.</div>
         </div>
 
         <div class="form-field">
           <label for="houseType">주택형<span class="req">*</span></label>
-          <select id="houseType" name="houseType" required class="locked" tabindex="-1">
-            <option value="" disabled selected>인증샷 업로드 시 자동으로 선택됩니다</option>
+          <select id="houseType" name="houseType" required>
+            <option value="" disabled selected>선택해 주세요</option>
             <option value="51A">51A</option>
             <option value="55A">55A</option>
             <option value="55B">55B</option>
             <option value="59A">59A</option>
             <option value="59T">59T</option>
           </select>
-          <div class="hint" id="houseTypeHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.</div>
+          <div class="hint" id="houseTypeHint">인증샷을 보고 직접 선택해 주세요.</div>
         </div>
 
         <div class="form-field">
           <label for="building">당첨동<span class="req">*</span></label>
-          <select id="building" name="building" required class="locked" tabindex="-1">
-            <option value="" disabled selected>인증샷 업로드 시 자동으로 선택됩니다</option>
+          <select id="building" name="building" required>
+            <option value="" disabled selected>선택해 주세요</option>
             <option value="101동">101동</option>
             <option value="102동">102동</option>
             <option value="103동">103동</option>
@@ -688,13 +619,13 @@
             <option value="202동">202동</option>
             <option value="203동">203동</option>
           </select>
-          <div class="hint" id="buildingHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.</div>
+          <div class="hint" id="buildingHint">인증샷을 보고 직접 선택해 주세요.</div>
         </div>
 
         <div class="form-field">
           <label for="unitNo">호수<span class="req">*</span></label>
-          <input type="text" id="unitNo" name="unitNo" required readonly placeholder="인증샷 업로드 시 자동으로 채워집니다">
-          <div class="hint" id="unitNoHint">인증샷을 업로드하면 사진에서 자동으로 인식되어 채워집니다.</div>
+          <input type="text" id="unitNo" name="unitNo" required placeholder="예: 1502">
+          <div class="hint" id="unitNoHint">인증샷을 보고 직접 입력해 주세요.</div>
         </div>
       </fieldset>
 
@@ -929,9 +860,6 @@
 
   <script>
     // ── 배포 시 채워야 할 값 ──────────────────────────────────────────────
-    // OCR_API_URL: 캡쳐 이미지 판독 서버.
-    const OCR_API_URL = 'https://leeopklop.synology.me:7001/api/auth-page/ocr';
-
     // SUBMIT_URL: Google Apps Script Web App 배포 URL(.../exec). 이미지(base64) + 폼필드 +
     // submission_id를 이 URL 한 곳으로만 전송하며, Drive 업로드+Sheets 기록을 전담함.
     const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
@@ -961,7 +889,6 @@
     const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
     // 실측 기준(qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초. DSM 리버스
     // 프록시 타임아웃(300초)보다는 항상 짧게 잡아 서버가 응답 없이 계속 붙들지 않게 함.
-    const OCR_TIMEOUT_MS = 150000;
 
     const submissionId = (crypto.randomUUID ? crypto.randomUUID() :
       'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -975,11 +902,6 @@
     const filePreviewImg = document.getElementById('filePreviewImg');
     const fileNameLabel = document.getElementById('fileNameLabel');
     const sizeError = document.getElementById('sizeError');
-    const ocrBox = document.getElementById('ocrBox');
-    const ocrTitleText = document.getElementById('ocrTitleText');
-    const ocrResultRows = document.getElementById('ocrResultRows');
-    const ocrFailWarning = document.getElementById('ocrFailWarning');
-    const ocrFailText = document.getElementById('ocrFailText');
     const receiptNoInput = document.getElementById('receiptNo');
     const unitNoInput = document.getElementById('unitNo');
     const receiptNoHint = document.getElementById('receiptNoHint');
@@ -1664,9 +1586,6 @@
     });
 
     let selectedFile = null;
-    let lastOcrName = ''; // 표시용(참고용) — 이름은 폼 필드가 없으므로 별도 보관
-    let ocrFailCount = 0;
-    const OCR_FAIL_LIMIT = 3;
 
     function setSubmitStatus(msg, type, iconClass) {
       submitStatus.className = 'submit-status show ' + type;
@@ -1677,88 +1596,6 @@
       submitStatus.className = 'submit-status';
     }
 
-    function setOcrFailMessage(msg) {
-      if (!msg) { ocrFailWarning.classList.remove('show'); return; }
-      ocrFailText.textContent = msg;
-      ocrFailWarning.classList.add('show');
-    }
-
-    // ── 자동입력 스위치 (기본값: 켜짐 = 자동입력) ────────────────────────
-    // 켜져 있으면(자동입력) 기존처럼 인증샷에서 자동으로 인식해 채운다(필드는 잠김).
-    // 꺼지면(수동입력) 접수번호/주택형/당첨동/호수를 직접 입력하고 OCR은 아예 호출하지 않는다.
-    const manualModeSwitch = document.getElementById('manualModeSwitch');
-    const autoFieldsLegend = document.getElementById('autoFieldsLegend');
-    const modeSwitchNote = document.getElementById('modeSwitchNote');
-    const modeSwitchNoteText = document.getElementById('modeSwitchNoteText');
-    const MANUAL_DELAY_NOTICE = '담당자가 수동으로 확인을 할 예정이오니 등업에 지연이 발생할 수 있습니다.';
-
-    function isManualMode() {
-      return !manualModeSwitch.checked;
-    }
-    let prevManualMode = isManualMode();
-
-    function updateModeSwitchNote(justSwitchedOn) {
-      if (!isManualMode()) {
-        modeSwitchNote.classList.remove('show');
-        return;
-      }
-      modeSwitchNoteText.textContent = justSwitchedOn
-        ? '인증샷을 다시 업로드해 주세요. ' + MANUAL_DELAY_NOTICE
-        : MANUAL_DELAY_NOTICE;
-      modeSwitchNote.classList.add('show');
-    }
-
-    function applyManualMode(justSwitchedOn) {
-      const manual = isManualMode();
-
-      receiptNoInput.readOnly = !manual;
-      unitNoInput.readOnly = !manual;
-      houseTypeSelect.classList.toggle('locked', !manual);
-      buildingSelect.classList.toggle('locked', !manual);
-      if (manual) {
-        houseTypeSelect.removeAttribute('tabindex');
-        buildingSelect.removeAttribute('tabindex');
-      } else {
-        houseTypeSelect.setAttribute('tabindex', '-1');
-        buildingSelect.setAttribute('tabindex', '-1');
-      }
-
-      autoFieldsLegend.textContent = manual
-        ? '접수번호 / 주택형 / 당첨동 / 호수 (직접 입력)'
-        : '자동 인식 정보 (인증샷에서 자동으로 채워집니다)';
-
-      const hintMsg = manual ? '사진을 보고 직접 입력해 주세요.' : '인증샷을 업로드하면 사진에서 자동으로 인식되어 채워집니다.';
-      const selectHintMsg = manual ? '사진을 보고 직접 선택해 주세요.' : '인증샷을 업로드하면 사진에서 자동으로 인식되어 선택됩니다.';
-      receiptNoInput.placeholder = manual ? '예: 123456' : '인증샷 업로드 시 자동으로 채워집니다';
-      unitNoInput.placeholder = manual ? '예: 1502' : '인증샷 업로드 시 자동으로 채워집니다';
-      receiptNoHint.textContent = hintMsg;
-      unitNoHint.textContent = hintMsg;
-      houseTypeHint.textContent = selectHintMsg;
-      buildingHint.textContent = selectHintMsg;
-
-      if (manual) {
-        ocrBox.classList.remove('show', 'loading');
-        setOcrFailMessage('');
-      } else if (selectedFile) {
-        // 자동 인식 모드로 전환 + 이미 첨부된 이미지가 있으면 바로 인식을 시도한다
-        ocrFailCount = 0;
-        runOcrPreview(selectedFile);
-      }
-
-      updateModeSwitchNote(justSwitchedOn);
-    }
-
-    manualModeSwitch.addEventListener('change', () => {
-      const manual = isManualMode();
-      // 이미 업로드된 이미지가 있으면(selectedFile) 재업로드 문구를 띄우지 않는다 — 실제로도
-      // selectedFile은 모드 전환과 무관하게 그대로 제출에 쓰이므로, 다시 올릴 필요가 없다.
-      const justSwitchedOn = manual && !prevManualMode && !selectedFile;
-      applyManualMode(justSwitchedOn);
-      prevManualMode = manual;
-    });
-
-    applyManualMode(false); // 초기 상태 표시(기본값 자동입력이므로 필드 잠금 + 안내문 숨김)
-
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1768,94 +1605,12 @@
       });
     }
 
-    // 서버가 OCR_API_URL 하나뿐이라(2026-08-25, 맥미니 완전 종료) 그대로 호출한다.
-    async function fetchOcr(file) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT_MS);
-      try {
-        const fd = new FormData();
-        fd.append('image', file);
-        const res = await fetch(OCR_API_URL, { method: 'POST', body: fd, signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error('OCR 서버 오류: ' + res.status);
-        return await res.json();
-      } catch (err) {
-        clearTimeout(timeoutId);
-        throw err;
-      }
-    }
-
-    async function runOcrPreview(file) {
-      ocrBox.classList.add('show', 'loading');
-      ocrTitleText.textContent = '자동 판독 중... (최대 4~5분 정도 걸릴 수 있습니다)';
-      ocrResultRows.innerHTML = '';
-      setOcrFailMessage('');
-
-      let result = null;
-      try {
-        const data = await fetchOcr(file);
-        result = {
-          name: data.name || '',
-          receipt_no: data.receipt_no || '',
-          unit_no: data.unit_no || '',
-          house_type: data.house_type || '',
-          // 당첨자 발표 이미지엔 "T201동"처럼 T가 찍혀 있어 OCR도 T를 그대로 읽어오지만,
-          // 제출 데이터는 T 없이 통일하기로 해서 여기서 벗겨낸다.
-          building: (data.building || '').replace(/^T(20[1-3]동)$/, '$1')
-        };
-      } catch (err) {
-        result = null;
-      }
-
-      ocrBox.classList.remove('loading');
-
-      // 접수번호·주택형·당첨동·호수 네 가지가 전부 읽혀야 "성공"으로 취급한다.
-      // 넷 다 잠겨있는 필드라, 하나라도 못 채우면 제출 자체가 막히므로 재시도를 유도해야 한다.
-      const houseTypeOk = VALID_HOUSE_TYPES.has(result && result.house_type);
-      const buildingOk = VALID_BUILDINGS.has(result && result.building);
-      const success = !!(result && result.receipt_no && result.unit_no && houseTypeOk && buildingOk);
-
-      if (success) {
-        ocrFailCount = 0;
-        lastOcrName = result.name; // 화면에는 표시하지 않고 제출 데이터(관리자 참고용)에만 담아 보냄
-        ocrTitleText.textContent = '자동 인식 완료';
-        ocrResultRows.innerHTML = '';
-        // 이미 값이 입력돼 있으면(예: 수동입력 중 타이핑해둔 값) 덮어쓰지 않는다
-        if (!receiptNoInput.value.trim()) receiptNoInput.value = result.receipt_no;
-        if (!unitNoInput.value.trim()) unitNoInput.value = result.unit_no;
-        if (!houseTypeSelect.value) houseTypeSelect.value = result.house_type;
-        if (!buildingSelect.value) buildingSelect.value = result.building;
-        setOcrFailMessage('');
-      } else {
-        ocrFailCount++;
-        ocrTitleText.textContent = '자동 인식 실패';
-        ocrResultRows.innerHTML = '';
-        if (ocrFailCount < OCR_FAIL_LIMIT) {
-          setOcrFailMessage(
-            `접수번호·주택형·당첨동·호수 자동 인식에 실패했습니다 (${ocrFailCount}/${OCR_FAIL_LIMIT}회). 더 선명한 사진으로 다시 업로드해 주세요.`
-          );
-        } else {
-          setOcrFailMessage(
-            `자동 인식에 ${OCR_FAIL_LIMIT}회 실패했습니다. 다시 시도하시거나, 위의 '자동입력' 스위치를 끄고 직접 입력해 주세요.`
-          );
-        }
-      }
-    }
-
     imageInput.addEventListener('change', () => {
       sizeError.classList.remove('show');
-      setOcrFailMessage('');
       const file = imageInput.files[0];
       if (!file) {
         selectedFile = null;
         filePreview.style.display = 'none';
-        ocrBox.classList.remove('show');
-        if (!isManualMode()) {
-          receiptNoInput.value = '';
-          unitNoInput.value = '';
-          houseTypeSelect.value = '';
-          buildingSelect.value = '';
-        }
         return;
       }
 
@@ -1864,29 +1619,13 @@
         imageInput.value = '';
         selectedFile = null;
         filePreview.style.display = 'none';
-        ocrBox.classList.remove('show');
         return;
       }
 
       selectedFile = file;
       fileNameLabel.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + 'MB)';
-      const url = URL.createObjectURL(file);
-      filePreviewImg.src = url;
+      filePreviewImg.src = URL.createObjectURL(file);
       filePreview.style.display = 'block';
-
-      if (isManualMode()) {
-        // 수동입력 모드에서는 OCR을 아예 호출하지 않는다 — 재업로드 안내문이 있었다면 지운다
-        updateModeSwitchNote(false);
-        return;
-      }
-
-      // 자동인식 모드: 새 이미지를 고르면 이전 인식값은 비우고 다시 시도
-      receiptNoInput.value = '';
-      unitNoInput.value = '';
-      houseTypeSelect.value = '';
-      buildingSelect.value = '';
-      ocrFailCount = 0;
-      runOcrPreview(file);
     });
 
     form.addEventListener('submit', async (e) => {
@@ -1897,17 +1636,9 @@
         form.reportValidity();
         return;
       }
-      // checkValidity()만으로는 부족하다 — receiptNo/unitNo는 readonly가 걸리면 required 제약이
-      // 통째로 면제되는 HTML5 스펙 동작 때문에(자동인식 모드에서 정확히 이 상태), OCR이 값을 못
-      // 채웠어도 네이티브 검증을 그냥 통과해버릴 수 있다. 접수번호/주택형/당첨동/호수 네 값은
-      // 자동인식이든 수동입력이든 무조건 다 채워져 있어야 제출 가능해야 하므로 여기서 직접 확인한다.
+      // checkValidity()와 별개로 네 값을 직접 확인한다(방어적 중복 검사).
       if (!receiptNoInput.value.trim() || !unitNoInput.value.trim() || !houseTypeSelect.value || !buildingSelect.value) {
-        setSubmitStatus(
-          isManualMode()
-            ? '접수번호·주택형·당첨동·호수를 모두 입력해 주세요.'
-            : '접수번호·주택형·당첨동·호수가 자동 인식되지 않았습니다. 다시 시도하시거나, 위의 \'자동입력\' 스위치를 끄고 직접 입력해 주세요.',
-          'err', 'fa-circle-exclamation'
-        );
+        setSubmitStatus('접수번호·주택형·당첨동·호수를 모두 입력해 주세요.', 'err', 'fa-circle-exclamation');
         return;
       }
       if (!selectedFile) {
@@ -1956,8 +1687,8 @@
           spouse_nick: document.getElementById('spouseNick').value.trim(),
           spouse_role: document.getElementById('spouseRole').value,
           spouse_naver_id: document.getElementById('spouseNaverId').value.trim(),
-          ocr_name: lastOcrName,
-          entry_method: isManualMode() ? '수동입력' : '자동인식',
+          ocr_name: '',
+          entry_method: '수동입력',
           image_base64: imageBase64,
           image_mime: selectedFile.type || 'image/jpeg',
           image_filename: selectedFile.name
@@ -1978,14 +1709,8 @@
 
         if (result.duplicate) {
           setSubmitStatus('이미 제출이 완료되었습니다. (중복 제출 방지됨)', 'ok', 'fa-circle-check');
-        } else if (!isManualMode()) {
-          // 자동인식(OCR)으로 성공 제출된 경우엔 기존처럼 즉시 입장코드 모달을 보여준다 —
-          // 자동입력 필드는 OCR 성공 없이는 채워질 수 없으므로, 이 분기에 왔다는 것 자체가
-          // OCR 인식이 성공했다는 뜻이다.
-          setSubmitStatus('제출이 완료되었습니다. 감사합니다!', 'ok', 'fa-circle-check');
-          if (kakaoConfig.active && kakaoConfig.code) showKakaoPopup();
         } else {
-          // 수동입력은 관리자 검수를 거쳐야 하므로 즉시 코드를 보여주지 않는다
+          // 모든 제출이 관리자 검수를 거치므로 즉시 입장코드를 보여주지 않는다
           setSubmitStatus('인증 신청이 완료되었습니다. 관리자가 확인후, 신청하신 메일로 입장 코드를 전달드립니다.', 'ok', 'fa-circle-check');
         }
         submitBtn.innerHTML = '<i class="fas fa-check"></i> 제출 완료';
