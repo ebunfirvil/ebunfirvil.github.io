@@ -1900,7 +1900,7 @@
       </div>
       <div class="about-grid">
         <div class="about-image fade-in">
-          <img src="img/perspective.png" alt="e편한세상 분당 퍼스트빌리지 투시도">
+          <img src="img/perspective.webp" alt="e편한세상 분당 퍼스트빌리지 투시도">
         </div>
         <div class="about-text fade-in">
           <h3>성남낙생지구 A-1블록</h3>
@@ -2055,7 +2055,7 @@
       <div class="siteplan-card fade-in">
         <div class="siteplan-hint"><i class="fas fa-hand-pointer"></i> 배치도 위 점을 클릭해보세요 (PC/모바일 모두 가능)</div>
         <div class="siteplan-wrap" id="siteplanWrap">
-          <img src="img/amenities/site-plan.png" alt="단지 배치도">
+          <img src="img/amenities/site-plan.webp" alt="단지 배치도">
           <!-- hotspots injected by JS -->
         </div>
       </div>
@@ -2778,69 +2778,69 @@
         name: '주출입구',
         icon: 'fa-archway',
         top: 23.4, left: 85.4,
-        images: ['img/amenities/enteries.png']
+        images: ['img/amenities/enteries.webp']
       },
       {
         name: '커뮤니티센터 Ⅰ (B1)',
         icon: 'fa-dumbbell',
         top: 44.0, left: 62.1,
-        images: ['img/amenities/community-center1.png', 'img/amenities/cc1_gym.png', 'img/amenities/comunity_rg.png', 'img/amenities/gx-room.png'],
+        images: ['img/amenities/community-center1.webp', 'img/amenities/cc1_gym.webp', 'img/amenities/comunity_rg.webp', 'img/amenities/gx-room.webp'],
         desc: '피트니스 · G.X룸 · 커뮤니티라운지 · 라운지카페(작은도서관) · 샤워룸(남/여) · 미니짐 · 실내골프연습장 · 멀티룸(주민회의실)'
       },
       {
         name: '커뮤니티센터 Ⅱ (B1)',
         icon: 'fa-child-reaching',
         top: 71.9, left: 45.8,
-        images: ['img/amenities/community-center2.png', 'img/amenities/indoor-sports-court.png', 'img/amenities/cm1_private_office.png'],
+        images: ['img/amenities/community-center2.webp', 'img/amenities/indoor-sports-court.webp', 'img/amenities/cm1_private_office.webp'],
         desc: '키즈라운지(공동육아공간) · 스포츠코트 · 다함께돌봄센터 · 프라이빗오피스룸 · 멀티룸'
       },
       {
         name: '어린이집 (1, 2F)',
         icon: 'fa-child',
         top: 56.2, left: 53.7,
-        images: ['img/amenities/daycare-interior.png', 'img/amenities/daycare-exterior.png']
+        images: ['img/amenities/daycare-interior.webp', 'img/amenities/daycare-exterior.webp']
       },
       {
         name: '드포엠카페',
         icon: 'fa-mug-hot',
         top: 39.6, left: 72.9,
-        images: ['img/amenities/dpoem-cafe-exterior.png', 'img/amenities/dpoem-cafe-interior.png']
+        images: ['img/amenities/dpoem-cafe-exterior.webp', 'img/amenities/dpoem-cafe-interior.webp']
       },
       {
         name: '드포엠파크',
         icon: 'fa-tree',
         top: 33.0, left: 72.0,
-        images: ['img/amenities/dpoem-park.png']
+        images: ['img/amenities/dpoem-park.webp']
       },
       {
         name: '드포엠플레이 (104동측)',
         icon: 'fa-water-ladder',
         top: 38.1, left: 63.2,
-        images: ['img/amenities/community-center1-exterior.png']
+        images: ['img/amenities/community-center1-exterior.webp']
       },
       {
         name: '드포엠플레이 (111동측)',
         icon: 'fa-water-ladder',
         top: 69.8, left: 14.9,
-        images: ['img/amenities/dpoem-play.png']
+        images: ['img/amenities/dpoem-play.webp']
       },
       {
         name: '게스트하우스',
         icon: 'fa-bed',
         top: 64.0, left: 7.5,
-        images: ['img/amenities/guesthouse.png']
+        images: ['img/amenities/guesthouse.webp']
       },
       {
         name: '근린생활시설',
         icon: 'fa-store',
         top: 37.5, left: 92.2,
-        images: ['img/amenities/neighborhood-facility.png']
+        images: ['img/amenities/neighborhood-facility.webp']
       }
     ];
 
     const galleryPhotos = [
-      { name: '단지 투시도', images: ['img/perspective.png'], top: 26, left: 18 },
-      { name: '단지 조감도', images: ['img/aerial.png'], top: 46, left: 18 }
+      { name: '단지 투시도', images: ['img/perspective.webp'], top: 26, left: 18 },
+      { name: '단지 조감도', images: ['img/aerial.webp'], top: 46, left: 18 }
     ];
 
     const siteplanWrap = document.getElementById('siteplanWrap');
@@ -2868,7 +2868,7 @@
       thumb.className = 'photo-hotspot';
       thumb.style.top = p.top + '%';
       thumb.style.left = p.left + '%';
-      thumb.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><span>' + p.name + '</span>';
+      thumb.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '" loading="lazy"><span>' + p.name + '</span>';
       thumb.onclick = () => openGalleryPhoto(idx);
       siteplanWrap.appendChild(thumb);
     });
@@ -2876,7 +2876,7 @@
     galleryPhotos.forEach((p, idx) => {
       const card = document.createElement('div');
       card.className = 'photo-card';
-      card.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '"><div class="photo-card-label">' + p.name + '</div>';
+      card.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '" loading="lazy"><div class="photo-card-label">' + p.name + '</div>';
       card.onclick = () => openGalleryPhoto(idx);
       photoGrid.appendChild(card);
     });
@@ -2943,7 +2943,7 @@
       const modalType = document.getElementById('floorplanType');
 
       currentFloorPlan = {
-        images: ['img/' + type + '.png', 'img/planimages_' + type + '.png', 'img/pyposition_' + type + '.png'],
+        images: ['img/' + type + '.webp', 'img/planimages_' + type + '.webp', 'img/pyposition_' + type + '.webp'],
         labels: ['평면도', '투시도', '타입위치'],
         index: 0
       };

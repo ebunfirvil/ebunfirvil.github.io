@@ -227,7 +227,7 @@
     <div class="section-block">
       <h2><span class="num"><i class="fas fa-map-marked-alt"></i></span> 광역 위치도</h2>
       <div class="map-card">
-        <img src="img/location/cg_wide_map.jpg" alt="광역 위치도" onclick="openImgModal(this.src, '광역 위치도')">
+        <img src="img/location/cg_wide_map.webp" alt="광역 위치도" onclick="openImgModal(this.src, '광역 위치도')">
         <div class="map-caption">이미지를 클릭하면 크게 볼 수 있습니다</div>
       </div>
     </div>
@@ -236,7 +236,7 @@
     <div class="section-block">
       <h2><span class="num"><i class="fas fa-mountain-city"></i></span> 광역조감도</h2>
       <div class="map-card">
-        <img src="img/location/cg_wide_birds_view.jpg" alt="광역조감도" onclick="openImgModal(this.src, '광역조감도')">
+        <img src="img/location/cg_wide_birds_view.webp" alt="광역조감도" loading="lazy" onclick="openImgModal(this.src, '광역조감도')">
       </div>
       <div class="note-box">
         <i class="fas fa-info-circle"></i>
@@ -301,30 +301,30 @@
   <script>
     const places = {
       traffic: [
-        { img: 'faci01.jpg', name: '서분당 IC' },
-        { img: 'faci04.jpg', name: '금곡 IC' },
-        { img: 'faci03.jpg', name: '미금역' },
-        { img: 'faci07.jpg', name: '정자역' },
-        { img: 'faci12.jpg', name: '판교역' }
+        { img: 'faci01.webp', name: '서분당 IC' },
+        { img: 'faci04.webp', name: '금곡 IC' },
+        { img: 'faci03.webp', name: '미금역' },
+        { img: 'faci07.webp', name: '정자역' },
+        { img: 'faci12.webp', name: '판교역' }
       ],
       edu: [
-        { img: 'faci05.jpg', name: '늘푸른중학교' },
-        { img: 'faci06.jpg', name: '낙생고' }
+        { img: 'faci05.webp', name: '늘푸른중학교' },
+        { img: 'faci06.webp', name: '낙생고' }
       ],
       nature: [
-        { img: 'faci02.jpg', name: '낙생저수지' }
+        { img: 'faci02.webp', name: '낙생저수지' }
       ],
       medical: [
-        { img: 'faci09.jpg', name: '분당서울대학교 병원' },
-        { img: 'faci10.jpg', name: '분당구청' }
+        { img: 'faci09.webp', name: '분당서울대학교 병원' },
+        { img: 'faci10.webp', name: '분당구청' }
       ],
       biz: [
-        { img: 'faci08.jpg', name: '네이버 1784 / 그린팩토리' },
-        { img: 'faci11.jpg', name: 'AK플라자' },
-        { img: 'faci13.jpg', name: '현대백화점 판교점' },
-        { img: 'faci14.jpg', name: '판교 알파돔시티' },
-        { img: 'faci15.jpg', name: '카카오 판교 아지트' },
-        { img: 'faci16.jpg', name: '엔씨소프트 판교 R&D센터' }
+        { img: 'faci08.webp', name: '네이버 1784 / 그린팩토리' },
+        { img: 'faci11.webp', name: 'AK플라자' },
+        { img: 'faci13.webp', name: '현대백화점 판교점' },
+        { img: 'faci14.webp', name: '판교 알파돔시티' },
+        { img: 'faci15.webp', name: '카카오 판교 아지트' },
+        { img: 'faci16.webp', name: '엔씨소프트 판교 R&D센터' }
       ]
     };
 
@@ -334,7 +334,7 @@
         const card = document.createElement('div');
         card.className = 'place-card';
         card.onclick = () => openImgModal('img/location/' + p.img, p.name);
-        card.innerHTML = '<img src="img/location/' + p.img + '" alt="' + p.name + '">' +
+        card.innerHTML = '<img src="img/location/' + p.img + '" alt="' + p.name + '" loading="lazy">' +
           '<div class="place-name">' + p.name + '</div>';
         grid.appendChild(card);
       });

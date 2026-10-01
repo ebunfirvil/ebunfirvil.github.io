@@ -1,0 +1,62 @@
+# e편한세상 분당 퍼스트빌리지 입주예정자 협의회
+# 검색엔진의 페이지 색인은 허용하되, 이미지 수집과 AI 학습·SEO 수집 봇은 차단한다.
+# (robots.txt는 권고 사항이라 이를 무시하는 봇까지 막지는 못한다)
+
+User-agent: *
+Allow: /img/favicon
+Allow: /img/apple-touch-icon.png
+Disallow: /img/
+Crawl-delay: 10
+
+# 이미지 전용 크롤러
+User-agent: Googlebot-Image
+User-agent: msnbot-media
+Allow: /img/favicon
+Allow: /img/apple-touch-icon.png
+Disallow: /
+
+# AI 학습 / AI 검색 수집 봇
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: Meta-ExternalAgent
+User-agent: Meta-ExternalFetcher
+User-agent: FacebookBot
+User-agent: cohere-ai
+User-agent: cohere-training-data-crawler
+User-agent: Diffbot
+User-agent: ImagesiftBot
+User-agent: Omgilibot
+User-agent: Omgili
+User-agent: Timpibot
+User-agent: YouBot
+User-agent: AI2Bot
+User-agent: PetalBot
+User-agent: DuckAssistBot
+User-agent: MistralAI-User
+Disallow: /
+
+# SEO / 마케팅 수집 봇
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: BLEXBot
+User-agent: DataForSeoBot
+User-agent: serpstatbot
+User-agent: SeekportBot
+User-agent: Barkrowler
+User-agent: MegaIndex
+User-agent: ZoominfoBot
+Disallow: /
