@@ -193,8 +193,8 @@
       <div class="field"><label class="f" for="docGrade">최소 열람 등급</label>
         <select id="docGrade">
           <option value="일반">일반 — 청약 인증을 마친 모든 세대</option>
-          <option value="정회원">정회원 — 동의서를 제출한 세대</option>
-          <option value="VIP">VIP — 회원비를 납부한 세대</option>
+          <option value="준회원">준회원 — 위임장을 제출한 세대</option>
+          <option value="정회원">정회원 — 정회원비를 납부한 세대</option>
         </select>
       </div>
       <label class="drop" id="drop"><i class="fas fa-file-arrow-up"></i> 여기를 눌러 PDF 또는 이미지를 고르거나 끌어다 놓으세요<input type="file" id="fileInput" accept="application/pdf,image/*" multiple></label>
@@ -237,10 +237,10 @@
     <p>현재 등급은 <b id="modalMyGrade"></b>입니다. 등급은 아래 순서로 올라갑니다.</p>
     <table class="grade-table">
       <tr><td><span class="badge g0">일반</span></td><td>청약 인증을 마친 세대</td></tr>
-      <tr><td><span class="badge g1">정회원</span></td><td>동의서를 제출한 세대</td></tr>
-      <tr><td><span class="badge g2">VIP</span></td><td>회원비를 납부한 세대</td></tr>
+      <tr><td><span class="badge g1">준회원</span></td><td>위임장을 제출한 세대</td></tr>
+      <tr><td><span class="badge g2">정회원</span></td><td>정회원비를 납부한 세대</td></tr>
     </table>
-    <p>동의서 제출·회원비 납부 후 반영까지 시간이 걸릴 수 있습니다. 반영이 안 된 것 같으면 입예협에 문의해 주세요.</p>
+    <p>위임장 제출·정회원비 납부 후 반영까지 시간이 걸릴 수 있습니다. 반영이 안 된 것 같으면 입예협에 문의해 주세요.</p>
     <div class="actions">
       <a class="btn navy" href="delegate-member-guide.html" target="_blank" rel="noopener">안내 보기</a>
       <button type="button" class="btn ghost" id="modalClose">닫기</button>
@@ -253,7 +253,7 @@
   'use strict';
   // auth-page.html과 같은 Apps Script 배포. 문서열람 요청은 action이 'doc'로 시작하며 Documents.gs가 처리한다.
   const API_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
-  const GRADE_RANK = { '일반': 0, '정회원': 1, 'VIP': 2 };
+  const GRADE_RANK = { '일반': 0, '준회원': 1, '정회원': 2 };
   const $ = (id) => document.getElementById(id);
 
   async function api(payload) {
@@ -337,7 +337,7 @@
       const banner = $('gradeBanner');
       if (r.grade === '일반') { // 구 N12 — 일반등급에만 노출
         banner.hidden = false;
-        banner.innerHTML = '<i class="fas fa-circle-info"></i> 동의서를 제출하면 <b>정회원</b> 문서를, 회원비를 납부하면 <b>VIP</b> 문서까지 볼 수 있습니다. <a href="delegate-member-guide.html" target="_blank" rel="noopener">안내 보기 →</a>';
+        banner.innerHTML = '<i class="fas fa-circle-info"></i> 위임장을 제출하면 <b>준회원</b> 문서를, 정회원비를 납부하면 <b>정회원</b> 문서까지 볼 수 있습니다. <a href="delegate-member-guide.html" target="_blank" rel="noopener">안내 보기 →</a>';
       } else banner.hidden = true;
 
       const list = $('docList'); list.innerHTML = '';
