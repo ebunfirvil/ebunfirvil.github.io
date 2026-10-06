@@ -245,6 +245,13 @@
     }
     .cta-step .h { font-size: 0.98rem; font-weight: 700; margin-bottom: 6px; }
     .cta-step .d { font-size: 0.82rem; color: rgba(255,255,255,0.78); line-height: 1.7; }
+    .cta-step .step-link {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; margin-right: 8px;
+      padding: 8px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+      color: #5A2E10; background: var(--orange-warm); text-decoration: none; transition: all .2s;
+    }
+    .cta-step .step-link:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .cta-step .step-link.ghost { color: var(--white); background: rgba(255,255,255,0.14); }
 
     .cta-final {
       display: flex; align-items: center; gap: 14px; margin-top: 26px; position: relative; z-index: 1;
@@ -462,7 +469,10 @@
           <div class="cta-step">
             <span class="badge">STEP 1</span>
             <div class="h">위임장 제출 → 준회원</div>
-            <div class="d">법무법인 아크로와 함께 준비한 전자방식 위임장으로 간편하게 제출하실 수 있습니다. 제출이 확인되면 준회원이 됩니다.</div>
+            <div class="d">법무법인 아크로와 함께 준비한 전자방식 위임장으로 간편하게 제출하실 수 있습니다. 제출이 확인되면 준회원이 됩니다.<br>
+              <a class="step-link" href="https://doc.signok.com/linkUrl?UroVXA3zNE85" target="_blank" rel="noopener"><i class="fas fa-file-signature"></i> 위임장 제출하기</a>
+              <a class="step-link ghost" href="https://cafe.naver.com/naksangheemang/670" target="_blank" rel="noopener"><i class="fas fa-circle-info"></i> 제출 방법 안내</a>
+            </div>
           </div>
           <div class="cta-step">
             <span class="badge">STEP 2</span>
