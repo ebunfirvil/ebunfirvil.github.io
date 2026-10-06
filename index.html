@@ -567,6 +567,14 @@
       text-decoration: none;
       font-size: 1rem;
     }
+    /* 보조 버튼 — 주 버튼(제출하기) 아래에 두는 안내 링크 */
+    .notice-popup-btn.secondary {
+      background: var(--beige-dark);
+      color: var(--navy);
+      margin-top: 8px;
+      font-size: 0.92rem;
+      padding: 11px 0;
+    }
 
     .notice-popup-footer {
       margin-top: 16px;
@@ -2127,7 +2135,10 @@
   </div>
   <script>
     // 위임장 제출 안내 팝업 (KST 2026-07-31 오후 1시부터 노출, 방문자 기기 시간대 무관)
-    // 2026-08-01: 인증 유도 팝업으로 임시 교체를 위해 비활성화 (나중에 다시 사용 예정, 코드 보존)
+    // 2026-08-01: 인증 유도 팝업으로 임시 교체를 위해 비활성화 (코드 보존)
+    // 2026-10-06: 계속 비활성 유지. 아래 "위임장·회원 안내" 팝업이 상시 노출이고 거기에
+    // 위임장 제출 버튼을 넣었으므로, 이걸 켜면 같은 z-index(2000)로 두 팝업이 겹쳐 뜬다.
+    // 이쪽을 다시 쓰려면 반드시 memberGuideNoticePopup 쪽을 먼저 끌 것.
     (function () {
       var POPUP_ENABLED = false;
       if (!POPUP_ENABLED) return;
@@ -2255,7 +2266,8 @@
         <span class="hl-num">100%</span>
         <span class="hl-txt">위임장·정회원이 많이 모일수록<br>시공사·LH와의 협상력이 커지고,<br>더 나은 설계·품질·혜택으로 이어집니다.</span>
       </div>
-      <a href="delegate-member-guide.html" class="notice-popup-btn" onclick="closeMemberGuideNotice()">자세히 보기</a>
+      <a href="https://doc.signok.com/linkUrl?UroVXA3zNE85" target="_blank" rel="noopener" class="notice-popup-btn" onclick="closeMemberGuideNotice()"><i class="fas fa-file-signature"></i> 위임장 제출하기</a>
+      <a href="delegate-member-guide.html" class="notice-popup-btn secondary" onclick="closeMemberGuideNotice()">자세히 보기</a>
       <div class="notice-popup-footer">
         <span class="notice-popup-dismiss" onclick="hideMemberGuideNotice('today')">오늘 하루 보지 않기</span>
         <span class="notice-popup-divider">|</span>
