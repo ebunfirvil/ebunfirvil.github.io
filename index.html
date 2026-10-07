@@ -595,6 +595,80 @@
       justify-content: space-between;
     }
 
+    /* 우측 하단 위임장 제출률 위젯 — 안내 팝업이 닫히면 나타나고, 누르면 팝업을 다시 연다 */
+    .rate-fab {
+      position: fixed;
+      right: 24px;
+      bottom: 84px; /* 맨 위로 버튼(46px, bottom 24px) 위 */
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px 8px 8px;
+      background: var(--white);
+      border: 1px solid var(--orange-light);
+      border-radius: 999px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(16px);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .rate-fab.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    .rate-fab:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+    .rate-fab-ring {
+      --p: 0%;
+      position: relative;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange) var(--p), #F3E3D6 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .rate-fab-ring::before {
+      content: '';
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--white);
+    }
+    .rate-fab-ring span {
+      position: relative;
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: var(--orange-dark);
+    }
+    .rate-fab-txt { display: flex; flex-direction: column; line-height: 1.25; text-align: left; }
+    .rate-fab-txt b { font-size: 0.8rem; color: var(--navy); }
+    .rate-fab-txt span { font-size: 0.7rem; color: var(--gray); }
+    .rate-fab-close {
+      position: absolute;
+      top: -8px;
+      right: -6px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: var(--white);
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 0;
+    }
+    .rate-fab-close:hover { color: var(--navy); }
+    @media (max-width: 480px) {
+      .rate-fab { right: 14px; bottom: 80px; padding: 6px 12px 6px 6px; }
+    }
+
     .notice-popup-btn {
       display: inline-block;
       width: 100%;
@@ -2321,6 +2395,12 @@
       </div>
     </div>
   </div>
+  <!-- 우측 하단 위임장 제출률 위젯 (2026-10-07 추가) — 팝업이 닫힌 뒤 따라다니며 보인다 -->
+  <div class="rate-fab" id="delegateRateFab" role="button" tabindex="0" aria-label="위임장 제출률 — 누르면 안내 다시 보기">
+    <button class="rate-fab-close" id="delegateRateFabClose" aria-label="제출률 위젯 닫기">&times;</button>
+    <div class="rate-fab-ring" id="delegateRateFabRing"><span id="delegateRateFabPct">51%</span></div>
+    <div class="rate-fab-txt"><b>위임장 제출률</b><span id="delegateRateFabCount">473 / 933세대</span></div>
+  </div>
   <script>
     // 위임장·회원 안내 팝업 (2026-08-28 추가, 상시 노출 — 종료일 없음)
     (function () {
@@ -2342,16 +2422,48 @@
       // HIDE_KEY에는 "이 날짜까지는 다시 보여주지 않음"을 뜻하는 날짜 문자열을 저장한다
       // (ISO 형식이라 문자열 비교로도 날짜 순서 비교가 됨).
       var hiddenUntil = localStorage.getItem(HIDE_KEY);
-      if (hiddenUntil && hiddenUntil >= today) return;
+      // 오늘/7일간 보지 않기 중이면 팝업은 띄우지 않고 우측 하단 위젯만 보여준다.
+      var popupSuppressed = !!(hiddenUntil && hiddenUntil >= today);
 
-      window.closeMemberGuideNotice = function () {
+      // ---- 우측 하단 제출률 위젯 (2026-10-07). 팝업이 닫히면 나타나고, 누르면 팝업을 다시 연다.
+      // ×로 닫으면 이 탭(세션)에서는 다시 안 뜬다 — 다음 방문엔 다시 보인다.
+      var FAB_HIDE_KEY = 'delegateRateFabHidden';
+      var fab = document.getElementById('delegateRateFab');
+      function fabHidden() {
+        try { return sessionStorage.getItem(FAB_HIDE_KEY) === '1'; } catch (e) { return false; }
+      }
+      function showFab() {
+        if (fab && !fabHidden()) fab.classList.add('show');
+      }
+      function hideFab() {
+        if (fab) fab.classList.remove('show');
+      }
+      if (fab) {
+        fab.addEventListener('click', function (ev) {
+          if (ev.target.closest('#delegateRateFabClose')) {
+            ev.stopPropagation();
+            hideFab();
+            try { sessionStorage.setItem(FAB_HIDE_KEY, '1'); } catch (e) {}
+            return;
+          }
+          hideFab();
+          showPopup();
+        });
+        fab.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); hideFab(); showPopup(); }
+        });
+      }
+
+      function closePopup() {
         var popup = document.getElementById('memberGuideNoticePopup');
         popup.classList.remove('active');
-      };
+        setTimeout(showFab, 250);
+      }
+
+      window.closeMemberGuideNotice = closePopup;
 
       window.hideMemberGuideNotice = function (type) {
-        var popup = document.getElementById('memberGuideNoticePopup');
-        popup.classList.remove('active');
+        closePopup();
         // "7일간"은 오늘 포함 7일이므로 6일치를 더 얹는다(오늘 하루=0일 추가와 동일한 규칙)
         var untilMs = type === '7days' ? Date.now() + 6 * 24 * 60 * 60 * 1000 : Date.now();
         localStorage.setItem(HIDE_KEY, dateStrFromMs(untilMs));
@@ -2359,34 +2471,44 @@
 
       // 위임장 제출률 (2026-10-07 추가). Apps Script getDelegateStats가 '위임장 제출명단' 탭에서
       // 서명검토반려가 아닌 세대(검토완료+검토대기)를 세어 준다(서버에서 10분 캐시). 분모는 공공분양 933세대.
-      // HTML에 박힌 초기값은 호출 실패 시 폴백이므로 가끔 실제 값으로 갱신해 둘 것.
+      // HTML에 박힌 초기값(팝업·위젯 양쪽)은 호출 실패 시 폴백이므로 가끔 실제 값으로 갱신해 둘 것.
       var STATS_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec?action=getDelegateStats';
       var STATS_CACHE_KEY = 'delegateStatsCache';
       var STATS_CACHE_MS = 10 * 60 * 1000;
 
+      function setText(id, text) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = text;
+      }
+      function setRing(pct) {
+        var ring = document.getElementById('delegateRateFabRing');
+        if (ring) ring.style.setProperty('--p', Math.min(100, pct) + '%');
+        var bar = document.getElementById('delegateRateBar');
+        if (bar) bar.style.width = Math.min(100, pct) + '%';
+      }
+
       function renderStats(st) {
         if (!st || !st.ok || !(st.total > 0)) return;
         var pct = Math.round(st.signed / st.total * 100);
-        var num = document.getElementById('delegateRateNum');
-        var bar = document.getElementById('delegateRateBar');
-        var cnt = document.getElementById('delegateRateCount');
-        var dt = document.getElementById('delegateRateDate');
-        if (num) num.textContent = pct + '%';
-        if (bar) bar.style.width = Math.min(100, pct) + '%';
-        if (cnt) cnt.textContent = st.signed.toLocaleString('ko-KR') + ' / ' + st.total.toLocaleString('ko-KR') + '세대 제출';
+        var signed = st.signed.toLocaleString('ko-KR');
+        var total = st.total.toLocaleString('ko-KR');
+        setText('delegateRateNum', pct + '%');
+        setText('delegateRateCount', signed + ' / ' + total + '세대 제출');
+        setText('delegateRateFabPct', pct + '%');
+        setText('delegateRateFabCount', signed + ' / ' + total + '세대');
+        setRing(pct);
         var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(st.latest_signed_date || '');
-        if (dt && m) dt.textContent = m[2] + '.' + m[3] + ' 기준';
+        if (m) setText('delegateRateDate', m[2] + '.' + m[3] + ' 기준');
       }
 
-      function initialBarWidth() {
+      function initialRing() {
         var num = document.getElementById('delegateRateNum');
-        var bar = document.getElementById('delegateRateBar');
         var pct = num ? parseInt(num.textContent, 10) : NaN;
-        if (bar && !isNaN(pct)) bar.style.width = Math.min(100, pct) + '%';
+        if (!isNaN(pct)) setRing(pct);
       }
 
       function loadStats() {
-        initialBarWidth();
+        initialRing();
         try {
           var cached = JSON.parse(localStorage.getItem(STATS_CACHE_KEY) || 'null');
           if (cached && cached.at && Date.now() - cached.at < STATS_CACHE_MS) {
@@ -2407,14 +2529,15 @@
         if (popup) popup.classList.add('active');
       }
 
-      if (document.readyState === 'complete') {
+      function start() {
         loadStats();
-        setTimeout(showPopup, 500);
+        setTimeout(popupSuppressed ? showFab : showPopup, 500);
+      }
+
+      if (document.readyState === 'complete') {
+        start();
       } else {
-        window.addEventListener('load', function () {
-          loadStats();
-          setTimeout(showPopup, 500);
-        });
+        window.addEventListener('load', start);
       }
     })();
   </script>
