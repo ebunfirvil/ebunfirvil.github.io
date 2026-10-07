@@ -555,6 +555,45 @@
       line-height: 1.55;
       color: #6B3E1D;
     }
+    .notice-popup-highlight .hl-rate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      min-width: 72px;
+    }
+    .notice-popup-highlight .hl-rate .hl-num { line-height: 1.1; }
+    .notice-popup-highlight .hl-rate .hl-cap {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--orange-dark);
+      white-space: nowrap;
+    }
+    .notice-popup-progress {
+      margin: -10px 0 18px;
+      text-align: left;
+    }
+    .notice-popup-progress .bar {
+      height: 8px;
+      border-radius: 4px;
+      background: #F3E3D6;
+      overflow: hidden;
+    }
+    .notice-popup-progress .bar > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--orange-light), var(--orange-dark));
+      transition: width 0.8s ease;
+    }
+    .notice-popup-progress .meta {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: var(--gray);
+      display: flex;
+      justify-content: space-between;
+    }
 
     .notice-popup-btn {
       display: inline-block;
@@ -2263,8 +2302,15 @@
       <h3>위임장 · 회원 안내</h3>
       <p>더 나은 우리 집을 위해<br>위임장을 제출하면 <b>준회원</b>,<br>정회원비를 납부하면 <b>정회원</b>이 됩니다.</p>
       <div class="notice-popup-highlight">
-        <span class="hl-num">100%</span>
+        <div class="hl-rate">
+          <span class="hl-num" id="delegateRateNum">51%</span>
+          <span class="hl-cap">위임장 제출률</span>
+        </div>
         <span class="hl-txt">위임장·정회원이 많이 모일수록<br>시공사·LH와의 협상력이 커지고,<br>더 나은 설계·품질·혜택으로 이어집니다.</span>
+      </div>
+      <div class="notice-popup-progress" aria-label="위임장 제출 현황">
+        <div class="bar"><span id="delegateRateBar"></span></div>
+        <div class="meta"><span id="delegateRateCount">473 / 933세대 제출</span><span id="delegateRateDate">10.05 기준</span></div>
       </div>
       <a href="https://doc.signok.com/linkUrl?UroVXA3zNE85" target="_blank" rel="noopener" class="notice-popup-btn" onclick="closeMemberGuideNotice()"><i class="fas fa-file-signature"></i> 위임장 제출하기</a>
       <a href="delegate-member-guide.html" class="notice-popup-btn secondary" onclick="closeMemberGuideNotice()">자세히 보기</a>
@@ -2311,15 +2357,62 @@
         localStorage.setItem(HIDE_KEY, dateStrFromMs(untilMs));
       };
 
+      // 위임장 제출률 (2026-10-07 추가). Apps Script getDelegateStats가 '위임장 제출명단' 탭에서
+      // 서명검토반려가 아닌 세대(검토완료+검토대기)를 세어 준다(서버에서 10분 캐시). 분모는 공공분양 933세대.
+      // HTML에 박힌 초기값은 호출 실패 시 폴백이므로 가끔 실제 값으로 갱신해 둘 것.
+      var STATS_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec?action=getDelegateStats';
+      var STATS_CACHE_KEY = 'delegateStatsCache';
+      var STATS_CACHE_MS = 10 * 60 * 1000;
+
+      function renderStats(st) {
+        if (!st || !st.ok || !(st.total > 0)) return;
+        var pct = Math.round(st.signed / st.total * 100);
+        var num = document.getElementById('delegateRateNum');
+        var bar = document.getElementById('delegateRateBar');
+        var cnt = document.getElementById('delegateRateCount');
+        var dt = document.getElementById('delegateRateDate');
+        if (num) num.textContent = pct + '%';
+        if (bar) bar.style.width = Math.min(100, pct) + '%';
+        if (cnt) cnt.textContent = st.signed.toLocaleString('ko-KR') + ' / ' + st.total.toLocaleString('ko-KR') + '세대 제출';
+        var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(st.latest_signed_date || '');
+        if (dt && m) dt.textContent = m[2] + '.' + m[3] + ' 기준';
+      }
+
+      function initialBarWidth() {
+        var num = document.getElementById('delegateRateNum');
+        var bar = document.getElementById('delegateRateBar');
+        var pct = num ? parseInt(num.textContent, 10) : NaN;
+        if (bar && !isNaN(pct)) bar.style.width = Math.min(100, pct) + '%';
+      }
+
+      function loadStats() {
+        initialBarWidth();
+        try {
+          var cached = JSON.parse(localStorage.getItem(STATS_CACHE_KEY) || 'null');
+          if (cached && cached.at && Date.now() - cached.at < STATS_CACHE_MS) {
+            renderStats(cached.data);
+            return;
+          }
+        } catch (e) { /* 캐시 손상은 무시하고 새로 받는다 */ }
+        fetch(STATS_URL).then(function (r) { return r.json(); }).then(function (data) {
+          renderStats(data);
+          if (data && data.ok) {
+            try { localStorage.setItem(STATS_CACHE_KEY, JSON.stringify({at: Date.now(), data: data})); } catch (e) {}
+          }
+        }).catch(function () { /* 실패 시 HTML 초기값 유지 */ });
+      }
+
       function showPopup() {
         var popup = document.getElementById('memberGuideNoticePopup');
         if (popup) popup.classList.add('active');
       }
 
       if (document.readyState === 'complete') {
+        loadStats();
         setTimeout(showPopup, 500);
       } else {
         window.addEventListener('load', function () {
+          loadStats();
           setTimeout(showPopup, 500);
         });
       }
