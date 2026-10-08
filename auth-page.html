@@ -1107,15 +1107,13 @@
         ].join(' · ')));
         return;
       }
-      // 사용자 조회 카드 (2026-10-08 사용자 요청 문안). 업데이트 시각은 위임장 명단·입금 내역 두 반영 시각 중
-      // **이른** 쪽을 쓴다 — "이 시각 이후 건은 미반영"이라는 문장이 두 명단 모두에 참이어야 하므로.
-      // (최근 쪽을 쓰면 늦게 반영된 명단 기준으로 보여, 다른 명단의 미반영 건을 반영된 것처럼 읽게 된다)
-      const stamps = [m.proxy_latest, m.fee_latest].filter(Boolean).map(String).sort();
-      const cutoff = stamps.length === 2 ? msFormatTime(stamps[0]) : null;
+      // 사용자 조회 카드 (2026-10-08 사용자 요청 문안). 위임장 명단·입금 내역 반영 시각을 따로 보여준다.
       const basis = msEl('div', 'ms-basis');
       basis.appendChild(document.createTextNode('카페 등급은 순차적으로 진행될 예정입니다.'));
       basis.appendChild(msEl('br'));
-      basis.appendChild(document.createTextNode('위임장 제출, 정회원비 납부 업데이트 시간 : ' + (cutoff || '아직 집계 전')));
+      basis.appendChild(document.createTextNode('위임장 제출 업데이트 시간 : ' + (proxyLatest || '아직 집계 전')));
+      basis.appendChild(msEl('br'));
+      basis.appendChild(document.createTextNode('정회원비 납부 업데이트 시간 : ' + (feeLatest || '아직 집계 전')));
       basis.appendChild(msEl('br'));
       basis.appendChild(document.createTextNode('* 위 시간 이후 건은 아직 미반영 상태입니다 *'));
       container.appendChild(basis);
