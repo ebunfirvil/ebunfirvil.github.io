@@ -1079,7 +1079,9 @@
       }
       [['proxy', '위임장'], ['fee', '정회원비']].forEach(([key, label]) => {
         const st = MS_STATE[m[key]] || MS_STATE['없음'];
-        container.appendChild(msRow(label, msEl('span', 'ms-pill ' + st[0], st[1])));
+        // 확인됨 문구는 항목별로: 위임장 '제출 완료', 정회원비 '납부 확인' (2026-10-08 사용자 요청)
+        const pillText = st[0] === 'ok' ? (key === 'proxy' ? '제출 완료' : '납부 확인') : st[1];
+        container.appendChild(msRow(label, msEl('span', 'ms-pill ' + st[0], pillText)));
         if (!isAdmin && st[0] === 'none') container.appendChild(msEl('p', 'ms-hint', MS_NONE_HINT[key]));
       });
       if (m.hold) {
