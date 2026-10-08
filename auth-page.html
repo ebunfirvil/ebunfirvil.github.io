@@ -170,14 +170,6 @@
     .lookup-result.no { background: rgba(200,60,60,0.1); color: #b3312c; }
     .lookup-result.err { background: rgba(200,60,60,0.1); color: #b3312c; }
     .lookup-result.processing { background: rgba(232,98,46,0.12); color: var(--orange-dark); }
-    /* 조회 카드의 등급·위임장·회비 띠 — 인증 결과 띠와 같은 형태, 색만 상태별 */
-    .lookup-result.grade { background: rgba(26,43,74,0.08); color: var(--navy); }
-    .lookup-result.none { background: rgba(107,91,82,0.10); color: var(--gray); }
-    .lookup-result i { flex-shrink: 0; }
-    .ms-bars { display: none; flex-direction: column; gap: 0; }
-    .ms-bars.show { display: flex; }
-    .ms-bars .ms-hint { margin: 6px 4px 0; }
-    .ms-bars .ms-basis { border-top: none; padding-top: 0; margin-top: 10px; }
 
     /* ===== 회원 등급 · 위임장 · 회비 (조회 카드 / 관리자 이력 카드 공용) ===== */
     .ms-block {
@@ -196,6 +188,7 @@
     .ms-pill.ok { background: rgba(46,160,67,0.12); color: #1e7a30; }
     .ms-pill.pending { background: rgba(230,170,0,0.16); color: #8a6100; }
     .ms-pill.none { background: rgba(107,91,82,0.12); color: var(--gray); }
+    .ms-pill.bad { background: rgba(200,60,60,0.1); color: #b3312c; }
     .ms-grade { font-weight: 700; color: var(--navy); }
     .ms-hint { font-size: 0.78rem; color: var(--gray); line-height: 1.5; margin: 0 0 4px; word-break: keep-all; }
     .ms-hint.warn { color: #8a6100; }
@@ -701,7 +694,7 @@
         <button type="button" id="lookupRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 조회"><i class="fas fa-rotate"></i></button>
       </div>
       <div class="lookup-result" id="lookupResult"></div>
-      <div class="ms-bars" id="lookupMembership"></div>
+      <div class="ms-block" id="lookupMembership" style="display:none"></div>
       <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
         <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
       </div>
@@ -1062,15 +1055,29 @@
       return row;
     }
     // isAdmin이면 사용자용 안내 문구 대신 확인 근거/비고를 덧붙인다.
-    function renderMembershipBlock(container, m, isAdmin) {
+    // 사용자 조회 카드에서는 인증 결과도 위임장·정회원비와 같은 한 줄(라벨 + 상태 알약)로 보여준다
+    // (2026-10-08 사용자 요청). 순서: 회원 등급 → 인증 → 위임장 → 정회원비.
+    const MS_AUTH = {
+      verified: ['ok', '인증 완료', null],
+      processing: ['pending', '인증 진행 중', '입예협에서 검토 중입니다. 잠시 후 다시 확인해 주세요.'],
+      failed: ['bad', '인증 실패', '동호수가 보이도록 다시 제출해 주세요. LH청약플러스 > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회에서 동호수를 가리지 말고 캡쳐해 제출해 주세요.']
+    };
+    // authStatus(verified/processing/failed)를 주면 인증 줄을 넣는다. 관리자 이력 카드는 주지 않는다.
+    function renderMembershipBlock(container, m, isAdmin, authStatus) {
       container.innerHTML = '';
       const title = msEl('div', 'ms-title');
       title.appendChild(msEl('i', 'fas fa-id-card'));
-      title.appendChild(document.createTextNode(isAdmin && !m.found ? '회원 등급 (회원등급 탭에 행 없음)' : '회원 등급 · 위임장 · 회비'));
+      title.appendChild(document.createTextNode(isAdmin && !m.found ? '회원 등급 (회원등급 탭에 행 없음)'
+        : (authStatus ? '회원 등급 · 인증 · 위임장 · 정회원비' : '회원 등급 · 위임장 · 정회원비')));
       container.appendChild(title);
 
       container.appendChild(msRow('회원 등급', msEl('span', m.grade ? 'ms-grade' : 'ms-pill none', m.grade || '없음')));
-      [['proxy', '위임장'], ['fee', '회비']].forEach(([key, label]) => {
+      if (authStatus && MS_AUTH[authStatus]) {
+        const a = MS_AUTH[authStatus];
+        container.appendChild(msRow('인증', msEl('span', 'ms-pill ' + a[0], a[1])));
+        if (a[2]) container.appendChild(msEl('p', 'ms-hint', a[2]));
+      }
+      [['proxy', '위임장'], ['fee', '정회원비']].forEach(([key, label]) => {
         const st = MS_STATE[m[key]] || MS_STATE['없음'];
         container.appendChild(msRow(label, msEl('span', 'ms-pill ' + st[0], st[1])));
         if (!isAdmin && st[0] === 'none') container.appendChild(msEl('p', 'ms-hint', MS_NONE_HINT[key]));
@@ -1098,53 +1105,20 @@
     const lookupMembership = document.getElementById('lookupMembership');
     // 인증 상태가 none(접수번호+동+호 불일치)이면 서버도 membership을 안 주므로 숨기고,
     // processing/verified/failed에서는 회원등급 탭에 행이 있을 때만 보여준다.
-    // 사용자 조회 카드는 "인증이 완료되었습니다" 띠와 같은 모양의 띠 3개(등급·위임장·회비)로 보여준다
-    // (2026-10-08 사용자 요청). 관리자 이력 카드는 renderMembershipBlock의 표 형태를 그대로 쓴다.
-    const MS_BAR = {
-      proxy: {
-        '확인됨': ['ok', 'fa-check-circle', '위임장 제출이 확인되었습니다.'],
-        '확인중': ['processing', 'fa-clock', '위임장이 검토 중입니다. 검토가 끝나면 준회원으로 반영됩니다.'],
-        '없음': ['none', 'fa-minus-circle', '위임장 제출이 확인되지 않았습니다.']
-      },
-      fee: {
-        '확인됨': ['ok', 'fa-check-circle', '회비 납부가 확인되었습니다.'],
-        '확인중': ['processing', 'fa-clock', '회비가 일부만 입금되어 확인 중입니다.'],
-        '없음': ['none', 'fa-minus-circle', '회비 납부가 확인되지 않았습니다.']
-      }
-    };
-    function msBar(type, icon, text) {
-      const bar = msEl('div', 'lookup-result show ' + type);
-      bar.appendChild(msEl('i', 'fas ' + icon));
-      bar.appendChild(document.createTextNode(text));
-      return bar;
-    }
+    // 인증 상태가 none(접수번호+동+호 불일치)이면 서버도 membership을 안 주므로 숨긴다.
+    // processing/verified/failed에서는 회원등급 탭에 행이 없어도(아직 집계 전) 인증 줄은 보여줘야 하므로
+    // 빈 세대 값으로 채워서 그린다.
     function showLookupMembership(data) {
-      const m = data && data.status !== 'none' ? data.membership : null;
-      lookupMembership.innerHTML = '';
-      if (!m || !m.found) {
-        lookupMembership.classList.remove('show');
+      const status = data ? data.status : null;
+      if (!status || status === 'none' || !MS_AUTH[status]) {
+        lookupMembership.style.display = 'none';
+        lookupMembership.innerHTML = '';
         return;
       }
-      lookupMembership.appendChild(msBar('grade', 'fa-id-card', '회원 등급: ' + (m.grade || '없음')));
-      ['proxy', 'fee'].forEach((key) => {
-        const st = MS_BAR[key][m[key]] || MS_BAR[key]['없음'];
-        lookupMembership.appendChild(msBar(st[0], st[1], st[2]));
-        if (st[0] === 'none') lookupMembership.appendChild(msEl('p', 'ms-hint', MS_NONE_HINT[key]));
-      });
-      if (m.hold) {
-        lookupMembership.appendChild(msEl('p', 'ms-hint warn', m.proxy === '확인중'
-          ? '회비는 확인됐고 위임장은 검토 중입니다. 검토가 끝나면 정회원으로 전환됩니다.'
-          : '회비는 확인됐으나 위임장이 없어 정회원 전환이 보류 중입니다. 위임장을 제출하시면 정회원이 됩니다.'));
-      }
-      const updated = msFormatTime(m.updated_at);
-      const proxyLatest = msFormatTime(m.proxy_latest);
-      const feeLatest = msFormatTime(m.fee_latest);
-      lookupMembership.appendChild(msEl('div', 'ms-basis', [
-        updated ? '등급 집계 ' + updated : '등급 아직 집계 전',
-        proxyLatest ? '위임장 명단 ' + proxyLatest + '까지' : '위임장 명단 아직 집계 전',
-        feeLatest ? '입금 내역 ' + feeLatest + '까지' : '입금 내역 아직 집계 전'
-      ].join(' · ')));
-      lookupMembership.classList.add('show');
+      const m = data.membership || {found: false, grade: null, proxy: '없음', fee: '없음', hold: false,
+        updated_at: null, proxy_latest: null, fee_latest: null};
+      renderMembershipBlock(lookupMembership, m, false, status);
+      lookupMembership.style.display = 'block';
     }
 
     lookupKakaoBtn.addEventListener('click', showKakaoPopup);
@@ -1170,17 +1144,16 @@
         const data = await res.json();
         if (!data.ok) throw new Error('조회 실패');
         showLookupMembership(data);
+        // 인증 결과는 표의 "인증" 줄이 보여주므로(2026-10-08) 조회가 되면 위쪽 띠는 비운다
+        if (MS_AUTH[data.status]) lookupResult.className = 'lookup-result';
         if (data.status === 'processing') {
-          setLookupResult('입예협에서 인증 진행중입니다. 잠시후에 확인 해주세요.', 'processing');
           editInfoRow.style.display = 'flex';
         } else if (data.status === 'verified') {
-          setLookupResult('해당 접수번호는 인증이 완료되었습니다.', 'ok');
           // 인증 완료된 사람만 "입장코드 확인" 버튼을 보여주고, 누를 때만 팝업을 띄운다(자동 표시 안 함)
           if (kakaoConfig.active && kakaoConfig.code) lookupKakaoRow.style.display = 'flex';
           editInfoRow.style.display = 'flex';
         } else if (data.status === 'failed') {
           // 실패 처리된 신청은 정보만 고쳐서 될 일이 아니라 재제출이 필요하므로 정보 수정 버튼은 띄우지 않는다
-          setLookupResult('인증에 실패하였습니다. 동호수가 보이도록 다시 제출해주세요.\n* LH청약플러스 > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 에서 동호수를 가리지 말고 캡쳐하여 제출해주세요', 'no');
         } else {
           setLookupResult('인증이 완료되지 않은 접수번호입니다.', 'no');
         }
