@@ -170,6 +170,14 @@
     .lookup-result.no { background: rgba(200,60,60,0.1); color: #b3312c; }
     .lookup-result.err { background: rgba(200,60,60,0.1); color: #b3312c; }
     .lookup-result.processing { background: rgba(232,98,46,0.12); color: var(--orange-dark); }
+    /* 조회 카드의 등급·위임장·회비 띠 — 인증 결과 띠와 같은 형태, 색만 상태별 */
+    .lookup-result.grade { background: rgba(26,43,74,0.08); color: var(--navy); }
+    .lookup-result.none { background: rgba(107,91,82,0.10); color: var(--gray); }
+    .lookup-result i { flex-shrink: 0; }
+    .ms-bars { display: none; flex-direction: column; gap: 0; }
+    .ms-bars.show { display: flex; }
+    .ms-bars .ms-hint { margin: 6px 4px 0; }
+    .ms-bars .ms-basis { border-top: none; padding-top: 0; margin-top: 10px; }
 
     /* ===== 회원 등급 · 위임장 · 회비 (조회 카드 / 관리자 이력 카드 공용) ===== */
     .ms-block {
@@ -302,6 +310,7 @@
     }
     .form-field input[type="text"],
     .form-field input[type="email"],
+    .form-field input[type="password"],
     .form-field select {
       width: 100%; padding: 11px 14px; border: 1.5px solid var(--beige-warm); border-radius: 8px;
       font-size: 0.92rem; font-family: 'Noto Sans KR', sans-serif; background: var(--beige);
@@ -309,6 +318,7 @@
     }
     .form-field input[type="text"]:focus,
     .form-field input[type="email"]:focus,
+    .form-field input[type="password"]:focus,
     .form-field select:focus { border-color: var(--orange); background: var(--white); }
     .form-field input[readonly],
     .form-field select.locked { background: var(--beige-dark); color: var(--gray); cursor: not-allowed; }
@@ -691,7 +701,7 @@
         <button type="button" id="lookupRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 조회"><i class="fas fa-rotate"></i></button>
       </div>
       <div class="lookup-result" id="lookupResult"></div>
-      <div class="ms-block" id="lookupMembership" style="display:none"></div>
+      <div class="ms-bars" id="lookupMembership"></div>
       <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
         <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
       </div>
@@ -1088,15 +1098,53 @@
     const lookupMembership = document.getElementById('lookupMembership');
     // 인증 상태가 none(접수번호+동+호 불일치)이면 서버도 membership을 안 주므로 숨기고,
     // processing/verified/failed에서는 회원등급 탭에 행이 있을 때만 보여준다.
+    // 사용자 조회 카드는 "인증이 완료되었습니다" 띠와 같은 모양의 띠 3개(등급·위임장·회비)로 보여준다
+    // (2026-10-08 사용자 요청). 관리자 이력 카드는 renderMembershipBlock의 표 형태를 그대로 쓴다.
+    const MS_BAR = {
+      proxy: {
+        '확인됨': ['ok', 'fa-check-circle', '위임장 제출이 확인되었습니다.'],
+        '확인중': ['processing', 'fa-clock', '위임장이 검토 중입니다. 검토가 끝나면 준회원으로 반영됩니다.'],
+        '없음': ['none', 'fa-minus-circle', '위임장 제출이 확인되지 않았습니다.']
+      },
+      fee: {
+        '확인됨': ['ok', 'fa-check-circle', '회비 납부가 확인되었습니다.'],
+        '확인중': ['processing', 'fa-clock', '회비가 일부만 입금되어 확인 중입니다.'],
+        '없음': ['none', 'fa-minus-circle', '회비 납부가 확인되지 않았습니다.']
+      }
+    };
+    function msBar(type, icon, text) {
+      const bar = msEl('div', 'lookup-result show ' + type);
+      bar.appendChild(msEl('i', 'fas ' + icon));
+      bar.appendChild(document.createTextNode(text));
+      return bar;
+    }
     function showLookupMembership(data) {
       const m = data && data.status !== 'none' ? data.membership : null;
+      lookupMembership.innerHTML = '';
       if (!m || !m.found) {
-        lookupMembership.style.display = 'none';
-        lookupMembership.innerHTML = '';
+        lookupMembership.classList.remove('show');
         return;
       }
-      renderMembershipBlock(lookupMembership, m, false);
-      lookupMembership.style.display = 'block';
+      lookupMembership.appendChild(msBar('grade', 'fa-id-card', '회원 등급: ' + (m.grade || '없음')));
+      ['proxy', 'fee'].forEach((key) => {
+        const st = MS_BAR[key][m[key]] || MS_BAR[key]['없음'];
+        lookupMembership.appendChild(msBar(st[0], st[1], st[2]));
+        if (st[0] === 'none') lookupMembership.appendChild(msEl('p', 'ms-hint', MS_NONE_HINT[key]));
+      });
+      if (m.hold) {
+        lookupMembership.appendChild(msEl('p', 'ms-hint warn', m.proxy === '확인중'
+          ? '회비는 확인됐고 위임장은 검토 중입니다. 검토가 끝나면 정회원으로 전환됩니다.'
+          : '회비는 확인됐으나 위임장이 없어 정회원 전환이 보류 중입니다. 위임장을 제출하시면 정회원이 됩니다.'));
+      }
+      const updated = msFormatTime(m.updated_at);
+      const proxyLatest = msFormatTime(m.proxy_latest);
+      const feeLatest = msFormatTime(m.fee_latest);
+      lookupMembership.appendChild(msEl('div', 'ms-basis', [
+        updated ? '등급 집계 ' + updated : '등급 아직 집계 전',
+        proxyLatest ? '위임장 명단 ' + proxyLatest + '까지' : '위임장 명단 아직 집계 전',
+        feeLatest ? '입금 내역 ' + feeLatest + '까지' : '입금 내역 아직 집계 전'
+      ].join(' · ')));
+      lookupMembership.classList.add('show');
     }
 
     lookupKakaoBtn.addEventListener('click', showKakaoPopup);
