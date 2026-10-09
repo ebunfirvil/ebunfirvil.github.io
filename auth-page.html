@@ -181,6 +181,14 @@
     .ms-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 4px 0; }
     .ms-row > span:first-child { color: var(--gray); flex-shrink: 0; }
     .ms-row > span:last-child { text-align: right; min-width: 0; word-break: break-all; }
+    /* 회원명부 블록(2026-10-09): 계정 옆 닉네임·확인상태 보조 문구, 안내문 */
+    .ms-row small { color: var(--gray); font-weight: 400; }
+    .ms-row small.ms-st { margin-left: 4px; color: var(--navy); }
+    .ms-note { margin-top: 8px; padding: 8px 10px; border-radius: 6px; background: #fff; border: 1px dashed var(--orange); color: var(--navy); font-size: 0.82rem; line-height: 1.5; }
+    /* 제출하시는 분 라디오 */
+    .radio-row { display: flex; gap: 18px; flex-wrap: wrap; }
+    .radio-row .radio-opt { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--navy); font-size: 0.92rem; margin: 0; cursor: pointer; }
+    .radio-row .radio-opt input { width: 16px; height: 16px; margin: 0; accent-color: var(--orange); }
     .ms-pill {
       display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;
       white-space: nowrap;
@@ -562,12 +570,20 @@
         </div>
 
         <div class="form-field">
-          <label for="kakaoNick">카톡방닉네임<span class="req">*</span></label>
+          <label>제출하시는 분<span class="req">*</span><span class="field-note">(당첨자 본인이 아니면 배우자를 선택해 주세요.)</span></label>
+          <div class="radio-row">
+            <label class="radio-opt"><input type="radio" name="submitterRole" value="본인" required> 당첨자 본인</label>
+            <label class="radio-opt"><input type="radio" name="submitterRole" value="배우자"> 배우자</label>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="kakaoNick">카톡방닉네임 (제출하는 분)<span class="req">*</span></label>
           <input type="text" id="kakaoNick" name="kakaoNick" required placeholder="카카오톡 오픈채팅방 닉네임">
         </div>
 
         <div class="form-field">
-          <label for="naverId">네이버ID<span class="req">*</span><span class="field-note">(닉네임이 아닌 계정명입니다.)</span></label>
+          <label for="naverId">네이버ID (제출하는 분)<span class="req">*</span><span class="field-note">(닉네임이 아닌 계정명입니다.)</span></label>
           <div class="input-with-suffix">
             <input type="text" id="naverId" name="naverId" required placeholder="네이버 카페 아이디"
               pattern="[^ᄀ-ᇿ㄰-㆏가-힣]*"
@@ -578,7 +594,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>배우자 정보 (선택)</legend>
+        <legend>배우자 정보 (제출하는 분의 배우자 · 선택)</legend>
 
         <div class="form-field">
           <label for="spouseNick">배우자닉네임<span class="optional-tag">(선택)</span></label>
@@ -695,6 +711,7 @@
       </div>
       <div class="lookup-result" id="lookupResult"></div>
       <div class="ms-block" id="lookupMembership" style="display:none"></div>
+      <div class="ms-block" id="lookupRoster" style="display:none"></div>
       <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
         <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
       </div>
@@ -703,19 +720,27 @@
       </div>
       <div id="editInfoCard" style="display:none; margin-top:14px; border-top:1px solid var(--beige-warm); padding-top:14px;">
         <div class="form-field">
-          <label for="editKakaoNick">카톡닉네임 (본인)</label>
+          <label for="editSubmitterRole">제출하신 분<span class="field-note">(인증을 누가 제출했는지 — 본인/배우자 계정 구분의 기준)</span></label>
+          <select id="editSubmitterRole">
+            <option value="">선택</option>
+            <option value="본인">당첨자 본인</option>
+            <option value="배우자">배우자</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="editKakaoNick">당첨자 본인 — 카톡닉네임</label>
           <input type="text" id="editKakaoNick" autocomplete="off">
         </div>
         <div class="form-field">
-          <label for="editNaverId">네이버ID (본인)</label>
+          <label for="editNaverId">당첨자 본인 — 네이버ID<span class="field-note" id="editNaverIdHint"></span></label>
           <input type="text" id="editNaverId" autocomplete="off">
         </div>
         <div class="form-field">
-          <label for="editSpouseNick">카톡닉네임 (배우자)</label>
+          <label for="editSpouseNick">배우자 — 카톡닉네임</label>
           <input type="text" id="editSpouseNick" autocomplete="off">
         </div>
         <div class="form-field">
-          <label for="editSpouseNaverId">네이버ID (배우자)</label>
+          <label for="editSpouseNaverId">배우자 — 네이버ID<span class="field-note" id="editSpouseNaverIdHint"></span></label>
           <input type="text" id="editSpouseNaverId" autocomplete="off">
         </div>
         <button type="button" id="editInfoSaveBtn" class="btn-submit" style="width:100%">저장</button>
@@ -1139,6 +1164,23 @@
 
     lookupKakaoBtn.addEventListener('click', showKakaoPopup);
 
+    // 회원명부(당첨자 기준) 요약 — 본인/배우자 계정과 확인상태. 확인이 안 된 세대엔 "제출하신 분"을 골라
+    // 달라고 안내해 셀프로 풀리게 한다(2026-10-09).
+    function showLookupRoster(r) {
+      const box = document.getElementById('lookupRoster');
+      if (!r) { box.style.display = 'none'; box.innerHTML = ''; return; }
+      const esc = (v) => String(v == null ? '' : v).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      const line = (who, nick, id, st) => '<div class="ms-row"><span class="ms-k">' + who + '</span><span class="ms-v">' +
+        (id ? esc(id) : '<em>미등록</em>') + (nick ? ' <small>(' + esc(nick) + ')</small>' : '') +
+        (st ? ' <small class="ms-st">' + esc(st) + '</small>' : '') + '</span></div>';
+      const unknown = !r.submitter_role && /알 수 없음|미확인/.test(r.winner_status || '');
+      box.innerHTML = '<div class="ms-title">회원명부 (당첨자 기준)</div>' +
+        line('당첨자 계정', r.winner_nick, r.winner_naver_id, r.winner_status) +
+        line('배우자 계정', r.spouse_nick, r.spouse_naver_id, r.spouse_status) +
+        (unknown ? '<div class="ms-note">본인/배우자 계정 구분이 확인되지 않았습니다. 아래 <b>정보 수정</b>에서 "제출하신 분"을 선택해 저장해 주세요.</div>' : '');
+      box.style.display = 'block';
+    }
+
     async function runLookup() {
       const receipt = lookupReceiptNo.value.trim();
       const building = lookupBuilding.value.trim();
@@ -1151,6 +1193,7 @@
       lookupKakaoRow.style.display = 'none';
       editInfoRow.style.display = 'none';
       showLookupMembership(null);
+      showLookupRoster(null);
       closeEditInfoCard();
       const prevLabel = lookupBtn.textContent;
       lookupBtn.textContent = '조회 중...';
@@ -1160,6 +1203,7 @@
         const data = await res.json();
         if (!data.ok) throw new Error('조회 실패');
         showLookupMembership(data);
+        showLookupRoster(data.roster);
         // 인증 결과는 표의 "인증" 줄이 보여주므로(2026-10-08) 조회가 되면 위쪽 띠는 비운다
         if (MS_AUTH[data.status]) lookupResult.className = 'lookup-result';
         if (data.status === 'processing') {
@@ -1222,10 +1266,14 @@
           setEditInfoStatus('해당 접수번호/당첨동/호수로 등록된 신청 내역을 찾지 못했습니다. 입력값을 확인해 주세요.', 'no');
           return;
         }
-        editKakaoNick.value = data.kakao_nick || '';
-        editNaverId.value = data.naver_id || '';
+        // 2026-10-09: 응답은 당첨자 기준(winner_* / spouse_*). 회원명부에 추정 실제 아이디가 있으면 힌트로 보여준다.
+        editKakaoNick.value = data.winner_nick || data.kakao_nick || '';
+        editNaverId.value = data.winner_naver_id || data.naver_id || '';
         editSpouseNick.value = data.spouse_nick || '';
         editSpouseNaverId.value = data.spouse_naver_id || '';
+        document.getElementById('editSubmitterRole').value = data.submitter_role || '';
+        document.getElementById('editNaverIdHint').textContent = data.winner_naver_hint ? ' (카페에서 찾은 실제 아이디 추정: ' + data.winner_naver_hint + ')' : '';
+        document.getElementById('editSpouseNaverIdHint').textContent = data.spouse_naver_hint ? ' (추정: ' + data.spouse_naver_hint + ')' : '';
         editInfoIdentity = { receipt, building, unitNo };
         lookupReceiptNo.disabled = true;
         lookupBuilding.disabled = true;
@@ -1250,10 +1298,11 @@
           body: JSON.stringify({
             action: 'updateOwnInfo', receipt, building, unit_no: unitNo,
             fields: {
-              kakao_nick: editKakaoNick.value.trim(),
-              naver_id: editNaverId.value.trim(),
+              winner_nick: editKakaoNick.value.trim(),
+              winner_naver_id: editNaverId.value.trim(),
               spouse_nick: editSpouseNick.value.trim(),
-              spouse_naver_id: editSpouseNaverId.value.trim()
+              spouse_naver_id: editSpouseNaverId.value.trim(),
+              submitter_role: document.getElementById('editSubmitterRole').value
             }
           })
         });
@@ -1855,6 +1904,7 @@
           spouse_nick: document.getElementById('spouseNick').value.trim(),
           spouse_role: document.getElementById('spouseRole').value,
           spouse_naver_id: document.getElementById('spouseNaverId').value.trim(),
+          submitter_role: (document.querySelector('input[name="submitterRole"]:checked') || {}).value || '',
           ocr_name: '',
           entry_method: '수동입력',
           image_base64: imageBase64,
