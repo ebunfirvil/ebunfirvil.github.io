@@ -743,6 +743,14 @@
           <label for="editSpouseNaverId">배우자 — 네이버ID<span class="field-note" id="editSpouseNaverIdHint"></span></label>
           <input type="text" id="editSpouseNaverId" autocomplete="off">
         </div>
+        <div class="form-field" id="editFullAccountField">
+          <label for="editFullToSpouse" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="editFullToSpouse" style="width:auto; margin:0;">
+            정회원 카페 계정을 <b>배우자</b> 계정으로 하기
+          </label>
+          <div class="field-note" id="editFullAccountNote">체크하지 않으면 당첨자 본인 계정이 정회원이 됩니다. 정회원 세대에만 적용되며, 세대의 다른 계정은 (정)가족회원으로 바뀝니다(매일 밤 반영).</div>
+          <div class="field-note" id="editFullAccountHold" style="display:none; color:#b45309;"></div>
+        </div>
         <button type="button" id="editInfoSaveBtn" class="btn-submit" style="width:100%">저장</button>
         <div class="lookup-result" id="editInfoStatus" style="margin-top:10px;"></div>
       </div>
@@ -1015,6 +1023,51 @@
     const editNaverId = document.getElementById('editNaverId');
     const editSpouseNick = document.getElementById('editSpouseNick');
     const editSpouseNaverId = document.getElementById('editSpouseNaverId');
+    // 2026-10-10: 정회원 카페 계정 선택(체크 = 배우자, 해제 = 당첨자) → 회원명부 '정회원 적용 계정'
+    const editFullToSpouse = document.getElementById('editFullToSpouse');
+    const editFullAccountHold = document.getElementById('editFullAccountHold');
+    let editFullAccountIsHold = false;
+    // 리뷰(2026-10-10): 다른 칸만 고치고 저장해도 '당첨자'가 적히면 밤 동기화의 '확인된 계정만' 안전장치를 건너뛴다.
+    // 그래서 체크박스를 직접 바꿨을 때만 보내고, 보류 세대는 아이디 칸을 실제로 다시 입력해야(미리 채운 값 그대로는 X) 보낸다.
+    let editFullTouched = false, editWinnerRetyped = false, editSpouseRetyped = false, editSpouseAtLoad = '';
+    function holdIdsReentered() {
+      const winnerOk = editWinnerRetyped && editNaverId.value.trim() !== '';
+      const spouseNow = editSpouseNaverId.value.trim();
+      // 배우자 계정이 없는 세대는 당첨자 아이디만 다시 적으면 된다
+      const spouseOk = (!editSpouseAtLoad && !spouseNow) || (editSpouseRetyped && spouseNow !== '');
+      return winnerOk && spouseOk;
+    }
+    function refreshFullAccountUI() {
+      const spouseOk = editSpouseNaverId.value.trim() !== '';
+      // 배우자 아이디가 비면 선택 불가. 보류 세대는 아이디를 다시 입력해야 선택 가능.
+      const enabled = spouseOk && (!editFullAccountIsHold || holdIdsReentered());
+      editFullToSpouse.disabled = !enabled;
+      if (!enabled) editFullToSpouse.checked = false;
+      if (editFullAccountIsHold) {
+        editFullAccountHold.style.display = 'block';
+        editFullAccountHold.textContent = holdIdsReentered()
+          ? '아이디가 맞는지 확인한 뒤 정회원 계정을 선택하고 저장해 주세요.'
+          : '정회원 계정이 확인되지 않아 보류 중입니다. 당첨자 본인' + (editSpouseAtLoad || spouseOk ? '과 배우자' : '') +
+            '의 네이버 아이디를 다시 입력해 주세요. 입력하면 정회원 계정을 선택할 수 있습니다.';
+      } else {
+        editFullAccountHold.style.display = 'none';
+      }
+    }
+    // 저장할 값(없으면 null = 정회원 적용 계정은 건드리지 않음)
+    function fullAccountChoice() {
+      const winnerOk = editNaverId.value.trim() !== '';
+      const spouseOk = editSpouseNaverId.value.trim() !== '';
+      if (editFullAccountIsHold) {
+        if (!holdIdsReentered()) return null;
+      } else if (!editFullTouched) {
+        return null;
+      }
+      if (editFullToSpouse.checked) return spouseOk ? '배우자' : null;
+      return winnerOk ? '당첨자' : null;
+    }
+    editNaverId.addEventListener('input', () => { editWinnerRetyped = true; refreshFullAccountUI(); });
+    editSpouseNaverId.addEventListener('input', () => { editSpouseRetyped = true; refreshFullAccountUI(); });
+    editFullToSpouse.addEventListener('change', () => { editFullTouched = true; });
     const editInfoSaveBtn = document.getElementById('editInfoSaveBtn');
     const editInfoStatus = document.getElementById('editInfoStatus');
 
@@ -1266,6 +1319,11 @@
         document.getElementById('editSubmitterRole').value = data.submitter_role || '';
         document.getElementById('editNaverIdHint').textContent = data.winner_naver_hint ? ' (카페에서 찾은 실제 아이디 추정: ' + data.winner_naver_hint + ')' : '';
         document.getElementById('editSpouseNaverIdHint').textContent = data.spouse_naver_hint ? ' (추정: ' + data.spouse_naver_hint + ')' : '';
+        editFullAccountIsHold = !!data.full_account_hold;
+        editFullTouched = editWinnerRetyped = editSpouseRetyped = false;
+        editSpouseAtLoad = editSpouseNaverId.value.trim();
+        editFullToSpouse.checked = data.full_account === '배우자';
+        refreshFullAccountUI();
         editInfoIdentity = { receipt, building, unitNo };
         lookupReceiptNo.disabled = true;
         lookupBuilding.disabled = true;
@@ -1294,7 +1352,8 @@
               winner_naver_id: editNaverId.value.trim(),
               spouse_nick: editSpouseNick.value.trim(),
               spouse_naver_id: editSpouseNaverId.value.trim(),
-              submitter_role: document.getElementById('editSubmitterRole').value
+              submitter_role: document.getElementById('editSubmitterRole').value,
+              ...(fullAccountChoice() ? { full_account: fullAccountChoice() } : {})
             }
           })
         });
@@ -1309,7 +1368,19 @@
             : '저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
           return;
         }
-        setEditInfoStatus(data.changed > 0 ? '저장되었습니다.' : '변경된 내용이 없습니다.', 'ok');
+        const fullMsg = {
+          busy: ' 다만 정회원 계정 선택은 자동 처리 중이라 저장되지 않았습니다. 잠시 뒤 다시 저장해 주세요.',
+          rejected: ' 다만 정회원 계정 선택은 저장되지 않았습니다(아이디를 확인해 주세요).',
+          no_roster: ' (정회원 계정 선택은 회원명부에 세대가 등록된 뒤 저장할 수 있습니다.)',
+          error: ' 다만 정회원 계정 선택 저장 중 오류가 났습니다. 다시 저장해 주세요.'
+        }[data.full_account] || '';
+        if (data.full_account === 'saved') {
+          editFullAccountIsHold = false;
+          editFullTouched = false;
+          refreshFullAccountUI();
+        }
+        setEditInfoStatus((data.changed > 0 ? '저장되었습니다.' : '변경된 내용이 없습니다.') + fullMsg,
+          fullMsg && data.full_account !== 'no_roster' ? 'err' : 'ok');
       } catch (err) {
         setEditInfoStatus('저장 중 오류가 발생했습니다.', 'err');
       } finally {

@@ -585,7 +585,6 @@
       width: 0;
       border-radius: 4px;
       background: linear-gradient(90deg, var(--orange-light), var(--orange-dark));
-      transition: width 0.8s ease;
     }
     .notice-popup-progress .meta {
       margin-top: 6px;
@@ -2433,7 +2432,10 @@
         try { return sessionStorage.getItem(FAB_HIDE_KEY) === '1'; } catch (e) { return false; }
       }
       function showFab() {
-        if (fab && !fabHidden()) fab.classList.add('show');
+        if (fab && !fabHidden()) {
+          fab.classList.add('show');
+          animatePct(0, targetPct);
+        }
       }
       function hideFab() {
         if (fab) fab.classList.remove('show');
@@ -2487,16 +2489,46 @@
         if (bar) bar.style.width = Math.min(100, pct) + '%';
       }
 
+      // 2026-10-10: 팝업·위젯이 보일 때마다 0%에서 실제 제출률까지 숫자·막대·링이 함께 차오른다.
+      var targetPct = 0;   // 보여줄 실제 값(받아온 통계 또는 HTML 초기값)
+      var shownPct = 0;    // 지금 화면에 그려진 값
+      var animId = 0;
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function paintPct(p) {
+        shownPct = p;
+        var label = Math.round(p) + '%';
+        setText('delegateRateNum', label);
+        setText('delegateRateFabPct', label);
+        setRing(p);
+      }
+      function animatePct(from, to) {
+        if (animId) cancelAnimationFrame(animId);
+        if (reduceMotion || from === to) { paintPct(to); return; }
+        var duration = 1400, t0 = null;
+        function step(ts) {
+          if (t0 === null) t0 = ts;
+          var k = Math.min(1, (ts - t0) / duration);
+          var eased = 1 - Math.pow(1 - k, 3); // 끝에서 천천히 멈추게(easeOutCubic)
+          paintPct(from + (to - from) * eased);
+          animId = k < 1 ? requestAnimationFrame(step) : 0;
+        }
+        animId = requestAnimationFrame(step);
+      }
+      function rateVisible() {
+        var popup = document.getElementById('memberGuideNoticePopup');
+        return !!((popup && popup.classList.contains('active')) || (fab && fab.classList.contains('show')));
+      }
+
       function renderStats(st) {
         if (!st || !st.ok || !(st.total > 0)) return;
         var pct = Math.round(st.signed / st.total * 100);
         var signed = st.signed.toLocaleString('ko-KR');
         var total = st.total.toLocaleString('ko-KR');
-        setText('delegateRateNum', pct + '%');
         setText('delegateRateCount', signed + ' / ' + total + '세대 제출');
-        setText('delegateRateFabPct', pct + '%');
         setText('delegateRateFabCount', signed + ' / ' + total + '세대');
-        setRing(pct);
+        targetPct = pct;
+        // 이미 보이는 중에 값이 늦게 도착하면 지금 값에서 이어서 차오르고, 아직 안 보이면 보일 때 0부터
+        if (rateVisible()) animatePct(shownPct, pct);
         var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(st.latest_signed_date || '');
         if (m) setText('delegateRateDate', m[2] + '.' + m[3] + ' 기준');
       }
@@ -2504,7 +2536,8 @@
       function initialRing() {
         var num = document.getElementById('delegateRateNum');
         var pct = num ? parseInt(num.textContent, 10) : NaN;
-        if (!isNaN(pct)) setRing(pct);
+        if (!isNaN(pct)) targetPct = pct;
+        paintPct(0); // 보이기 전엔 0% — 팝업·위젯이 뜰 때 실제 값까지 차오른다
       }
 
       function loadStats() {
@@ -2527,6 +2560,7 @@
       function showPopup() {
         var popup = document.getElementById('memberGuideNoticePopup');
         if (popup) popup.classList.add('active');
+        animatePct(0, targetPct);
       }
 
       function start() {
