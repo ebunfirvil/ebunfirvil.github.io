@@ -977,18 +977,9 @@
     // ── 카톡 인증코드 팝업 ──────────────────────────────────────────────
     // 코드·활성화 여부는 Google 시트('카톡인증코드' 탭)에서 직접 관리한다 — 그 탭의 값을
     // 고치면 Apps Script doGet을 통해 이 페이지가 읽어와 반영한다(별도 관리자 화면 없음).
+    // 2026-10-09: 코드는 페이지를 열 때 받아 오지 않는다. 3키가 맞는 인증 완료 조회 응답(checkReceiptStatus의
+    // kakao_code)에만 실려 오며, 그때 여기에 담는다. 예전엔 페이지 로드 때 누구에게나 내려왔다.
     let kakaoConfig = { code: '', active: false };
-
-    async function fetchKakaoConfig() {
-      try {
-        const res = await fetch(SUBMIT_URL + '?action=getKakaoConfig');
-        const data = await res.json();
-        if (data.ok) kakaoConfig = { code: data.code || '', active: data.active === true };
-      } catch (err) {
-        console.warn('카톡 인증코드 설정을 불러오지 못했습니다:', err);
-      }
-    }
-    fetchKakaoConfig();
 
     const kakaoPopupOverlay = document.getElementById('kakaoPopupOverlay');
     const kakaoPopupCode = document.getElementById('kakaoPopupCode');
@@ -1210,6 +1201,7 @@
           editInfoRow.style.display = 'flex';
         } else if (data.status === 'verified') {
           // 인증 완료된 사람만 "입장코드 확인" 버튼을 보여주고, 누를 때만 팝업을 띄운다(자동 표시 안 함)
+          kakaoConfig = { code: data.kakao_code || '', active: !!data.kakao_code };
           if (kakaoConfig.active && kakaoConfig.code) lookupKakaoRow.style.display = 'flex';
           editInfoRow.style.display = 'flex';
         } else if (data.status === 'failed') {
