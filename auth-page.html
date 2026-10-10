@@ -752,8 +752,9 @@
           <div class="field-note" id="editFullAccountHold" style="display:none; color:#b45309;"></div>
         </div>
         <button type="button" id="editInfoSaveBtn" class="btn-submit" style="width:100%">저장</button>
-        <div class="lookup-result" id="editInfoStatus" style="margin-top:10px;"></div>
       </div>
+      <!-- 2026-10-10: 카드 밖에 둔다 — 카드가 안 열리는 실패(못 찾음·바쁨·오류)도 보이도록 -->
+      <div class="lookup-result" id="editInfoStatus" style="margin-top:10px;"></div>
     </div>
     </div> <!-- /tabPanelLookup -->
 
@@ -1275,8 +1276,13 @@
     // 열려있는 동안 조회 입력칸 값이 바뀌어도(사용자가 실수로 건드리는 경우 등) 엉뚱한 행에
     // 저장되지 않도록. 폼이 열려있는 동안은 조회 입력칸 자체도 잠가서 애초에 못 바꾸게 막는다.
     let editInfoIdentity = null;
+    function clearEditInfoStatus() {
+      editInfoStatus.textContent = '';
+      editInfoStatus.className = 'lookup-result';
+    }
     function closeEditInfoCard() {
       editInfoCard.style.display = 'none';
+      clearEditInfoStatus();
       editInfoIdentity = null;
       lookupReceiptNo.disabled = false;
       lookupBuilding.disabled = false;
@@ -1291,7 +1297,10 @@
       const building = lookupBuilding.value.trim();
       const unitNo = lookupUnitNo.value.trim();
       editInfoToggleBtn.disabled = true;
-      setEditInfoStatus('', '');
+      // 2026-10-10: 불러오기에 5초 안팎 걸린다 — 눌린 게 보이도록
+      const toggleLabel = editInfoToggleBtn.innerHTML;
+      editInfoToggleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 정보를 불러오는 중...';
+      clearEditInfoStatus();
       try {
         const res = await fetch(SUBMIT_URL, {
           method: 'POST',
@@ -1304,7 +1313,9 @@
           return;
         }
         if (!data.ok) {
-          setEditInfoStatus('정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+          setEditInfoStatus(data.error === 'BUSY'
+            ? '자동 처리가 잠시 시트를 쓰고 있습니다. 몇 초 뒤 다시 눌러 주세요.'
+            : '정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', 'err');
           return;
         }
         if (!data.found) {
@@ -1333,6 +1344,7 @@
         setEditInfoStatus('정보를 불러오는 중 오류가 발생했습니다.', 'err');
       } finally {
         editInfoToggleBtn.disabled = false;
+        editInfoToggleBtn.innerHTML = toggleLabel;
       }
     });
 
