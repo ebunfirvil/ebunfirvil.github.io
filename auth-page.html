@@ -733,7 +733,10 @@
         </div>
         <div class="form-field">
           <label for="editNaverId">당첨자 본인 — 네이버ID<span class="field-note" id="editNaverIdHint"></span></label>
-          <input type="text" id="editNaverId" autocomplete="off">
+          <div class="input-with-suffix">
+            <input type="text" id="editNaverId" autocomplete="off" placeholder="네이버 카페 아이디">
+            <span class="input-suffix">@naver.com</span>
+          </div>
         </div>
         <div class="form-field">
           <label for="editSpouseNick">배우자 — 카톡닉네임</label>
@@ -741,7 +744,10 @@
         </div>
         <div class="form-field">
           <label for="editSpouseNaverId">배우자 — 네이버ID<span class="field-note" id="editSpouseNaverIdHint"></span></label>
-          <input type="text" id="editSpouseNaverId" autocomplete="off">
+          <div class="input-with-suffix">
+            <input type="text" id="editSpouseNaverId" autocomplete="off" placeholder="배우자 네이버 카페 아이디 (해당 시)">
+            <span class="input-suffix">@naver.com</span>
+          </div>
         </div>
         <div class="form-field" id="editFullAccountField">
           <label for="editFullToSpouse" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
@@ -1024,6 +1030,18 @@
     const editNaverId = document.getElementById('editNaverId');
     const editSpouseNick = document.getElementById('editSpouseNick');
     const editSpouseNaverId = document.getElementById('editSpouseNaverId');
+    // 네이버ID 칸 공통 정리: 한글 제거, '@' 이후(@naver.com 등) 제거 — 제출 화면과 수정 화면이 같이 쓴다
+    function cleanNaverIdValue(v) {
+      return String(v || '').replace(/[ᄀ-ᇿ㄰-㆏가-힣]/g, '').replace(/@.*$/, '');
+    }
+    function attachNaverIdFilter(input) {
+      input.addEventListener('input', () => {
+        const filtered = cleanNaverIdValue(input.value);
+        if (filtered !== input.value) input.value = filtered;
+      });
+    }
+    attachNaverIdFilter(editNaverId);
+    attachNaverIdFilter(editSpouseNaverId);
     // 2026-10-10: 정회원 카페 계정 선택(체크 = 배우자, 해제 = 당첨자) → 회원명부 '정회원 적용 계정'
     const editFullToSpouse = document.getElementById('editFullToSpouse');
     const editFullAccountHold = document.getElementById('editFullAccountHold');
@@ -1324,9 +1342,9 @@
         }
         // 2026-10-09: 응답은 당첨자 기준(winner_* / spouse_*). 회원명부에 추정 실제 아이디가 있으면 힌트로 보여준다.
         editKakaoNick.value = data.winner_nick || data.kakao_nick || '';
-        editNaverId.value = data.winner_naver_id || data.naver_id || '';
+        editNaverId.value = cleanNaverIdValue(data.winner_naver_id || data.naver_id || '');
         editSpouseNick.value = data.spouse_nick || '';
-        editSpouseNaverId.value = data.spouse_naver_id || '';
+        editSpouseNaverId.value = cleanNaverIdValue(data.spouse_naver_id || '');
         document.getElementById('editSubmitterRole').value = data.submitter_role || '';
         document.getElementById('editNaverIdHint').textContent = data.winner_naver_hint ? ' (카페에서 찾은 실제 아이디 추정: ' + data.winner_naver_hint + ')' : '';
         document.getElementById('editSpouseNaverIdHint').textContent = data.spouse_naver_hint ? ' (추정: ' + data.spouse_naver_hint + ')' : '';
@@ -1864,18 +1882,11 @@
       });
     }
 
-    // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다
+    // 네이버ID는 한글이 섞이면 안 되므로, 입력 즉시(한글 조합 중간 글자 포함) 걸러낸다.
+    // 2026-10-10: '@naver.com'은 칸 뒤에 붙어 있으니 '@'부터 뒤는 지운다(메일 주소를 통째로 붙여넣는 경우).
     const naverIdInput = document.getElementById('naverId');
-    const HANGUL_RE = /[ᄀ-ᇿ㄰-㆏가-힣]/g;
-    naverIdInput.addEventListener('input', () => {
-      const filtered = naverIdInput.value.replace(HANGUL_RE, '');
-      if (filtered !== naverIdInput.value) naverIdInput.value = filtered;
-    });
     const spouseNaverIdInput = document.getElementById('spouseNaverId');
-    spouseNaverIdInput.addEventListener('input', () => {
-      const filtered = spouseNaverIdInput.value.replace(HANGUL_RE, '');
-      if (filtered !== spouseNaverIdInput.value) spouseNaverIdInput.value = filtered;
-    });
+    [naverIdInput, spouseNaverIdInput].forEach(attachNaverIdFilter);
 
     let selectedFile = null;
 
