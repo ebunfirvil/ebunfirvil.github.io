@@ -722,7 +722,7 @@
         <div class="form-field">
           <label for="editSubmitterRole">제출하신 분<span class="field-note">(인증을 누가 제출했는지 — 본인/배우자 계정 구분의 기준)</span></label>
           <select id="editSubmitterRole">
-            <option value="">선택</option>
+            <option value="">선택(*필수)</option>
             <option value="본인">당첨자 본인</option>
             <option value="배우자">배우자</option>
           </select>
@@ -1345,7 +1345,9 @@
         editNaverId.value = cleanNaverIdValue(data.winner_naver_id || data.naver_id || '');
         editSpouseNick.value = data.spouse_nick || '';
         editSpouseNaverId.value = cleanNaverIdValue(data.spouse_naver_id || '');
-        document.getElementById('editSubmitterRole').value = data.submitter_role || '';
+        // 2026-10-10: 본인/배우자가 기록돼 있으면 그 값, 없으면 '선택(*필수)' — 고르지 않으면 저장 안 됨
+        document.getElementById('editSubmitterRole').value =
+          (data.submitter_role === '본인' || data.submitter_role === '배우자') ? data.submitter_role : '';
         document.getElementById('editNaverIdHint').textContent = data.winner_naver_hint ? ' (카페에서 찾은 실제 아이디 추정: ' + data.winner_naver_hint + ')' : '';
         document.getElementById('editSpouseNaverIdHint').textContent = data.spouse_naver_hint ? ' (추정: ' + data.spouse_naver_hint + ')' : '';
         editFullAccountIsHold = !!data.full_account_hold;
@@ -1369,6 +1371,12 @@
     editInfoSaveBtn.addEventListener('click', async () => {
       if (!editInfoIdentity) return;
       const { receipt, building, unitNo } = editInfoIdentity;
+      const submitterSel = document.getElementById('editSubmitterRole');
+      if (submitterSel.value !== '본인' && submitterSel.value !== '배우자') {
+        setEditInfoStatus("'제출하신 분'(당첨자 본인 / 배우자)을 선택해 주세요. 선택해야 저장됩니다.", 'err');
+        submitterSel.focus();
+        return;
+      }
       editInfoSaveBtn.disabled = true;
       setEditInfoStatus('저장 중...', 'processing');
       try {
