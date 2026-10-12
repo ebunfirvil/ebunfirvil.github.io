@@ -1317,6 +1317,18 @@
       return '';
     }
 
+    // 2026-10-12 G16: 브라우저가 file.type을 비워 주는 경우(안드로이드·윈도우 크롬의 HEIC 등)는 확장자로 형식을 정한다.
+    // 서버는 그래도 파일 내용으로 다시 확인한다.
+    function submitMime(file) {
+      const t = (file.type || '').toLowerCase();
+      if (t === 'image/jpg') return 'image/jpeg';
+      if (t) return t;
+      const ext = ((file.name || '').split('.').pop() || '').toLowerCase();
+      if (ext === 'heic' || ext === 'heif') return 'image/heic';
+      if (ext === 'png') return 'image/png';
+      return 'image/jpeg';
+    }
+
     async function runLookup() {
       const receipt = lookupReceiptNo.value.trim();
       const building = lookupBuilding.value.trim();
@@ -2150,7 +2162,7 @@
           ocr_name: '',
           entry_method: '수동입력',
           image_base64: imageBase64,
-          image_mime: (selectedFile.type === 'image/jpg' ? 'image/jpeg' : selectedFile.type) || 'image/jpeg',
+          image_mime: submitMime(selectedFile),
           image_filename: selectedFile.name
         };
 
