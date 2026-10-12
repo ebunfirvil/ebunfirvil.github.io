@@ -2384,14 +2384,14 @@
       <p>더 나은 우리 집을 위해<br>위임장을 제출하면 <b>준회원</b>,<br>정회원비를 납부하면 <b>정회원</b>이 됩니다.</p>
       <div class="notice-popup-highlight">
         <div class="hl-rate">
-          <span class="hl-num" id="delegateRateNum">51%</span>
+          <span class="hl-num" id="delegateRateNum">54%</span>
           <span class="hl-cap">위임장 제출률</span>
         </div>
         <span class="hl-txt">위임장·정회원이 많이 모일수록<br>시공사·LH와의 협상력이 커지고,<br>더 나은 설계·품질·혜택으로 이어집니다.</span>
       </div>
       <div class="notice-popup-progress" aria-label="위임장 제출 현황">
         <div class="bar"><span id="delegateRateBar"></span></div>
-        <div class="meta"><span id="delegateRateCount">473 / 933세대 제출</span><span id="delegateRateDate">10.05 기준</span></div>
+        <div class="meta"><span id="delegateRateCount">501 / 933세대 제출</span><span id="delegateRateDate">10.05 기준</span></div>
       </div>
       <a href="https://doc.signok.com/linkUrl?UroVXA3zNE85" target="_blank" rel="noopener" class="notice-popup-btn" onclick="closeMemberGuideNotice()"><i class="fas fa-file-signature"></i> 위임장 제출하기</a>
       <a href="delegate-member-guide.html" class="notice-popup-btn secondary" onclick="closeMemberGuideNotice()">자세히 보기</a>
@@ -2406,7 +2406,7 @@
   <div class="rate-fab" id="delegateRateFab" role="button" tabindex="0" aria-label="위임장 제출률 — 누르면 안내 다시 보기">
     <button class="rate-fab-close" id="delegateRateFabClose" aria-label="제출률 위젯 닫기">&times;</button>
     <div class="rate-fab-ring" id="delegateRateFabRing"><span id="delegateRateFabPct">51%</span></div>
-    <div class="rate-fab-txt"><b>위임장 제출률</b><span id="delegateRateFabCount">473 / 933세대</span></div>
+    <div class="rate-fab-txt"><b>위임장 제출률</b><span id="delegateRateFabCount">501 / 933세대</span></div>
   </div>
   <script>
     // 위임장·회원 안내 팝업 (2026-08-28 추가, 상시 노출 — 종료일 없음)
@@ -2442,7 +2442,7 @@
       function showFab() {
         if (fab && !fabHidden()) {
           fab.classList.add('show');
-          animatePct(0, targetPct);
+          startRateAnim(); // 통계가 아직 안 왔으면 올 때까지(최대 1.5초) 기다렸다가 한 번만 차오른다
         }
       }
       function hideFab() {
@@ -2501,6 +2501,14 @@
       var targetPct = 0;   // 보여줄 실제 값(받아온 통계 또는 HTML 초기값)
       var shownPct = 0;    // 지금 화면에 그려진 값
       var animId = 0;
+      // 2026-10-12: 예전엔 HTML 폴백(51%)까지 먼저 차오르고 통계가 늦게 오면 거기서 실제 값까지 한 번 더 올라가
+      // 51%에서 멈칫했다. 이제 통계가 올 때까지(최대 1.5초) 기다렸다가 실제 값까지 한 번만 차오른다.
+      var statsReady = false, animPending = false, animWaitId = 0;
+      function startRateAnim() {
+        if (statsReady) { animPending = false; animatePct(0, targetPct); return; }
+        animPending = true;
+        if (!animWaitId) animWaitId = setTimeout(function () { animWaitId = 0; if (animPending) { animPending = false; animatePct(0, targetPct); } }, 1500);
+      }
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       function paintPct(p) {
         shownPct = p;
@@ -2535,8 +2543,11 @@
         setText('delegateRateCount', signed + ' / ' + total + '세대 제출');
         setText('delegateRateFabCount', signed + ' / ' + total + '세대');
         targetPct = pct;
-        // 이미 보이는 중에 값이 늦게 도착하면 지금 값에서 이어서 차오르고, 아직 안 보이면 보일 때 0부터
-        if (rateVisible()) animatePct(shownPct, pct);
+        statsReady = true;
+        if (animWaitId) { clearTimeout(animWaitId); animWaitId = 0; }
+        // 보이는 중이고 아직 시작 전이면 0부터, 이미 차오르는 중이면 지금 값에서 이어서; 아직 안 보이면 보일 때 0부터
+        if (animPending) { animPending = false; animatePct(0, pct); }
+        else if (rateVisible()) animatePct(shownPct, pct);
         var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(st.latest_signed_date || '');
         if (m) setText('delegateRateDate', m[2] + '.' + m[3] + ' 기준');
       }
@@ -2562,13 +2573,18 @@
           if (data && data.ok) {
             safeStorage.set(STATS_CACHE_KEY, JSON.stringify({at: Date.now(), data: data}));
           }
-        }).catch(function () { /* 실패 시 HTML 초기값 유지 */ });
+        }).catch(function () {
+          // 실패 시 HTML 초기값 유지 — 기다리던 애니메이션은 폴백 값으로 바로 시작
+          statsReady = true;
+          if (animWaitId) { clearTimeout(animWaitId); animWaitId = 0; }
+          if (animPending) { animPending = false; animatePct(0, targetPct); }
+        });
       }
 
       function showPopup() {
         var popup = document.getElementById('memberGuideNoticePopup');
         if (popup) popup.classList.add('active');
-        animatePct(0, targetPct);
+        startRateAnim();
       }
 
       function start() {
