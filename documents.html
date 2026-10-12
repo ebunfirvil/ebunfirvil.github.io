@@ -565,6 +565,9 @@
       pdfjsReady = new Promise((res, rej) => {
         const s = document.createElement('script');
         s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        // 2026-10-12 G16: cdnjs가 공개한 SRI(내려받아 직접 계산한 값과 일치) — 라이브러리가 바뀌면 로드를 거부한다
+        s.integrity = 'sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ==';
+        s.crossOrigin = 'anonymous';
         s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; res(window.pdfjsLib); };
         s.onerror = () => rej(new Error('PDF 변환 라이브러리를 불러오지 못했습니다'));
         document.head.appendChild(s);
@@ -574,7 +577,7 @@
     async function addPdf(file) { // N23_1 ~ N23_4
       const pdfjsLib = await loadPdfjs();
       const data = new Uint8Array(await file.arrayBuffer());
-      const pdf = await pdfjsLib.getDocument({ data, cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/', cMapPacked: true,
+      const pdf = await pdfjsLib.getDocument({ data, isEvalSupported: false, cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/', cMapPacked: true,
         standardFontDataUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/' }).promise;
       for (let i = 1; i <= pdf.numPages; i++) {
         showMsg(convMsg, `${file.name} 변환 중… ${i} / ${pdf.numPages}`, 'info');
