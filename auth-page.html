@@ -823,6 +823,8 @@
         <div class="lookup-row" id="mgReviewToolbar" style="display:none; justify-content:flex-end; margin-bottom:10px;">
           <button type="button" id="mgReviewRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 불러오기"><i class="fas fa-rotate"></i></button>
         </div>
+        <!-- 2026-10-12 G42: 검수 카드가 숨겨져 있어도 보이도록 카드 밖에 둔다 -->
+        <div class="lookup-result" id="mgReviewStatus" style="margin-bottom:14px;"></div>
         <div class="form-card" id="mgReviewCard" style="display:none">
           <div class="form-field" id="mgImageField">
             <label>인증샷</label>
@@ -877,7 +879,6 @@
             </div>
           </div>
 
-          <div class="lookup-result" id="mgReviewStatus" style="margin-top:14px;"></div>
         </div>
 
         <div class="lookup-card" id="mgDoneCard" style="display:none">
@@ -1594,9 +1595,16 @@
         mgDoneCard.style.display = 'none';
         mgFailReasonPanel.style.display = 'none';
         setMgReviewStatus('', '');
-        const data = await callManageApi({ action: 'getNextPending' });
+        // 2026-10-12 G42: 오류는 로그인 뒤 숨겨진 로그인 카드가 아니라 보이는 검수 상태 줄에 띄운다
+        let data;
+        try {
+          data = await callManageApi({ action: 'getNextPending' });
+        } catch (err) {
+          setMgReviewStatus('다음 건을 불러오지 못했습니다(네트워크 오류). 새로고침 버튼을 눌러 다시 시도해 주세요.', 'err');
+          return;
+        }
         if (!data.ok) {
-          setMgLoginResult('조회 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
+          setMgReviewStatus('다음 건을 불러오지 못했습니다: ' + (data.error || '') + ' — 새로고침 버튼을 눌러 다시 시도해 주세요.', 'err');
           return;
         }
         if (data.done) {
@@ -1632,10 +1640,18 @@
           result: result
         };
         if (result === '실패') payload.fail_reason = failReason || '';
-        const data = await callManageApi(payload);
-        mgSuccessBtn.disabled = false;
-        mgFailBtn.disabled = false;
-        mgFailConfirmBtn.disabled = false;
+        // 2026-10-12 G42: 네트워크 오류 등으로 던져져도 버튼이 잠긴 채 남지 않게 try/finally
+        let data;
+        try {
+          data = await callManageApi(payload);
+        } catch (err) {
+          setMgReviewStatus('저장 중 오류가 발생했습니다(네트워크). 저장됐는지 확인한 뒤 다시 눌러 주세요: ' + err.message, 'err');
+          return;
+        } finally {
+          mgSuccessBtn.disabled = false;
+          mgFailBtn.disabled = false;
+          mgFailConfirmBtn.disabled = false;
+        }
         if (!data.ok) {
           // BUSY: 자동 처리(5분마다)나 다른 저장이 잠깐 시트를 쓰는 중 — 저장 안 됨, 다시 누르면 된다
           setMgReviewStatus(data.error === 'BUSY'
@@ -1856,7 +1872,7 @@
         ['building', '당첨동', 'text'],
         ['unit_no', '호수', 'text'],
         ['name', '이름', 'text'],
-        ['result', '인증결과', 'select', ['', '확인 필요', '성공', '실패']],
+        ['result', '인증결과', 'select', ['', '확인필요', '성공', '실패']],
         ['kakao_nick', '카톡닉네임', 'text'],
         ['naver_id', '네이버ID', 'text'],
         ['spouse_role', '배우자구분', 'select', ['', '남편', '아내']],
@@ -1876,7 +1892,10 @@
           html += '<label style="font-size:0.8rem;">' + esc(label) + '</label>';
           if (type === 'select') {
             html += '<select data-key="' + key + '">';
-            options.forEach((opt) => {
+            // 2026-10-12 G42: 행의 현재 값이 선택지에 없으면('-', 옛 표기 등) 그 값을 선택지에 추가해 저장 때 값이 비워지지 않게 한다
+            const curVal = String(value == null ? '' : value);
+            const opts = curVal && options.indexOf(curVal) < 0 ? options.concat([curVal]) : options;
+            opts.forEach((opt) => {
               html += '<option value="' + esc(opt) + '"' + (String(value || '') === opt ? ' selected' : '') + '>' +
                 (opt || '(비어있음)') + '</option>';
             });
