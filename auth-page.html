@@ -535,7 +535,7 @@
           <label for="imageInput">인증샷 업로드<span class="req">*</span></label>
           <label class="file-drop" for="imageInput">
             <i class="fas fa-camera"></i>
-            <div class="file-drop-text">당첨 화면 캡쳐 이미지를 선택하세요 (jpg/png/heic, 최대 10MB)</div>
+            <div class="file-drop-text">당첨 화면 캡쳐 이미지를 선택하세요 (jpg/png/heic, 최대 6MB)</div>
             <div class="file-drop-guide">
               <div class="guide-title">아래 두 화면 중 하나로 캡쳐해 주세요 (접수번호·동·호수가 잘리지 않아야 합니다)</div>
               <ol>
@@ -551,7 +551,7 @@
           </div>
           <div class="size-error" id="sizeError">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>이미지 용량이 10MB를 초과합니다. 더 작은 용량의 이미지를 선택해 주세요.</span>
+            <span>사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.</span>
           </div>
 
         </div>
@@ -959,7 +959,7 @@
       });
     })();
 
-    const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB
+    const MAX_FILE_BYTES = 6 * 1024 * 1024; // 6MB — 서버 base64 상한 8MB(= 바이너리 6MB)와 맞춘다(Code.gs SUBMIT_MAX_BASE64)
     // 실측 기준(qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초. DSM 리버스
     // 프록시 타임아웃(300초)보다는 항상 짧게 잡아 서버가 응답 없이 계속 붙들지 않게 함.
 
@@ -2105,7 +2105,7 @@
       }
       if (selectedFile.size > MAX_FILE_BYTES) {
         sizeError.classList.add('show');
-        setSubmitStatus('이미지 용량이 10MB를 초과합니다.', 'err', 'fa-circle-exclamation');
+        setSubmitStatus('사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.', 'err', 'fa-circle-exclamation');
         return;
       }
 
@@ -2167,7 +2167,7 @@
           // 2026-10-12 G16: 서버가 검증에서 거절한 경우의 안내
           const SUBMIT_ERR = {
             BAD_RECEIPT: '접수번호는 5~6자리 숫자여야 합니다.', BAD_UNIT: '당첨동·호수를 확인해 주세요.',
-            BAD_IMAGE: '인증 이미지를 첨부해 주세요.', IMAGE_TOO_LARGE: '이미지가 너무 큽니다(8MB 이하로 줄여 주세요).',
+            BAD_IMAGE: '인증 이미지를 첨부해 주세요.', IMAGE_TOO_LARGE: '사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.',
             BAD_IMAGE_TYPE: '이미지는 JPG·PNG·HEIC 형식만 올릴 수 있습니다.', BUSY: '자동 처리 중입니다. 잠시 후 다시 제출해 주세요.',
             SERVER_ERROR: '서버에서 처리하지 못했습니다.'
           };
