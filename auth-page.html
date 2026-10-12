@@ -1052,7 +1052,7 @@
     // 그래서 체크박스를 직접 바꿨을 때만 보내고, 보류 세대는 아이디 칸을 실제로 다시 입력해야(미리 채운 값 그대로는 X) 보낸다.
     let editFullTouched = false, editWinnerRetyped = false, editSpouseRetyped = false, editSpouseAtLoad = '', editWinnerAtLoad = '';
     // 2026-10-12 G1: 불러온 아이디 칸 원본 값 — 저장할 때 바뀐 칸만 보낸다(한글 닉네임·'아이디/닉네임' 값을 정리본으로 덮지 않게)
-    let editWinnerRawAtLoad = '', editSpouseRawAtLoad = '', editRoleAtLoad = '';
+    let editWinnerRawAtLoad = '', editSpouseRawAtLoad = '', editRoleAtLoad = '', editFullAtLoad = '';
     function holdIdsReentered() {
       const winnerNow = editNaverId.value.trim();
       const spouseNow = editSpouseNaverId.value.trim();
@@ -1067,7 +1067,10 @@
       // 배우자 아이디가 비면 선택 불가. 보류 세대는 아이디를 다시 입력해야 선택 가능.
       const enabled = spouseOk && (!editFullAccountIsHold || holdIdsReentered());
       editFullToSpouse.disabled = !enabled;
+      // G9: 배우자 아이디를 지워서 강제로 체크가 풀리는데 불러올 때 정회원 계정이 '배우자'였다면 '당첨자'로 바뀐 것으로 보내고 알린다
+      const forcedToWinner = !spouseOk && editFullAtLoad === '배우자';
       if (!enabled) editFullToSpouse.checked = false;
+      if (forcedToWinner) editFullTouched = true;
       if (editFullAccountIsHold) {
         editFullAccountHold.style.display = 'block';
         editFullAccountHold.textContent = holdIdsReentered()
@@ -1076,6 +1079,9 @@
             ((editWinnerAtLoad && (editSpouseAtLoad || spouseOk)) ? '당첨자 본인과 배우자'
               : (editWinnerAtLoad || !(editSpouseAtLoad || spouseOk)) ? '당첨자 본인' : '배우자') +
             '의 네이버 아이디를 다시 입력해 주세요. 입력하면 정회원 계정을 선택할 수 있습니다.';
+      } else if (forcedToWinner) {
+        editFullAccountHold.style.display = 'block';
+        editFullAccountHold.textContent = '배우자 아이디를 지워 정회원 계정이 당첨자로 바뀝니다.';
       } else {
         editFullAccountHold.style.display = 'none';
       }
@@ -1375,8 +1381,10 @@
         document.getElementById('editSpouseNaverIdHint').textContent = data.spouse_naver_hint ? ' (추정: ' + data.spouse_naver_hint + ')' : '';
         editFullAccountIsHold = !!data.full_account_hold;
         editFullTouched = editWinnerRetyped = editSpouseRetyped = false;
-        editSpouseAtLoad = editSpouseNaverId.value.trim();
-        editWinnerAtLoad = editNaverId.value.trim();
+        // 2026-10-12 G9: 불러올 때 칸에 값이 '있었는지'는 서버가 알려 주는 플래그로(정리한 값으로 판단하지 않는다)
+        editSpouseAtLoad = data.spouse_present !== undefined ? !!data.spouse_present : editSpouseNaverId.value.trim() !== '';
+        editWinnerAtLoad = data.winner_present !== undefined ? !!data.winner_present : editNaverId.value.trim() !== '';
+        editFullAtLoad = data.full_account || '';
         editWinnerRawAtLoad = editNaverId.value;
         editSpouseRawAtLoad = editSpouseNaverId.value;
         editRoleAtLoad = document.getElementById('editSubmitterRole').value;
@@ -1408,6 +1416,13 @@
       setEditInfoStatus('저장 중...', 'processing');
       try {
         // 2026-10-12 G1·G2: 아이디는 바뀐 칸만 보낸다. 보류 세대가 아이디를 다시 적은 경우(ids_reentered)는 같은 값이어도 보낸다.
+        const fullChoice = fullAccountChoice();
+        // G9: 정회원 계정을 바꾸려는데(체크박스를 건드렸거나 보류 세대가 아이디를 다시 적음) 보낼 값이 없으면 조용히 저장하지 않고 막는다
+        if (fullChoice === null && (editFullTouched || (editFullAccountIsHold && holdIdsReentered()))) {
+          setEditInfoStatus('당첨자 아이디가 없어 정회원 계정을 바꿀 수 없습니다.', 'err');
+          editInfoSaveBtn.disabled = false;
+          return;
+        }
         const idsReentered = editFullAccountIsHold && holdIdsReentered();
         // H1: 제출자 구분을 바꾸면 서버가 닉네임·아이디 칸을 서로 옮기므로 아이디도 둘 다 보낸다
         const roleChanged = document.getElementById('editSubmitterRole').value !== editRoleAtLoad;
@@ -1425,7 +1440,7 @@
               ...(sendSpouseId ? { spouse_naver_id: editSpouseNaverId.value.trim() } : {}),
               submitter_role: document.getElementById('editSubmitterRole').value,
               ...(idsReentered ? { ids_reentered: true } : {}),
-              ...(fullAccountChoice() ? { full_account: fullAccountChoice() } : {})
+              ...(fullChoice ? { full_account: fullChoice } : {})
             }
           })
         });
@@ -1464,6 +1479,7 @@
         editRoleAtLoad = document.getElementById('editSubmitterRole').value;
         if (data.full_account === 'saved') {
           editFullAccountIsHold = false;
+          editFullAtLoad = fullChoice;
           editFullTouched = false;
           refreshFullAccountUI();
         }
