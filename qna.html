@@ -126,6 +126,19 @@
     .md-card code {
       background: var(--beige-dark); padding: 2px 6px; border-radius: 4px; font-size: 0.9em;
     }
+    .md-card table {
+      width: 100%; border-collapse: separate; border-spacing: 0; margin: 12px 0 16px;
+      font-size: 0.92rem; border: 1px solid var(--beige-dark); border-radius: 10px; overflow: hidden;
+    }
+    .md-card th, .md-card td {
+      padding: 10px 12px; text-align: left !important; vertical-align: top;
+      word-break: keep-all; overflow-wrap: break-word; line-height: 1.6;
+      border-bottom: 1px solid var(--beige-dark);
+    }
+    .md-card th { background: var(--beige); color: var(--navy); font-weight: 700; white-space: nowrap; }
+    .md-card tr:last-child td { border-bottom: none; }
+    .md-card td:first-child { font-weight: 700; color: var(--navy); white-space: nowrap; }
+    .md-card td + td, .md-card th + th { border-left: 1px solid var(--beige-dark); }
     .md-card hr { border: none; border-top: 1px solid var(--beige-dark); margin: 24px 0; }
     .md-loading { text-align: center; color: var(--gray); padding: 40px 0; }
 
@@ -189,6 +202,17 @@
     @media (max-width: 768px) {
       .page-header h1 { font-size: 1.5rem; }
       .md-card { padding: 26px 20px; }
+      .md-card table, .md-card tbody, .md-card tr, .md-card td { display: block; width: 100%; }
+      .md-card thead { display: none; }
+      .md-card table { border: none; }
+      .md-card tr {
+        border: 1px solid var(--beige-dark); border-radius: 10px; margin-bottom: 10px; overflow: hidden;
+      }
+      .md-card td { border: none !important; padding: 8px 12px; white-space: normal !important; }
+      .md-card td:first-child { background: var(--beige); font-size: 0.95rem; }
+      .md-card td[data-label]:not(:first-child)::before {
+        content: attr(data-label); display: block; font-size: 0.78rem; font-weight: 700; color: var(--orange-dark);
+      }
     }
   </style>
   <meta name="robots" content="noai, noimageai">
@@ -293,6 +317,13 @@
     function renderMarkdown(md) {
       const html = marked.parse(md);
       qnaContent.innerHTML = (window.DOMPurify ? DOMPurify.sanitize(html) : '');
+      // 모바일 카드형 표시용: 각 칸에 머리글 이름을 붙인다
+      qnaContent.querySelectorAll('table').forEach(t => {
+        const heads = [...t.querySelectorAll('thead th')].map(th => th.textContent.trim());
+        t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => {
+          if (heads[i]) td.setAttribute('data-label', heads[i]);
+        }));
+      });
       if (!window.DOMPurify) {
         qnaContent.textContent = '보안 모듈을 불러오지 못해 내용을 표시할 수 없습니다. 새로고침해 주세요.';
       }
