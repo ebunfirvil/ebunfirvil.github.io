@@ -2168,7 +2168,7 @@
           const SUBMIT_ERR = {
             BAD_RECEIPT: '접수번호는 5~6자리 숫자여야 합니다.', BAD_UNIT: '당첨동·호수를 확인해 주세요.',
             BAD_IMAGE: '인증 이미지를 첨부해 주세요.', IMAGE_TOO_LARGE: '사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.',
-            BAD_IMAGE_TYPE: '이미지는 JPG·PNG·HEIC 형식만 올릴 수 있습니다.', BUSY: '자동 처리 중입니다. 잠시 후 다시 제출해 주세요.',
+            BAD_IMAGE_TYPE: '이미지는 JPG·PNG·HEIC 형식만 올릴 수 있습니다.', IMAGE_TYPE: '선택한 파일이 이미지 형식과 맞지 않습니다. 화면 캡처 원본(JPG·PNG·HEIC)을 올려 주세요.', BUSY: '자동 처리 중입니다. 잠시 후 다시 제출해 주세요.',
             SERVER_ERROR: '서버에서 처리하지 못했습니다.'
           };
           throw new Error(SUBMIT_ERR[result.error] || result.error || '제출에 실패했습니다.');
