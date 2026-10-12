@@ -1052,7 +1052,7 @@
     // 그래서 체크박스를 직접 바꿨을 때만 보내고, 보류 세대는 아이디 칸을 실제로 다시 입력해야(미리 채운 값 그대로는 X) 보낸다.
     let editFullTouched = false, editWinnerRetyped = false, editSpouseRetyped = false, editSpouseAtLoad = '', editWinnerAtLoad = '';
     // 2026-10-12 G1: 불러온 아이디 칸 원본 값 — 저장할 때 바뀐 칸만 보낸다(한글 닉네임·'아이디/닉네임' 값을 정리본으로 덮지 않게)
-    let editWinnerRawAtLoad = '', editSpouseRawAtLoad = '';
+    let editWinnerRawAtLoad = '', editSpouseRawAtLoad = '', editRoleAtLoad = '';
     function holdIdsReentered() {
       const winnerNow = editNaverId.value.trim();
       const spouseNow = editSpouseNaverId.value.trim();
@@ -1379,6 +1379,7 @@
         editWinnerAtLoad = editNaverId.value.trim();
         editWinnerRawAtLoad = editNaverId.value;
         editSpouseRawAtLoad = editSpouseNaverId.value;
+        editRoleAtLoad = document.getElementById('editSubmitterRole').value;
         editFullToSpouse.checked = data.full_account === '배우자';
         refreshFullAccountUI();
         editInfoIdentity = { receipt, building, unitNo };
@@ -1408,8 +1409,10 @@
       try {
         // 2026-10-12 G1·G2: 아이디는 바뀐 칸만 보낸다. 보류 세대가 아이디를 다시 적은 경우(ids_reentered)는 같은 값이어도 보낸다.
         const idsReentered = editFullAccountIsHold && holdIdsReentered();
-        const sendWinnerId = idsReentered || editNaverId.value !== editWinnerRawAtLoad;
-        const sendSpouseId = idsReentered || editSpouseNaverId.value !== editSpouseRawAtLoad;
+        // H1: 제출자 구분을 바꾸면 서버가 닉네임·아이디 칸을 서로 옮기므로 아이디도 둘 다 보낸다
+        const roleChanged = document.getElementById('editSubmitterRole').value !== editRoleAtLoad;
+        const sendWinnerId = idsReentered || roleChanged || editNaverId.value !== editWinnerRawAtLoad;
+        const sendSpouseId = idsReentered || roleChanged || editSpouseNaverId.value !== editSpouseRawAtLoad;
         const res = await fetch(SUBMIT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1450,6 +1453,7 @@
         }[data.full_account] || '';
         editWinnerRawAtLoad = editNaverId.value;
         editSpouseRawAtLoad = editSpouseNaverId.value;
+        editRoleAtLoad = document.getElementById('editSubmitterRole').value;
         if (data.full_account === 'saved') {
           editFullAccountIsHold = false;
           editFullTouched = false;
