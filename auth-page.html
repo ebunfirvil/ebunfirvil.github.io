@@ -1434,6 +1434,10 @@
           setEditInfoStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다.', 'err');
           return;
         }
+        if (data.error === 'ROLE_FIXED') {
+          setEditInfoStatus('제출하신 분은 관리자가 확정한 값이라 바꿀 수 없습니다. 입예협에 문의해 주세요.', 'err');
+          return;
+        }
         if (data.error === 'ROLE_CHANGE_NEEDS_IDS') {
           setEditInfoStatus('제출하신 분을 바꾸면 당첨자·배우자 아이디를 모두 입력해 주세요.', 'err');
           return;
