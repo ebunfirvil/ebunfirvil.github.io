@@ -1260,7 +1260,7 @@
               payer_name: kindSel.value === '회비' ? payer.value.trim() : '', paid_at: kindSel.value === '회비' ? paidAt.value : '', note: note.value.trim() })
           });
           const data = await res.json();
-          const MSG = { ALREADY_REPORTED: '오늘 이미 같은 내용을 접수하셨습니다. 확인 후 반영됩니다.', NOT_FOUND: '접수번호·당첨동·호수를 확인해 주세요.',
+          const MSG = { ALREADY_REPORTED: '오늘 이미 같은 내용을 접수하셨습니다. 확인 후 반영됩니다.', TOO_MANY_REPORTS: '오늘 접수 가능한 횟수를 넘었습니다. 확인 후 반영되니 내일 다시 시도하거나 입예협에 문의해 주세요.', NOT_FOUND: '접수번호·당첨동·호수를 확인해 주세요.',
             NOTE_TOO_LONG: '내용은 500자 이내로 적어 주세요.', BAD_PAYER: '입금자명이 너무 깁니다.', BAD_DATE: '입금일 형식을 확인해 주세요.' };
           status.textContent = data.ok ? '접수되었습니다. 확인 후 반영됩니다.'
             : (throttleMessage(data.error) || MSG[data.error] || '접수하지 못했습니다. 잠시 후 다시 시도해 주세요.');
