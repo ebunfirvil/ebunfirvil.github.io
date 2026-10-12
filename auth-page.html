@@ -1424,7 +1424,10 @@
         const fullChoice = fullAccountChoice();
         // G9: 정회원 계정을 바꾸려는데(체크박스를 건드렸거나 보류 세대가 아이디를 다시 적음) 보낼 값이 없으면 조용히 저장하지 않고 막는다
         if (fullChoice === null && (editFullTouched || (editFullAccountIsHold && holdIdsReentered()))) {
-          setEditInfoStatus('당첨자 아이디가 없어 정회원 계정을 바꿀 수 없습니다.', 'err');
+          // 배우자만 인증한 세대(당첨자 계정 없음)가 아이디를 다시 적고 체크박스를 비워 둔 경우는 '배우자를 선택'하라고 안내한다
+          setEditInfoStatus(editNaverId.value.trim() === '' && editSpouseNaverId.value.trim() !== ''
+            ? '배우자를 정회원 계정으로 선택해 주세요.'
+            : '당첨자 아이디가 없어 정회원 계정을 바꿀 수 없습니다.', 'err');
           editInfoSaveBtn.disabled = false;
           return;
         }
