@@ -1252,6 +1252,13 @@
       box.style.display = 'block';
     }
 
+    // 2026-10-12 G4: 서버의 3키 시도 제한 응답(LOCKED/BUSY) 안내 — 해당 없으면 ''
+    function throttleMessage(error) {
+      if (error === 'LOCKED') return '잠시 후 다시 시도해 주세요(여러 번 틀려 30분간 잠겼습니다).';
+      if (error === 'BUSY') return '지금 접속이 많습니다. 잠시 후 다시 시도해 주세요.';
+      return '';
+    }
+
     async function runLookup() {
       const receipt = lookupReceiptNo.value.trim();
       const building = lookupBuilding.value.trim();
@@ -1272,7 +1279,11 @@
         const res = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receipt) +
           '&building=' + encodeURIComponent(building) + '&unit_no=' + encodeURIComponent(unitNo));
         const data = await res.json();
-        if (!data.ok) throw new Error('조회 실패');
+        if (!data.ok) {
+          const tm = throttleMessage(data.error);
+          if (tm) { setLookupResult(tm, 'err'); return; }
+          throw new Error('조회 실패');
+        }
         showLookupMembership(data);
         showLookupRoster(data.roster);
         // 인증 결과는 표의 "인증" 줄이 보여주므로(2026-10-08) 조회가 되면 위쪽 띠는 비운다
@@ -1336,6 +1347,10 @@
         const data = await res.json();
         if (data.error === 'FEATURE_DISABLED') {
           setEditInfoStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다.', 'err');
+          return;
+        }
+        if (data.error === 'LOCKED') {
+          setEditInfoStatus(throttleMessage('LOCKED'), 'err');
           return;
         }
         if (!data.ok) {
@@ -1414,6 +1429,10 @@
         const data = await res.json();
         if (data.error === 'FEATURE_DISABLED') {
           setEditInfoStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다.', 'err');
+          return;
+        }
+        if (data.error === 'LOCKED') {
+          setEditInfoStatus(throttleMessage('LOCKED'), 'err');
           return;
         }
         if (!data.ok) {
