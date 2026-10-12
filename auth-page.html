@@ -1167,7 +1167,7 @@
       failed: ['bad', '인증 실패', '동호수가 보이도록 다시 제출해 주세요. LH청약플러스 > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회에서 동호수를 가리지 말고 캡쳐해 제출해 주세요.']
     };
     // authStatus(verified/processing/failed)를 주면 인증 줄을 넣는다. 관리자 이력 카드는 주지 않는다.
-    function renderMembershipBlock(container, m, isAdmin, authStatus) {
+    function renderMembershipBlock(container, m, isAdmin, authStatus, cafe) {
       container.innerHTML = '';
       const title = msEl('div', 'ms-title');
       title.appendChild(msEl('i', 'fas fa-id-card'));
@@ -1192,6 +1192,17 @@
           container.appendChild(buildReportLink(key === 'fee' ? '회비' : '위임장'));
         }
       });
+      // 2026-10-12 G68-①: 수정한 계정이 카페에 반영됐는지 주민이 스스로 볼 수 있게 현재 카페 등급과 마지막 등업 결과를 보여준다(textContent만)
+      if (!isAdmin && cafe) {
+        container.appendChild(msRow('카페 등급', msEl('span', 'ms-pill none',
+          '당첨자 ' + (cafe.winner_level || '—') + ' / 배우자 ' + (cafe.spouse_level || '—'))));
+        const resultText = (r) => !r ? '아직 시도 전' : (r.indexOf('등업완료') === 0 ? '반영됨' : r);
+        container.appendChild(msEl('p', 'ms-hint', '마지막 등업 결과 — 당첨자: ' + resultText(cafe.winner_result) +
+          ' · 배우자: ' + resultText(cafe.spouse_result) + (cafe.checked_at ? ' (카페 조회 ' + cafe.checked_at + ')' : '')));
+        if (cafe.hold_reason) {
+          container.appendChild(msEl('p', 'ms-hint warn', '보류: ' + cafe.hold_reason + ' — 수정 화면에서 아이디를 확인해 주세요'));
+        }
+      }
       if (m.hold) {
         // 보류 세대는 대부분 위임장이 '검토 중'(서명검토대기중)이라 "없어"라고 하면 틀린 안내가 된다
         container.appendChild(msEl('p', 'ms-hint warn', m.proxy === '확인중'
@@ -1287,7 +1298,7 @@
       }
       const m = data.membership || {found: false, grade: null, proxy: '없음', fee: '없음', hold: false,
         updated_at: null, proxy_latest: null, fee_latest: null};
-      renderMembershipBlock(lookupMembership, m, false, status);
+      renderMembershipBlock(lookupMembership, m, false, status, data.cafe);
       lookupMembership.style.display = 'block';
     }
 
