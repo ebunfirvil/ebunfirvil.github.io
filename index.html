@@ -2248,6 +2248,13 @@
     </div>
   </div>
   <script>
+  // 2026-10-12 G50: 시크릿 모드·저장소 차단 브라우저에서도 팝업·위젯이 죽지 않게 localStorage 접근을 전부 감싼다
+  window.safeStorage = {
+    get: function (k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* 저장 못 해도 화면은 계속 */ } }
+  };
+</script>
+<script>
     // 위임장 제출 안내 팝업 (KST 2026-07-31 오후 1시부터 노출, 방문자 기기 시간대 무관)
     // 2026-08-01: 인증 유도 팝업으로 임시 교체를 위해 비활성화 (코드 보존)
     // 2026-10-06: 계속 비활성 유지. 아래 "위임장·회원 안내" 팝업이 상시 노출이고 거기에
@@ -2274,7 +2281,7 @@
       if (Date.now() < POPUP_START_UTC_MS) return;
 
       var today = todayStr();
-      var hiddenDate = localStorage.getItem(HIDE_KEY);
+      var hiddenDate = safeStorage.get(HIDE_KEY);
       if (hiddenDate === today) return;
 
       window.closeDelegateNotice = function () {
@@ -2282,7 +2289,7 @@
         popup.classList.remove('active');
         var hideToday = document.getElementById('delegateNoticeHideToday');
         if (hideToday && hideToday.checked) {
-          localStorage.setItem(HIDE_KEY, todayStr());
+          safeStorage.set(HIDE_KEY, todayStr());
         }
       };
 
@@ -2336,7 +2343,7 @@
       if (Date.now() >= POPUP_END_UTC_MS) return;
 
       var today = todayStr();
-      var hiddenDate = localStorage.getItem(HIDE_KEY);
+      var hiddenDate = safeStorage.get(HIDE_KEY);
       if (hiddenDate === 'forever' || hiddenDate === today) return;
 
       window.closeVerifyNotice = function () {
@@ -2348,9 +2355,9 @@
         var popup = document.getElementById('verifyNoticePopup');
         popup.classList.remove('active');
         if (type === 'forever') {
-          localStorage.setItem(HIDE_KEY, 'forever');
+          safeStorage.set(HIDE_KEY, 'forever');
         } else {
-          localStorage.setItem(HIDE_KEY, todayStr());
+          safeStorage.set(HIDE_KEY, todayStr());
         }
       };
 
@@ -2422,7 +2429,7 @@
       var today = todayStr();
       // HIDE_KEY에는 "이 날짜까지는 다시 보여주지 않음"을 뜻하는 날짜 문자열을 저장한다
       // (ISO 형식이라 문자열 비교로도 날짜 순서 비교가 됨).
-      var hiddenUntil = localStorage.getItem(HIDE_KEY);
+      var hiddenUntil = safeStorage.get(HIDE_KEY);
       // 오늘/7일간 보지 않기 중이면 팝업은 띄우지 않고 우측 하단 위젯만 보여준다.
       var popupSuppressed = !!(hiddenUntil && hiddenUntil >= today);
 
@@ -2470,7 +2477,7 @@
         closePopup();
         // "7일간"은 오늘 포함 7일이므로 6일치를 더 얹는다(오늘 하루=0일 추가와 동일한 규칙)
         var untilMs = type === '7days' ? Date.now() + 6 * 24 * 60 * 60 * 1000 : Date.now();
-        localStorage.setItem(HIDE_KEY, dateStrFromMs(untilMs));
+        safeStorage.set(HIDE_KEY, dateStrFromMs(untilMs));
       };
 
       // 위임장 제출률 (2026-10-07 추가). Apps Script getDelegateStats가 '위임장 제출명단' 탭에서
@@ -2545,7 +2552,7 @@
       function loadStats() {
         initialRing();
         try {
-          var cached = JSON.parse(localStorage.getItem(STATS_CACHE_KEY) || 'null');
+          var cached = JSON.parse(safeStorage.get(STATS_CACHE_KEY) || 'null');
           if (cached && cached.at && Date.now() - cached.at < STATS_CACHE_MS) {
             renderStats(cached.data);
             return;
@@ -2554,7 +2561,7 @@
         fetch(STATS_URL).then(function (r) { return r.json(); }).then(function (data) {
           renderStats(data);
           if (data && data.ok) {
-            try { localStorage.setItem(STATS_CACHE_KEY, JSON.stringify({at: Date.now(), data: data})); } catch (e) {}
+            safeStorage.set(STATS_CACHE_KEY, JSON.stringify({at: Date.now(), data: data}));
           }
         }).catch(function () { /* 실패 시 HTML 초기값 유지 */ });
       }
