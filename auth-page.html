@@ -1467,8 +1467,10 @@
           editFullTouched = false;
           refreshFullAccountUI();
         }
-        setEditInfoStatus((data.changed > 0 ? '저장되었습니다.' : '변경된 내용이 없습니다.') + fullMsg,
-          fullMsg && data.full_account !== 'no_roster' ? 'err' : 'ok');
+        // 2026-10-12 G26: 명부 재생성 중이라 회원명부 반영이 건너뛰어졌으면 알린다(2-처리완료에는 저장됨)
+        const rosterMsg = data.roster_busy ? ' 저장됐지만 회원명부 반영은 잠시 뒤에 됩니다(명부 갱신 중).' : '';
+        setEditInfoStatus((data.changed > 0 ? '저장되었습니다.' : '변경된 내용이 없습니다.') + rosterMsg + fullMsg,
+          (fullMsg && data.full_account !== 'no_roster') || rosterMsg ? 'err' : 'ok');
       } catch (err) {
         setEditInfoStatus('저장 중 오류가 발생했습니다.', 'err');
       } finally {
