@@ -303,7 +303,9 @@
           showMsg(authMsg, '', '');
           renderList(r);
         } else if (r.error === 'LOCKED') {
-          showMsg(authMsg, `여러 번 틀려서 잠시 잠겼습니다. ${Math.ceil((r.retry_after_sec || 600) / 60)}분 뒤에 다시 시도해 주세요.`, 'err');
+          showMsg(authMsg, '여러 번 틀려 30분간 잠겼습니다. 잠시 후 다시 시도해 주세요.', 'err');
+        } else if (r.error === 'BUSY') {
+          showMsg(authMsg, '지금 접속이 많습니다. 잠시 후 다시 시도해 주세요.', 'err');
         } else if (r.error === 'NOT_VERIFIED') {
           // N10 인증 절차 안내
           showMsg(authMsg, `일치하는 인증 완료 세대가 없습니다${r.remaining ? ` (남은 시도 ${r.remaining}회)` : ''}.<br>아직 청약 인증을 하지 않으셨다면 <a href="auth-page.html">청약 인증 페이지</a>에서 먼저 인증해 주세요. 인증 처리에는 시간이 걸릴 수 있습니다.`, 'err');
