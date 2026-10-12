@@ -1051,6 +1051,8 @@
     // 리뷰(2026-10-10): 다른 칸만 고치고 저장해도 '당첨자'가 적히면 밤 동기화의 '확인된 계정만' 안전장치를 건너뛴다.
     // 그래서 체크박스를 직접 바꿨을 때만 보내고, 보류 세대는 아이디 칸을 실제로 다시 입력해야(미리 채운 값 그대로는 X) 보낸다.
     let editFullTouched = false, editWinnerRetyped = false, editSpouseRetyped = false, editSpouseAtLoad = '', editWinnerAtLoad = '';
+    // 2026-10-12 G1: 불러온 아이디 칸 원본 값 — 저장할 때 바뀐 칸만 보낸다(한글 닉네임·'아이디/닉네임' 값을 정리본으로 덮지 않게)
+    let editWinnerRawAtLoad = '', editSpouseRawAtLoad = '';
     function holdIdsReentered() {
       const winnerNow = editNaverId.value.trim();
       const spouseNow = editSpouseNaverId.value.trim();
@@ -1348,9 +1350,9 @@
         }
         // 2026-10-09: 응답은 당첨자 기준(winner_* / spouse_*). 회원명부에 추정 실제 아이디가 있으면 힌트로 보여준다.
         editKakaoNick.value = data.winner_nick || data.kakao_nick || '';
-        editNaverId.value = cleanNaverIdValue(data.winner_naver_id || data.naver_id || '');
+        editNaverId.value = data.winner_naver_id || data.naver_id || '';
         editSpouseNick.value = data.spouse_nick || '';
-        editSpouseNaverId.value = cleanNaverIdValue(data.spouse_naver_id || '');
+        editSpouseNaverId.value = data.spouse_naver_id || '';
         // 2026-10-10: 본인/배우자가 기록돼 있으면 그 값, 없으면 '선택(*필수)' — 고르지 않으면 저장 안 됨
         document.getElementById('editSubmitterRole').value =
           (data.submitter_role === '본인' || data.submitter_role === '배우자') ? data.submitter_role : '';
@@ -1360,6 +1362,8 @@
         editFullTouched = editWinnerRetyped = editSpouseRetyped = false;
         editSpouseAtLoad = editSpouseNaverId.value.trim();
         editWinnerAtLoad = editNaverId.value.trim();
+        editWinnerRawAtLoad = editNaverId.value;
+        editSpouseRawAtLoad = editSpouseNaverId.value;
         editFullToSpouse.checked = data.full_account === '배우자';
         refreshFullAccountUI();
         editInfoIdentity = { receipt, building, unitNo };
@@ -1387,6 +1391,10 @@
       editInfoSaveBtn.disabled = true;
       setEditInfoStatus('저장 중...', 'processing');
       try {
+        // 2026-10-12 G1·G2: 아이디는 바뀐 칸만 보낸다. 보류 세대가 아이디를 다시 적은 경우(ids_reentered)는 같은 값이어도 보낸다.
+        const idsReentered = editFullAccountIsHold && holdIdsReentered();
+        const sendWinnerId = idsReentered || editNaverId.value !== editWinnerRawAtLoad;
+        const sendSpouseId = idsReentered || editSpouseNaverId.value !== editSpouseRawAtLoad;
         const res = await fetch(SUBMIT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1394,10 +1402,11 @@
             action: 'updateOwnInfo', receipt, building, unit_no: unitNo,
             fields: {
               winner_nick: editKakaoNick.value.trim(),
-              winner_naver_id: editNaverId.value.trim(),
+              ...(sendWinnerId ? { winner_naver_id: editNaverId.value.trim() } : {}),
               spouse_nick: editSpouseNick.value.trim(),
-              spouse_naver_id: editSpouseNaverId.value.trim(),
+              ...(sendSpouseId ? { spouse_naver_id: editSpouseNaverId.value.trim() } : {}),
               submitter_role: document.getElementById('editSubmitterRole').value,
+              ...(idsReentered ? { ids_reentered: true } : {}),
               ...(fullAccountChoice() ? { full_account: fullAccountChoice() } : {})
             }
           })
@@ -1415,10 +1424,13 @@
         }
         const fullMsg = {
           busy: ' 다만 정회원 계정 선택은 자동 처리 중이라 저장되지 않았습니다. 잠시 뒤 다시 저장해 주세요.',
+          admin_hold: ' 다만 관리자가 확인 중인 세대입니다. 입예협에 문의해 주세요.',
           rejected: ' 다만 정회원 계정 선택은 저장되지 않았습니다(아이디를 확인해 주세요).',
           no_roster: ' (정회원 계정 선택은 회원명부에 세대가 등록된 뒤 저장할 수 있습니다.)',
           error: ' 다만 정회원 계정 선택 저장 중 오류가 났습니다. 다시 저장해 주세요.'
         }[data.full_account] || '';
+        editWinnerRawAtLoad = editNaverId.value;
+        editSpouseRawAtLoad = editSpouseNaverId.value;
         if (data.full_account === 'saved') {
           editFullAccountIsHold = false;
           editFullTouched = false;
