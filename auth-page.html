@@ -1187,6 +1187,10 @@
         const pillText = st[0] === 'ok' ? (key === 'proxy' ? '제출 완료' : '납부 확인') : st[1];
         container.appendChild(msRow(label, msEl('span', 'ms-pill ' + st[0], pillText)));
         if (!isAdmin && st[0] === 'none') container.appendChild(msEl('p', 'ms-hint', MS_NONE_HINT[key]));
+        // 2026-10-12 G11: 냈는데 '없음'/'반려'로 보이면 신고할 수 있게 한다(사용자 조회 카드에서만)
+        if (!isAdmin && authStatus && (m[key] === '없음' || m[key] === '반려')) {
+          container.appendChild(buildReportLink(key === 'fee' ? '회비' : '위임장'));
+        }
       });
       if (m.hold) {
         // 보류 세대는 대부분 위임장이 '검토 중'(서명검토대기중)이라 "없어"라고 하면 틀린 안내가 된다
@@ -1225,6 +1229,50 @@
       container.appendChild(basis);
     }
     const lookupMembership = document.getElementById('lookupMembership');
+    // 2026-10-12 G11: 조회가 성공한 3키 — 신고 접수 때 이 값을 쓴다(조회 입력칸이 나중에 바뀌어도 엉뚱한 세대로 안 가게)
+    let lastLookupIdentity = null;
+    function buildReportLink(kind) {
+      const wrap = msEl('div', 'ms-report');
+      const link = msEl('button', 'ms-report-link', '신고하기');
+      link.type = 'button';
+      link.style.cssText = 'background:none;border:none;padding:0;color:var(--orange-dark, #c0622b);text-decoration:underline;cursor:pointer;font-size:0.8rem;';
+      const form = msEl('div', 'ms-report-form');
+      form.style.cssText = 'display:none;margin-top:8px;';
+      const kindSel = document.createElement('select');
+      ['회비', '위임장', '기타'].forEach((k) => { const o = document.createElement('option'); o.value = k; o.textContent = k; if (k === kind) o.selected = true; kindSel.appendChild(o); });
+      const payer = document.createElement('input'); payer.type = 'text'; payer.maxLength = 50; payer.placeholder = '입금자명(회비)';
+      const paidAt = document.createElement('input'); paidAt.type = 'date';
+      const note = document.createElement('textarea'); note.maxLength = 500; note.rows = 3; note.placeholder = '확인이 필요한 내용을 적어 주세요(500자 이내)';
+      const send = document.createElement('button'); send.type = 'button'; send.textContent = '접수';
+      const status = msEl('p', 'ms-hint', '');
+      [kindSel, payer, paidAt, note, send, status].forEach((el) => { if (el.tagName !== 'P') el.style.cssText = 'display:block;width:100%;margin-top:6px;'; form.appendChild(el); });
+      const syncKind = () => { const fee = kindSel.value === '회비'; payer.style.display = fee ? 'block' : 'none'; paidAt.style.display = fee ? 'block' : 'none'; };
+      kindSel.addEventListener('change', syncKind); syncKind();
+      link.addEventListener('click', () => { form.style.display = form.style.display === 'none' ? 'block' : 'none'; });
+      send.addEventListener('click', async () => {
+        if (!lastLookupIdentity) { status.textContent = '먼저 조회해 주세요.'; return; }
+        send.disabled = true; status.textContent = '접수 중...';
+        try {
+          const res = await fetch(SUBMIT_URL, {
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'reportIssue', receipt: lastLookupIdentity.receipt, building: lastLookupIdentity.building,
+              unit_no: lastLookupIdentity.unitNo, kind: kindSel.value,
+              payer_name: kindSel.value === '회비' ? payer.value.trim() : '', paid_at: kindSel.value === '회비' ? paidAt.value : '', note: note.value.trim() })
+          });
+          const data = await res.json();
+          const MSG = { ALREADY_REPORTED: '오늘 이미 같은 내용을 접수하셨습니다. 확인 후 반영됩니다.', NOT_FOUND: '접수번호·당첨동·호수를 확인해 주세요.',
+            NOTE_TOO_LONG: '내용은 500자 이내로 적어 주세요.', BAD_PAYER: '입금자명이 너무 깁니다.', BAD_DATE: '입금일 형식을 확인해 주세요.' };
+          status.textContent = data.ok ? '접수되었습니다. 확인 후 반영됩니다.'
+            : (throttleMessage(data.error) || MSG[data.error] || '접수하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+          if (data.ok) { send.disabled = true; return; }
+        } catch (err) {
+          status.textContent = '접수 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+        }
+        send.disabled = false;
+      });
+      wrap.appendChild(link); wrap.appendChild(form);
+      return wrap;
+    }
     // 인증 상태가 none(접수번호+동+호 불일치)이면 서버도 membership을 안 주므로 숨기고,
     // processing/verified/failed에서는 회원등급 탭에 행이 있을 때만 보여준다.
     // 인증 상태가 none(접수번호+동+호 불일치)이면 서버도 membership을 안 주므로 숨긴다.
@@ -1294,6 +1342,7 @@
           if (tm) { setLookupResult(tm, 'err'); return; }
           throw new Error('조회 실패');
         }
+        lastLookupIdentity = { receipt, building, unitNo };
         showLookupMembership(data);
         showLookupRoster(data.roster);
         // 인증 결과는 표의 "인증" 줄이 보여주므로(2026-10-08) 조회가 되면 위쪽 띠는 비운다
