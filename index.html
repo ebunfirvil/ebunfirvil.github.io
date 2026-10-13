@@ -2384,14 +2384,14 @@
       <p>더 나은 우리 집을 위해<br>위임장을 제출하면 <b>준회원</b>,<br>정회원비를 납부하면 <b>정회원</b>이 됩니다.</p>
       <div class="notice-popup-highlight">
         <div class="hl-rate">
-          <span class="hl-num" id="delegateRateNum">54%</span>
+          <span class="hl-num" id="delegateRateNum">53%</span>
           <span class="hl-cap">위임장 제출률</span>
         </div>
         <span class="hl-txt">위임장·정회원이 많이 모일수록<br>시공사·LH와의 협상력이 커지고,<br>더 나은 설계·품질·혜택으로 이어집니다.</span>
       </div>
       <div class="notice-popup-progress" aria-label="위임장 제출 현황">
         <div class="bar"><span id="delegateRateBar"></span></div>
-        <div class="meta"><span id="delegateRateCount">501 / 933세대 제출</span><span id="delegateRateDate">10.05 기준</span></div>
+        <div class="meta"><span id="delegateRateCount">495 / 933세대 제출</span><span id="delegateRateDate">10.11 기준</span></div>
       </div>
       <a href="https://doc.signok.com/linkUrl?UroVXA3zNE85" target="_blank" rel="noopener" class="notice-popup-btn" onclick="closeMemberGuideNotice()"><i class="fas fa-file-signature"></i> 위임장 제출하기</a>
       <a href="delegate-member-guide.html" class="notice-popup-btn secondary" onclick="closeMemberGuideNotice()">자세히 보기</a>
@@ -2405,8 +2405,8 @@
   <!-- 우측 하단 위임장 제출률 위젯 (2026-10-07 추가) — 팝업이 닫힌 뒤 따라다니며 보인다 -->
   <div class="rate-fab" id="delegateRateFab" role="button" tabindex="0" aria-label="위임장 제출률 — 누르면 안내 다시 보기">
     <button class="rate-fab-close" id="delegateRateFabClose" aria-label="제출률 위젯 닫기">&times;</button>
-    <div class="rate-fab-ring" id="delegateRateFabRing"><span id="delegateRateFabPct">51%</span></div>
-    <div class="rate-fab-txt"><b>위임장 제출률</b><span id="delegateRateFabCount">501 / 933세대</span></div>
+    <div class="rate-fab-ring" id="delegateRateFabRing"><span id="delegateRateFabPct">53%</span></div>
+    <div class="rate-fab-txt"><b>위임장 제출률</b><span id="delegateRateFabCount">495 / 933세대</span></div>
   </div>
   <script>
     // 위임장·회원 안내 팝업 (2026-08-28 추가, 상시 노출 — 종료일 없음)
@@ -2502,12 +2502,37 @@
       var shownPct = 0;    // 지금 화면에 그려진 값
       var animId = 0;
       // 2026-10-12: 예전엔 HTML 폴백(51%)까지 먼저 차오르고 통계가 늦게 오면 거기서 실제 값까지 한 번 더 올라가
-      // 51%에서 멈칫했다. 이제 통계가 올 때까지(최대 1.5초) 기다렸다가 실제 값까지 한 번만 차오른다.
+      // 51%에서 멈칫했다. 이제 통계가 올 때까지 기다렸다가 실제 값까지 한 번만 차오른다.
+      // 2026-10-13: 통계가 1.5초보다 늦게 오면(Apps Script 첫 응답은 2~5초) 팝업엔 HTML 폴백 숫자가 먼저 보이고,
+      // 닫은 뒤 위젯엔 실제 값이 보여 "팝업과 위젯 숫자가 다르다"로 보였다. 이제 통계가 올 때까지는 숫자 대신
+      // '집계 중'을 보여주고(최대 8초), 폴백 숫자는 호출이 실패했거나 8초를 넘겼을 때만 쓴다.
+      var STATS_WAIT_MS = 8000;
       var statsReady = false, animPending = false, animWaitId = 0;
+      var fallback = null; // HTML에 박힌 폴백 문구(초기화 때 읽어 둠)
+      function showPlaceholder() {
+        setText('delegateRateNum', '–%');
+        setText('delegateRateFabPct', '–%');
+        setText('delegateRateCount', '집계 중…');
+        setText('delegateRateFabCount', '집계 중…');
+        setText('delegateRateDate', '');
+        setRing(0);
+      }
+      function useFallback() {
+        if (statsReady) return;
+        statsReady = true;
+        if (animWaitId) { clearTimeout(animWaitId); animWaitId = 0; }
+        if (fallback) {
+          setText('delegateRateCount', fallback.count);
+          setText('delegateRateFabCount', fallback.fabCount);
+          setText('delegateRateDate', fallback.date);
+        }
+        if (animPending) { animPending = false; animatePct(0, targetPct); }
+        else paintPct(0);
+      }
       function startRateAnim() {
         if (statsReady) { animPending = false; animatePct(0, targetPct); return; }
         animPending = true;
-        if (!animWaitId) animWaitId = setTimeout(function () { animWaitId = 0; if (animPending) { animPending = false; animatePct(0, targetPct); } }, 1500);
+        if (!animWaitId) animWaitId = setTimeout(function () { animWaitId = 0; useFallback(); }, STATS_WAIT_MS);
       }
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       function paintPct(p) {
@@ -2536,7 +2561,7 @@
       }
 
       function renderStats(st) {
-        if (!st || !st.ok || !(st.total > 0)) return;
+        if (!st || !st.ok || !(st.total > 0)) { useFallback(); return; }
         var pct = Math.round(st.signed / st.total * 100);
         var signed = st.signed.toLocaleString('ko-KR');
         var total = st.total.toLocaleString('ko-KR');
@@ -2552,11 +2577,15 @@
         if (m) setText('delegateRateDate', m[2] + '.' + m[3] + ' 기준');
       }
 
+      function textOf(id) {
+        var el = document.getElementById(id);
+        return el ? el.textContent : '';
+      }
       function initialRing() {
-        var num = document.getElementById('delegateRateNum');
-        var pct = num ? parseInt(num.textContent, 10) : NaN;
+        var pct = parseInt(textOf('delegateRateNum'), 10);
         if (!isNaN(pct)) targetPct = pct;
-        paintPct(0); // 보이기 전엔 0% — 팝업·위젯이 뜰 때 실제 값까지 차오른다
+        fallback = { count: textOf('delegateRateCount'), fabCount: textOf('delegateRateFabCount'), date: textOf('delegateRateDate') };
+        showPlaceholder(); // 통계가 오기 전엔 숫자를 보여주지 않는다(폴백은 실패·8초 초과 때만)
       }
 
       function loadStats() {
@@ -2573,12 +2602,7 @@
           if (data && data.ok) {
             safeStorage.set(STATS_CACHE_KEY, JSON.stringify({at: Date.now(), data: data}));
           }
-        }).catch(function () {
-          // 실패 시 HTML 초기값 유지 — 기다리던 애니메이션은 폴백 값으로 바로 시작
-          statsReady = true;
-          if (animWaitId) { clearTimeout(animWaitId); animWaitId = 0; }
-          if (animPending) { animPending = false; animatePct(0, targetPct); }
-        });
+        }).catch(useFallback); // 실패 시 HTML 폴백 문구로 — 기다리던 애니메이션은 폴백 값으로 바로 시작
       }
 
       function showPopup() {
