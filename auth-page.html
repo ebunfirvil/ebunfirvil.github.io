@@ -1679,12 +1679,15 @@
         const info = document.getElementById('mgApplicantInfo');
         let html = '접수번호 <b>' + esc(receiptNo) + '</b>';
         if (!a || !a.found) {
-          html += ' · 명부에 없는 접수번호입니다';
+          html += (a && a.reserve && a.reserve.found) ? ' · 당첨자 명부에는 없음' : ' · 명부에 없는 접수번호입니다';
         } else {
           html += ' · 이름 <b>' + esc(a.masked_name || '-') + '</b>';
           html += a.verified
             ? '<br>이미 인증된 세대: <b>' + esc(a.building || '-') + ' ' + esc(a.unit_no || '-') + '</b>'
             : '<br>아직 인증되지 않은 세대';
+        }
+        if (a && a.reserve && a.reserve.found) {
+          html += '<br>예비자명단: 예비번호 <b>' + esc(a.reserve.seq || '-') + '</b> · 이름 <b>' + esc(a.reserve.masked_name || '-') + '</b>';
         }
         info.innerHTML = html;
         box.style.display = 'block';
