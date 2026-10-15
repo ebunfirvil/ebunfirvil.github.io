@@ -837,6 +837,10 @@
             <label>접수번호</label>
             <input type="text" id="mgReceiptNo" readonly>
           </div>
+          <div class="form-field" id="mgApplicantBox" style="display:none">
+            <label>명부 조회 (접수번호 기준)</label>
+            <div id="mgApplicantInfo" style="padding:10px 12px; background:var(--beige); border:1px solid var(--beige-warm); border-radius:8px; font-size:0.88rem; line-height:1.6;"></div>
+          </div>
           <div class="form-field">
             <label>청약구분</label>
             <input type="text" id="mgApplyType" readonly>
@@ -1669,6 +1673,23 @@
         return res.json();
       }
 
+      // 접수번호로 명부를 조회한 결과: 접수번호 + 마스킹된 이름, 이미 인증된 세대면 동/호까지
+      function renderApplicantInfo(receiptNo, a) {
+        const box = document.getElementById('mgApplicantBox');
+        const info = document.getElementById('mgApplicantInfo');
+        let html = '접수번호 <b>' + esc(receiptNo) + '</b>';
+        if (!a || !a.found) {
+          html += ' · 명부에 없는 접수번호입니다';
+        } else {
+          html += ' · 이름 <b>' + esc(a.masked_name || '-') + '</b>';
+          html += a.verified
+            ? '<br>이미 인증된 세대: <b>' + esc(a.building || '-') + ' ' + esc(a.unit_no || '-') + '</b>'
+            : '<br>아직 인증되지 않은 세대';
+        }
+        info.innerHTML = html;
+        box.style.display = 'block';
+      }
+
       async function loadNextItem() {
         mgReviewCard.style.display = 'none';
         mgDoneCard.style.display = 'none';
@@ -1696,6 +1717,7 @@
         mgBuilding.value = data.building || '';
         mgUnitNo.value = data.unit_no || '';
         mgName.value = '';
+        renderApplicantInfo(data.receipt_no, data.applicant);
         if (data.image) {
           mgImage.src = data.image;
           mgImage.style.display = 'block';
