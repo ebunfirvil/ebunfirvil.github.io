@@ -1678,7 +1678,9 @@
         const box = document.getElementById('mgApplicantBox');
         const info = document.getElementById('mgApplicantInfo');
         let html = '접수번호 <b>' + esc(receiptNo) + '</b>';
-        if (!a || !a.found) {
+        if (!a) {
+          html += ' · 명부 조회 결과를 받지 못했습니다(웹앱 새 버전 배포 확인)';
+        } else if (!a.found) {
           html += (a && a.reserve && a.reserve.found) ? ' · 당첨자 명부에는 없음' : ' · 명부에 없는 접수번호입니다';
         } else {
           html += ' · 이름 <b>' + esc(a.masked_name || '-') + '</b>';
