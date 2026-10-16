@@ -247,6 +247,49 @@
     .mg-result-row span:first-child { color: var(--gray); flex-shrink: 0; }
     .mg-result-row span:last-child { text-align: right; word-break: break-all; }
     .mg-result-row a { color: var(--orange-dark); font-weight: 600; }
+    /* ===== 신고 처리 탭 ===== */
+    #mgTabNav { flex-wrap: wrap; }
+    .mg-tab-btn { min-width: 0; padding: 11px 8px; }
+    .rp-toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .rp-toolbar select, .rp-edit select, .rp-edit textarea {
+      padding: 10px 12px; border: 1.5px solid var(--beige-warm); border-radius: 8px; background: var(--white);
+      font-size: 0.92rem; font-family: 'Noto Sans KR', sans-serif; color: var(--dark); max-width: 100%;
+    }
+    .rp-toolbar select { flex: 1; min-width: 0; }
+    .rp-edit textarea { width: 100%; box-sizing: border-box; min-height: 90px; resize: vertical; }
+    .rp-edit button {
+      padding: 11px 20px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.9rem; cursor: pointer;
+      color: var(--white); background: linear-gradient(135deg, var(--orange), var(--orange-light));
+    }
+    .rp-edit button:disabled { opacity: 0.65; cursor: not-allowed; }
+    .rp-counts { font-size: 0.8rem; color: var(--gray); margin: 0 0 10px; word-break: keep-all; }
+    .rp-item {
+      display: block; width: 100%; text-align: left; background: var(--white); border: 1px solid var(--beige-warm);
+      border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; font-family: inherit; color: var(--dark);
+    }
+    .rp-item.rp-selected { border-color: var(--orange); background: var(--beige); }
+    .rp-item-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.84rem; color: var(--gray); }
+    .rp-item-main { margin-top: 4px; font-size: 0.9rem; font-weight: 700; word-break: break-all; }
+    .rp-sec { font-size: 0.86rem; font-weight: 700; color: var(--navy); margin: 14px 0 6px; padding-top: 10px; border-top: 1px dashed var(--beige-warm); }
+    .rp-cmp { border: 1px solid var(--beige-warm); border-radius: 8px; overflow: hidden; margin-top: 6px; }
+    .rp-cmp-row { display: grid; grid-template-columns: 84px 1fr 1fr; font-size: 0.84rem; border-top: 1px solid var(--beige-warm); }
+    .rp-cmp-row:first-child { border-top: 0; }
+    .rp-cmp-row > div { padding: 6px 8px; word-break: break-all; min-width: 0; }
+    .rp-cmp-row > .rp-lab { background: var(--beige); color: var(--gray); }
+    .rp-cmp-head > div { background: var(--beige-warm); font-weight: 700; }
+    .rp-cmp-row .rp-tag { display: none; color: var(--gray); font-size: 0.72rem; margin-right: 4px; }
+    .rp-same { margin: 8px 0 0; font-size: 0.86rem; }
+    .rp-hist { margin-top: 10px; font-size: 0.84rem; }
+    .rp-hist summary { cursor: pointer; font-weight: 700; color: var(--navy); }
+    .rp-hist-item { margin-top: 8px; padding: 8px 10px; border: 1px solid var(--beige-warm); border-radius: 8px; word-break: break-all; line-height: 1.55; }
+    .rp-count-line { font-size: 0.78rem; color: var(--gray); text-align: right; }
+    @media (max-width: 520px) {
+      .rp-cmp-head { display: none; }
+      .rp-cmp-row { grid-template-columns: 1fr; }
+      .rp-cmp-row > .rp-lab { font-weight: 700; }
+      .rp-cmp-row .rp-tag { display: inline; }
+      .mg-tab-btn { font-size: 0.8rem; }
+    }
 
     /* ===== PRIVACY NOTICE ===== */
     .privacy-notice {
@@ -816,6 +859,7 @@
       <div id="mgTabNav" style="display:none">
         <button type="button" id="mgTabReviewBtn" class="mg-tab-btn mg-tab-active">검수</button>
         <button type="button" id="mgTabHistoryBtn" class="mg-tab-btn">이력 조회</button>
+        <button type="button" id="mgTabReportsBtn" class="mg-tab-btn">신고 처리</button>
         <button type="button" id="mgTabSettingsBtn" class="mg-tab-btn">관리 설정</button>
       </div>
 
@@ -912,6 +956,28 @@
           <div class="lookup-result" id="mgSearchStatus"></div>
         </div>
         <div id="mgSearchResults"></div>
+      </div>
+
+      <div id="mgReportsPanel" style="display:none">
+        <div class="lookup-card">
+          <h3><i class="fas fa-flag"></i> 신고 처리</h3>
+          <div class="rp-toolbar lookup-row">
+            <select id="rpFilter" aria-label="상태 필터">
+              <option value="">전체</option>
+              <option value="대기" selected>대기</option>
+              <option value="처리중">처리중</option>
+              <option value="완료">완료</option>
+              <option value="보류">보류</option>
+              <option value="취소">취소</option>
+            </select>
+            <button type="button" id="rpRefreshBtn" class="lookup-refresh-btn" aria-label="새로고침" title="다시 불러오기"><i class="fas fa-rotate"></i></button>
+          </div>
+          <p class="rp-counts" id="rpCounts"></p>
+          <div class="lookup-result" id="rpListStatus" style="margin-bottom:10px;"></div>
+          <div id="rpList"></div>
+          <p class="rp-counts" id="rpTruncated" style="display:none">최근 300건만 표시됩니다.</p>
+        </div>
+        <div class="mg-result-card" id="rpDetail" style="display:none"></div>
       </div>
 
       <div id="mgSettingsPanel" style="display:none">
@@ -1634,6 +1700,8 @@
       const mgReviewPanel = document.getElementById('mgReviewPanel');
       const mgHistoryPanel = document.getElementById('mgHistoryPanel');
       const mgSettingsPanel = document.getElementById('mgSettingsPanel');
+      const mgTabReportsBtn = document.getElementById('mgTabReportsBtn');
+      const mgReportsPanel = document.getElementById('mgReportsPanel');
       const mgSearchReceipt = document.getElementById('mgSearchReceipt');
       const mgSearchBuilding = document.getElementById('mgSearchBuilding');
       const mgSearchUnit = document.getElementById('mgSearchUnit');
@@ -1817,6 +1885,7 @@
           mgTabNav.style.display = 'flex';
           mgReviewToolbar.style.display = 'flex';
           loadNextItem();
+          loadReports(true); // 대기 건수만 조용히 갱신(실패해도 로그인 흐름과 무관)
         } catch (err) {
           setMgLoginResult('로그인 중 오류가 발생했습니다: ' + err.message, 'err');
         } finally {
@@ -1856,15 +1925,294 @@
       function showTab(tab) {
         mgReviewPanel.style.display = tab === 'review' ? 'block' : 'none';
         mgHistoryPanel.style.display = tab === 'history' ? 'block' : 'none';
+        mgReportsPanel.style.display = tab === 'reports' ? 'block' : 'none';
         mgSettingsPanel.style.display = tab === 'settings' ? 'block' : 'none';
         mgTabReviewBtn.classList.toggle('mg-tab-active', tab === 'review');
         mgTabHistoryBtn.classList.toggle('mg-tab-active', tab === 'history');
+        mgTabReportsBtn.classList.toggle('mg-tab-active', tab === 'reports');
         mgTabSettingsBtn.classList.toggle('mg-tab-active', tab === 'settings');
         if (tab === 'settings') loadAdminSettings();
+        if (tab === 'reports') loadReports(false);
       }
+      mgTabReportsBtn.addEventListener('click', () => showTab('reports'));
       mgTabReviewBtn.addEventListener('click', () => showTab('review'));
       mgTabHistoryBtn.addEventListener('click', () => showTab('history'));
       mgTabSettingsBtn.addEventListener('click', () => showTab('settings'));
+
+      // ── 신고 처리 탭 ──────────────────────────────────────────────
+      // 신고 내용은 주민 입력이므로 모든 값은 textContent(msEl)로만 DOM에 넣는다(innerHTML 금지).
+      const rpFilter = document.getElementById('rpFilter');
+      const rpRefreshBtn = document.getElementById('rpRefreshBtn');
+      const rpCounts = document.getElementById('rpCounts');
+      const rpListStatus = document.getElementById('rpListStatus');
+      const rpList = document.getElementById('rpList');
+      const rpTruncated = document.getElementById('rpTruncated');
+      const rpDetail = document.getElementById('rpDetail');
+      const RP_STATUSES = ['대기', '처리중', '완료', '보류', '취소'];
+      const RP_ERRORS = {
+        UNAUTHORIZED: '관리자 인증이 만료됐습니다. 다시 로그인해 주세요.',
+        STALE: '그 사이 신고가 바뀌었습니다. 새로고침해 주세요.',
+        BUSY: '다른 처리 중입니다. 잠시 후 다시 시도해 주세요.',
+        BAD_STATUS: '허용되지 않는 처리 상태입니다.',
+        MEMO_TOO_LONG: '메모가 너무 깁니다(500자 이하).',
+        BAD_MEMO: '메모 형식이 올바르지 않습니다.',
+        NOT_FOUND: '신고를 찾을 수 없습니다.',
+        BAD_ROW: '신고 행 번호가 올바르지 않습니다.',
+        BAD_SHEET: '신고접수 시트를 확인할 수 없습니다.'
+      };
+      let rpReports = [];
+      let rpSelectedRow = null;
+      let rpDetailSeq = 0;
+      let rpListSeq = 0;
+
+      function rpErr(code) {
+        return RP_ERRORS[code] || ('처리 중 오류가 발생했습니다' + (code ? ' (' + code + ')' : '') + '. 잠시 후 다시 시도해 주세요.');
+      }
+      function rpV(v) { return (v == null || String(v).trim() === '') ? '-' : String(v); }
+      function rpWithConfirmed(v, c) {
+        const base = rpV(v);
+        return (c == null || String(c).trim() === '') ? base : base + ' (확정: ' + c + ')';
+      }
+      function rpPill(status) {
+        const cls = { '대기': 'bad', '처리중': 'pending', '완료': 'ok' }[status] || 'none';
+        return msEl('span', 'ms-pill ' + cls, rpV(status));
+      }
+      function rpSetListStatus(text, type) {
+        rpListStatus.textContent = text;
+        rpListStatus.className = 'lookup-result' + (text ? ' show' : '') + (type ? ' ' + type : '');
+      }
+      function rpUpdateTabLabel(counts) {
+        const n = counts && Number(counts['대기']);
+        mgTabReportsBtn.textContent = n > 0 ? '신고 처리 (' + n + ')' : '신고 처리';
+      }
+
+      async function loadReports(silent) {
+        const seq = ++rpListSeq;
+        if (!silent) rpSetListStatus('불러오는 중...', 'processing');
+        try {
+          const data = await callManageApi({ action: 'listReports' });
+          if (seq !== rpListSeq) return;
+          if (!data || !data.ok) {
+            if (!silent) rpSetListStatus('신고 목록을 불러오지 못했습니다: ' + rpErr(data && data.error), 'err');
+            return;
+          }
+          rpReports = Array.isArray(data.reports) ? data.reports : [];
+          rpUpdateTabLabel(data.counts);
+          rpSetListStatus('', '');
+          rpRenderCounts(data.counts || {});
+          rpTruncated.style.display = data.truncated ? 'block' : 'none';
+          rpRenderList();
+        } catch (err) {
+          if (!silent && seq === rpListSeq) rpSetListStatus('신고 목록을 불러오는 중 오류가 발생했습니다. 새로고침 버튼으로 다시 시도해 주세요.', 'err');
+        }
+      }
+      function rpRenderCounts(counts) {
+        const parts = RP_STATUSES.concat(['기타']).filter((k) => Number(counts[k]) > 0).map((k) => k + ' ' + counts[k]);
+        rpCounts.textContent = parts.length ? '건수: ' + parts.join(' · ') : '접수된 신고가 없습니다.';
+      }
+      function rpRenderList() {
+        const f = rpFilter.value;
+        rpList.textContent = '';
+        const rows = rpReports.filter((r) => !f || r.status === f);
+        if (!rows.length) {
+          rpList.appendChild(msEl('p', 'rp-counts', f ? '"' + f + '" 상태의 신고가 없습니다.' : '신고가 없습니다.'));
+          return;
+        }
+        rows.forEach((r) => {
+          const btn = msEl('button', 'rp-item' + (String(r.row) === String(rpSelectedRow) ? ' rp-selected' : ''));
+          btn.type = 'button';
+          const top = msEl('div', 'rp-item-top');
+          top.appendChild(msEl('span', null, rpV(r.submitted_at)));
+          top.appendChild(rpPill(r.status));
+          btn.appendChild(top);
+          btn.appendChild(msEl('div', 'rp-item-main', rpV(r.building) + ' ' + rpV(r.unit) + ' · ' + rpV(r.kind)));
+          btn.appendChild(msEl('div', 'rp-item-top', '접수번호 ' + rpV(r.receipt)));
+          btn.addEventListener('click', () => openReport(r.row));
+          rpList.appendChild(btn);
+        });
+      }
+      rpFilter.addEventListener('change', rpRenderList);
+      rpRefreshBtn.addEventListener('click', () => {
+        rpRefreshBtn.classList.remove('spinning');
+        void rpRefreshBtn.offsetWidth;
+        rpRefreshBtn.classList.add('spinning');
+        loadReports(false);
+      });
+
+      async function openReport(row) {
+        const seq = ++rpDetailSeq;
+        rpSelectedRow = row;
+        rpRenderList();
+        rpDetail.style.display = 'block';
+        rpDetail.textContent = '불러오는 중...';
+        try {
+          const data = await callManageApi({ action: 'getReportDetail', row: row });
+          if (seq !== rpDetailSeq) return;
+          if (!data || !data.ok) {
+            rpDetail.textContent = '상세를 불러오지 못했습니다: ' + rpErr(data && data.error);
+            return;
+          }
+          renderReportDetail(data.report || {}, data.household || {});
+        } catch (err) {
+          if (seq === rpDetailSeq) rpDetail.textContent = '상세를 불러오는 중 오류가 발생했습니다. 다시 눌러 주세요.';
+        }
+        if (seq === rpDetailSeq) rpDetail.scrollIntoView({ block: 'nearest' });
+      }
+
+      function rpAddRow(parent, label, value) {
+        const row = msEl('div', 'mg-result-row');
+        row.appendChild(msEl('span', null, label));
+        row.appendChild(msEl('span', null, rpV(value)));
+        parent.appendChild(row);
+      }
+
+      // 세대 상태 렌더 — 백엔드 응답 형태가 계약과 다르면 이 함수만 조정한다.
+      function renderHousehold(parent, h) {
+        parent.appendChild(msEl('div', 'rp-sec', '세대 상태'));
+        if (h.found === false) {
+          parent.appendChild(msEl('div', 'lookup-result show err', '이 신고의 세대 정보를 찾을 수 없습니다'));
+          return;
+        }
+        const r = h.roster;
+        if (r) {
+          rpAddRow(parent, '당첨자', r.winner_name);
+          rpAddRow(parent, '동/호', rpV(r.building) + ' ' + rpV(r.unit));
+          rpAddRow(parent, '회원등급', r.grade);
+          rpAddRow(parent, '인증 상태', r.auth_status);
+          rpAddRow(parent, '인증 일시', r.auth_at);
+          rpAddRow(parent, '위임장 제출', rpWithConfirmed(r.proxy_at, r.proxy_confirmed));
+          rpAddRow(parent, '회비 납부', rpWithConfirmed(r.fee_at, r.fee_confirmed));
+          rpAddRow(parent, '제출자 구분', rpWithConfirmed(r.submitter_role, r.submitter_role_confirmed));
+          rpAddRow(parent, '정회원 적용 계정', r.applied_account);
+          rpAddRow(parent, '카페 조회일', r.cafe_checked_at);
+          rpAddRow(parent, '자동 비고', r.auto_note);
+          rpAddRow(parent, '관리자 메모', r.admin_memo);
+        } else {
+          parent.appendChild(msEl('div', 'rp-counts', '명부 정보가 없습니다.'));
+        }
+        const w = h.winner || {};
+        const s = h.spouse || {};
+        const cmp = msEl('div', 'rp-cmp');
+        const head = msEl('div', 'rp-cmp-row rp-cmp-head');
+        head.appendChild(msEl('div', null, ''));
+        head.appendChild(msEl('div', null, '당첨자'));
+        head.appendChild(msEl('div', null, '배우자'));
+        cmp.appendChild(head);
+        [['카톡닉', 'kakao_nick'], ['네이버 구분', 'naver_kind'], ['네이버ID', 'naver_id'],
+         ['확인상태', 'status'], ['현재 카페등급', 'cafe_level'], ['등업 결과', 'promote_result']].forEach((f) => {
+          const row = msEl('div', 'rp-cmp-row');
+          row.appendChild(msEl('div', 'rp-lab', f[0]));
+          [['당첨자', w], ['배우자', s]].forEach((c) => {
+            const cell = msEl('div');
+            cell.appendChild(msEl('span', 'rp-tag', c[0]));
+            cell.appendChild(document.createTextNode(rpV(c[1][f[1]])));
+            row.appendChild(cell);
+          });
+          cmp.appendChild(row);
+        });
+        parent.appendChild(cmp);
+        const same = h.same_account;
+        const sameP = msEl('p', 'rp-same');
+        sameP.appendChild(document.createTextNode('네이버 계정 동일 여부: '));
+        sameP.appendChild(msEl('span', 'ms-pill ' + (same === '동일' ? 'ok' : same === '다름' ? 'bad' : 'none'), rpV(same)));
+        parent.appendChild(sameP);
+
+        const hist = Array.isArray(h.history) ? h.history : [];
+        const det = msEl('details', 'rp-hist');
+        det.appendChild(msEl('summary', null, '처리 이력 (' + hist.length + '건)'));
+        if (!hist.length) det.appendChild(msEl('div', 'rp-counts', '이력이 없습니다.'));
+        hist.forEach((x) => {
+          const it = msEl('div', 'rp-hist-item');
+          it.appendChild(msEl('div', null, rpV(x.source) + ' · ' + rpV(x.submitted_at)));
+          it.appendChild(msEl('div', null, '인증결과: ' + rpV(x.result) + ' · 구분: ' + rpV(x.apply_type)));
+          it.appendChild(msEl('div', null, rpV(x.building) + ' ' + rpV(x.unit_no) + ' · ' + rpV(x.name)));
+          if (x.naver_id) it.appendChild(msEl('div', null, '네이버ID: ' + x.naver_id));
+          det.appendChild(it);
+        });
+        parent.appendChild(det);
+      }
+
+      function renderReportDetail(rep, h, notice) {
+        rpDetail.textContent = '';
+        rpDetail.appendChild(msEl('div', 'rp-sec', '신고 내용')).style.borderTop = '0';
+        rpAddRow(rpDetail, '접수일시', rep.submitted_at);
+        rpAddRow(rpDetail, '접수번호', rep.receipt);
+        rpAddRow(rpDetail, '동/호', rpV(rep.building) + ' ' + rpV(rep.unit));
+        rpAddRow(rpDetail, '종류', rep.kind);
+        rpAddRow(rpDetail, '입금자명', rep.payer_name);
+        rpAddRow(rpDetail, '입금일', rep.paid_at);
+        rpAddRow(rpDetail, '내용', rep.note);
+        const cur = msEl('div', 'mg-result-row');
+        cur.appendChild(msEl('span', null, '현재 상태'));
+        cur.appendChild(rpPill(rep.status));
+        rpDetail.appendChild(cur);
+        rpAddRow(rpDetail, '메모', rep.memo);
+
+        renderHousehold(rpDetail, h);
+
+        rpDetail.appendChild(msEl('div', 'rp-sec', '처리'));
+        const edit = msEl('div', 'rp-edit');
+        const sel = msEl('select');
+        sel.setAttribute('aria-label', '처리 상태');
+        RP_STATUSES.forEach((st) => {
+          const o = msEl('option', null, st);
+          o.value = st;
+          sel.appendChild(o);
+        });
+        sel.value = RP_STATUSES.indexOf(rep.status) >= 0 ? rep.status : '대기';
+        const memo = msEl('textarea');
+        memo.maxLength = 500;
+        memo.value = rep.memo || '';
+        memo.setAttribute('aria-label', '처리 메모');
+        memo.placeholder = '처리 메모(500자 이하)';
+        const cnt = msEl('div', 'rp-count-line');
+        const upd = () => { cnt.textContent = memo.value.length + ' / 500'; };
+        memo.addEventListener('input', upd);
+        upd();
+        const save = msEl('button', null, '저장');
+        save.type = 'button';
+        save.style.cssText = 'width:100%; margin-top:8px;';
+        const st = msEl('div', 'lookup-result');
+        st.style.marginTop = '10px';
+        if (notice) { st.className = 'lookup-result show ok'; st.textContent = notice; }
+        save.addEventListener('click', async () => {
+          const detailSeq = rpDetailSeq;
+          save.disabled = true;
+          st.className = 'lookup-result show processing';
+          st.textContent = '저장 중...';
+          try {
+            const data = await callManageApi({
+              action: 'updateReportStatus', row: rep.row, expected_receipt: rep.receipt, expected_submitted_at: rep.submitted_at, expected_kind: rep.kind,
+              status: sel.value, memo: memo.value
+            });
+            if (!data || !data.ok) {
+              st.className = 'lookup-result show err';
+              st.textContent = rpErr(data && data.error);
+              return;
+            }
+            rep.status = data.status != null ? data.status : sel.value;
+            rep.memo = data.memo != null ? data.memo : memo.value;
+            if (detailSeq === rpDetailSeq) {
+              renderReportDetail(rep, h, '저장했습니다'); // 현재 상태 배지·메모 행을 서버가 돌려준 값으로 다시 그린다
+            } else {
+              st.className = 'lookup-result show ok';
+              st.textContent = '저장했습니다';
+            }
+            loadReports(false);
+          } catch (err) {
+            st.className = 'lookup-result show err';
+            st.textContent = '저장 중 오류가 발생했습니다. 다시 시도해 주세요.';
+          } finally {
+            save.disabled = false;
+          }
+        });
+        edit.appendChild(sel);
+        edit.appendChild(memo);
+        edit.appendChild(cnt);
+        edit.appendChild(save);
+        edit.appendChild(st);
+        rpDetail.appendChild(edit);
+      }
 
       // ── 관리 설정 탭 ──────────────────────────────────────────────
       function setMgSettingsStatus(text, type) {
