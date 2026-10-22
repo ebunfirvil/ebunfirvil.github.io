@@ -443,6 +443,19 @@
     .submit-status.info { background: var(--beige-dark); color: var(--gray); }
     .submit-status i { margin-top: 2px; flex-shrink: 0; }
 
+    /* 2026-10-22: 이미 인증된 세대가 다시 제출하려 할 때 — 재제출 대신 당첨자 이름 본인 확인 → 기존 정보 수정 안내 */
+    .verified-block {
+      margin-top: 16px; padding: 16px; border-radius: 10px; border: 1.5px solid var(--orange-light);
+      background: rgba(232,98,46,0.06);
+    }
+    .verified-block .verified-title {
+      display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95rem; color: var(--navy); margin-bottom: 6px;
+    }
+    .verified-block .verified-title i { color: #1e7a30; }
+    .verified-block p { margin: 0 0 12px; font-size: 0.86rem; color: var(--gray); line-height: 1.5; }
+    .verified-block .verified-ask { font-weight: 700; color: var(--dark); font-size: 0.92rem; }
+    .lookup-row button.btn-secondary { background: var(--beige-dark); color: var(--gray); }
+
     /* ===== FOOTER ===== */
     .page-footer {
       background: var(--navy-dark); color: rgba(255,255,255,0.5);
@@ -726,6 +739,28 @@
           <i class="fas"></i>
           <span id="submitStatusText"></span>
         </div>
+        <!-- 2026-10-22: 이미 인증 완료된 세대의 재제출은 받지 않는다. 당첨자 이름으로 본인 확인 후 기존 인증정보 수정으로 안내 -->
+        <div class="verified-block" id="verifiedBlock" style="display:none">
+          <div class="verified-title"><i class="fas fa-circle-check"></i> 이미 인증이 완료된 세대입니다</div>
+          <div id="verifiedNameStep">
+            <p>인증이 끝난 세대는 추가 인증을 받지 않습니다. 기존 인증정보(카톡닉네임·네이버ID 등)를 수정하시려면 <b>당첨자(청약 당첨자 본인) 이름</b>을 입력해 본인 확인을 해 주세요.</p>
+            <div class="lookup-row">
+              <input type="text" id="verifiedName" placeholder="당첨자 이름" autocomplete="off" maxlength="20">
+              <button type="button" id="verifiedNameBtn">확인</button>
+            </div>
+            <div class="lookup-row" style="margin-top:8px;">
+              <button type="button" class="btn-secondary" id="verifiedBackBtn" style="width:100%">돌아가기</button>
+            </div>
+          </div>
+          <div id="verifiedAskStep" style="display:none">
+            <p class="verified-ask">본인 확인되었습니다. 기존 인증정보를 수정하시겠습니까?</p>
+            <div class="lookup-row">
+              <button type="button" id="verifiedEditYesBtn" style="flex:1"><i class="fas fa-pen"></i> 예, 수정하기</button>
+              <button type="button" class="btn-secondary" id="verifiedEditNoBtn" style="flex:1">아니요</button>
+            </div>
+          </div>
+          <div class="lookup-result" id="verifiedStatus"></div>
+        </div>
       </div>
 
     </form>
@@ -916,6 +951,15 @@
               <input type="radio" name="mgFailReasonChoice" value="preset2" style="margin-top:3px; flex-shrink:0;">
               <span>이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
             </label>
+            <!-- 2026-10-22 추가: 필수 항목 누락(화면 캡처 / 문자 인증) -->
+            <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
+              <input type="radio" name="mgFailReasonChoice" value="preset3" style="margin-top:3px; flex-shrink:0;">
+              <span>접수번호, 당첨동, 호수가 모두 나와야 합니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.</span>
+            </label>
+            <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
+              <input type="radio" name="mgFailReasonChoice" value="preset4" style="margin-top:3px; flex-shrink:0;">
+              <span>문자메시지로 인증하시는 경우 발신자번호, 접수번호, 당첨동·호수가 모두 나와야 합니다.<br>당첨 안내 문자(SMS) 화면에서 발신자번호·접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.</span>
+            </label>
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; font-size:0.85rem; cursor:pointer;">
               <input type="radio" name="mgFailReasonChoice" value="custom" style="margin-top:3px; flex-shrink:0;">
               <span>기타 (직접 입력)</span>
@@ -1009,25 +1053,25 @@
     // ──────────────────────────────────────────────────────────────────────
 
     // ── 탭 전환 (당첨자 인증 / 인증결과 조회) ────────────────────────────
-    (function () {
+    // 2026-10-22: 코드에서도 탭을 바꿀 수 있게 함수로(이미 인증된 세대 → 조회 탭 이동)
+    function activateAuthTab(target) {
       const tabBtns = document.querySelectorAll('.auth-tab');
       const panels = {
         submit: document.getElementById('tabPanelSubmit'),
         lookup: document.getElementById('tabPanelLookup'),
       };
-      tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const target = btn.dataset.tab;
-          tabBtns.forEach(b => {
-            b.classList.toggle('active', b === btn);
-            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
-          });
-          Object.entries(panels).forEach(([key, el]) => {
-            el.classList.toggle('active', key === target);
-          });
-        });
+      tabBtns.forEach(b => {
+        const on = b.dataset.tab === target;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
       });
-    })();
+      Object.entries(panels).forEach(([key, el]) => {
+        el.classList.toggle('active', key === target);
+      });
+    }
+    document.querySelectorAll('.auth-tab').forEach(btn => {
+      btn.addEventListener('click', () => activateAuthTab(btn.dataset.tab));
+    });
 
     const MAX_FILE_BYTES = 6 * 1024 * 1024; // 6MB — 서버 base64 상한 8MB(= 바이너리 6MB)와 맞춘다(Code.gs SUBMIT_MAX_BASE64)
     // 실측 기준(qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초. DSM 리버스
@@ -1410,13 +1454,16 @@
       return 'image/jpeg';
     }
 
+    // 2026-10-22: 조회 결과 상태('verified'/'processing'/'failed'/'none', 조회 전·실패는 null). runLookup이 돌려준다.
+    let lookupStatus = null;
     async function runLookup() {
       const receipt = lookupReceiptNo.value.trim();
       const building = lookupBuilding.value.trim();
       const unitNo = lookupUnitNo.value.trim();
+      lookupStatus = null;
       if (!receipt || !building || !unitNo) {
         setLookupResult('접수번호, 당첨동, 호수를 모두 입력해 주세요.', 'err');
-        return;
+        return null;
       }
       lookupBtn.disabled = true;
       lookupKakaoRow.style.display = 'none';
@@ -1432,10 +1479,11 @@
         const data = await res.json();
         if (!data.ok) {
           const tm = throttleMessage(data.error);
-          if (tm) { setLookupResult(tm, 'err'); return; }
+          if (tm) { setLookupResult(tm, 'err'); return null; }
           throw new Error('조회 실패');
         }
         lastLookupIdentity = { receipt, building, unitNo };
+        lookupStatus = data.status || null; // 2026-10-22: 호출부(goToLookupTab)가 '인증 완료'일 때만 수정 화면을 열도록
         showLookupMembership(data);
         showLookupRoster(data.roster);
         // 인증 결과는 표의 "인증" 줄이 보여주므로(2026-10-08) 조회가 되면 위쪽 띠는 비운다
@@ -1459,6 +1507,7 @@
         lookupBtn.disabled = false;
         lookupBtn.textContent = prevLabel;
       }
+      return lookupStatus;
     }
 
     // ── 카톡닉네임/네이버ID 셀프 수정 (접수번호+당첨동+호수 3종으로 본인 확인, 관리자 로그인 불필요) ──
@@ -1789,7 +1838,11 @@
         mgApplyType.value = data.apply_type || '';
         mgBuilding.value = data.building || '';
         mgUnitNo.value = data.unit_no || '';
-        mgName.value = '';
+        // 2026-10-22: 접수번호로 명부를 조회한 마스킹 이름(홍*동)이 있으면 이름 칸에 미리 채운다 — 관리자는 캡처와 대조만 하고
+        // 다르면 고쳐 적는다. 당첨자 명부에 없고 예비자명단에만 있으면 그쪽 이름, 둘 다 없으면 빈칸.
+        const a = data.applicant;
+        mgName.value = (a && a.found && a.masked_name) ? a.masked_name
+          : (a && a.reserve && a.reserve.found && a.reserve.masked_name) ? a.reserve.masked_name : '';
         renderApplicantInfo(data.receipt_no, data.applicant);
         if (data.image) {
           mgImage.src = data.image;
@@ -1838,7 +1891,10 @@
 
       const MG_FAIL_REASON_PRESETS = {
         preset1: '동호수가 확인되지 않습니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.',
-        preset2: '이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.'
+        preset2: '이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.',
+        // 2026-10-22 추가: 필수 항목 누락 — 화면 캡처는 접수번호·당첨동·호수, 문자 인증은 발신자번호까지
+        preset3: '접수번호, 당첨동, 호수가 모두 나와야 합니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.',
+        preset4: '문자메시지로 인증하시는 경우 발신자번호, 접수번호, 당첨동·호수가 모두 나와야 합니다.\n당첨 안내 문자(SMS) 화면에서 발신자번호·접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.'
       };
 
       function getMgFailReasonChoice() {
@@ -2484,6 +2540,134 @@
       filePreview.style.display = 'block';
     });
 
+    // ── 2026-10-22: 이미 인증된 세대 — 당첨자 이름 본인 확인 → 기존 인증정보 수정 안내 ──────────────
+    // 서버(verifyWinnerName)가 접수번호 + 이름(당첨자명단(LH), 가운데 마스킹) + 동/호(회원명부)를 모두 대조한다.
+    // "예"면 조회 탭으로 옮겨 조회 뒤 기존 "회원정보 수정" 화면을 바로 열고, "아니요"면 한 번 더 확인한 뒤
+    // 제출 없이 취소하고 조회 탭으로만 이동한다. 어느 쪽이든 추가 인증 제출은 하지 않는다.
+    const verifiedBlock = document.getElementById('verifiedBlock');
+    const verifiedNameStep = document.getElementById('verifiedNameStep');
+    const verifiedAskStep = document.getElementById('verifiedAskStep');
+    const verifiedName = document.getElementById('verifiedName');
+    const verifiedNameBtn = document.getElementById('verifiedNameBtn');
+    const verifiedBackBtn = document.getElementById('verifiedBackBtn');
+    const verifiedEditYesBtn = document.getElementById('verifiedEditYesBtn');
+    const verifiedEditNoBtn = document.getElementById('verifiedEditNoBtn');
+    const verifiedStatus = document.getElementById('verifiedStatus');
+    function setVerifiedStatus(text, type) {
+      verifiedStatus.textContent = text;
+      verifiedStatus.className = 'lookup-result' + (text ? ' show ' + (type || '') : '');
+    }
+    function showVerifiedBlock() {
+      verifiedName.value = '';
+      setVerifiedStatus('');
+      verifiedNameStep.style.display = 'block';
+      verifiedAskStep.style.display = 'none';
+      verifiedBlock.style.display = 'block';
+      verifiedBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      verifiedName.focus();
+    }
+    function hideVerifiedBlock() {
+      verifiedBlock.style.display = 'none';
+      setVerifiedStatus('');
+    }
+    // 제출 폼의 접수번호·동·호를 조회 탭 입력칸에 옮긴다(동은 '103동' → '103')
+    function copySubmitKeysToLookup() {
+      lookupReceiptNo.value = receiptNoInput.value.trim();
+      lookupBuilding.value = buildingSelect.value.replace(/[^0-9]/g, '');
+      lookupUnitNo.value = unitNoInput.value.trim().replace(/[^0-9]/g, '');
+    }
+    async function goToLookupTab(openEdit) {
+      verifiedEditYesBtn.disabled = true;
+      verifiedEditNoBtn.disabled = true;
+      try {
+        hideVerifiedBlock();
+        closeEditInfoCard();
+        copySubmitKeysToLookup();
+        activateAuthTab('lookup');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const status = await runLookup();
+        // 조회가 '인증 완료'로 끝났을 때만 수정 버튼을 눌러 기존 수정 화면을 그대로 연다. 다른 결과(처리 중·잠김·오류)는
+        // 조회 카드의 안내가 그대로 보인다.
+        if (openEdit && status === 'verified') editInfoToggleBtn.click();
+      } finally {
+        verifiedEditYesBtn.disabled = false;
+        verifiedEditNoBtn.disabled = false;
+      }
+    }
+    // 접수번호·동·호를 고치면 본인 확인 블록은 더 이상 그 세대 것이 아니므로 닫는다(제출을 다시 누르면 새로 판단)
+    [receiptNoInput, buildingSelect, unitNoInput].forEach((el) => {
+      el.addEventListener('input', hideVerifiedBlock);
+      el.addEventListener('change', hideVerifiedBlock);
+    });
+    verifiedBackBtn.addEventListener('click', hideVerifiedBlock);
+    verifiedName.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); verifiedNameBtn.click(); }
+    });
+    verifiedNameBtn.addEventListener('click', async () => {
+      const name = verifiedName.value.trim();
+      if (!name) {
+        setVerifiedStatus('당첨자 이름을 입력해 주세요.', 'err');
+        verifiedName.focus();
+        return;
+      }
+      verifiedNameBtn.disabled = true;
+      verifiedBackBtn.disabled = true;
+      const label = verifiedNameBtn.textContent;
+      verifiedNameBtn.textContent = '확인 중...';
+      setVerifiedStatus('');
+      try {
+        const res = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'verifyWinnerName', receipt: receiptNoInput.value.trim(),
+            building: buildingSelect.value, unit_no: unitNoInput.value.trim(), name
+          })
+        });
+        const data = await res.json();
+        if (data.error === 'FEATURE_DISABLED') {
+          setVerifiedStatus('현재 정보 수정 기능이 잠시 중지되어 있습니다. 입예협에 문의해 주세요.', 'err');
+          return;
+        }
+        if (data.error === 'BAD_NAME') {
+          setVerifiedStatus('이름은 한글 또는 영문으로만 입력해 주세요.', 'err');
+          return;
+        }
+        if (!data.ok) {
+          const tm = throttleMessage(data.error);
+          setVerifiedStatus(tm || '확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+          return;
+        }
+        if (!data.verified) {
+          // 방금 전 조회에선 인증 완료였는데 그새 바뀐 경우 — 블록을 닫고 다시 제출하게 둔다
+          hideVerifiedBlock();
+          setSubmitStatus('인증 상태가 바뀌었습니다. 다시 제출해 주세요.', 'info', 'fa-circle-info');
+          return;
+        }
+        if (data.reason === 'NO_REFERENCE') {
+          setVerifiedStatus('당첨자 명단에서 이 세대의 정보를 확인할 수 없어 본인 확인을 진행할 수 없습니다. 입예협에 문의해 주세요.', 'err');
+          return;
+        }
+        if (!data.match) {
+          setVerifiedStatus('입력하신 이름이 당첨자 명단과 일치하지 않습니다. 청약 당첨자 본인 이름을 확인해 주세요. (여러 번 틀리면 30분간 잠깁니다)', 'no');
+          return;
+        }
+        verifiedNameStep.style.display = 'none';
+        verifiedAskStep.style.display = 'block';
+      } catch (err) {
+        setVerifiedStatus('확인 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      } finally {
+        verifiedNameBtn.disabled = false;
+        verifiedBackBtn.disabled = false;
+        verifiedNameBtn.textContent = label;
+      }
+    });
+    verifiedEditYesBtn.addEventListener('click', () => { goToLookupTab(true); });
+    verifiedEditNoBtn.addEventListener('click', () => {
+      if (!confirm('인증 제출을 취소하시겠습니까?\n이미 인증이 완료된 세대는 추가 인증을 받지 않습니다.')) return;
+      goToLookupTab(false);
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       clearSubmitStatus();
@@ -2507,17 +2691,34 @@
         return;
       }
 
-      // 같은 접수번호가 "2-처리완료" 시트에 이미 인증 성공으로 기록돼 있으면 재제출 여부를 한 번 더 확인한다.
+      // 같은 접수번호+동+호가 "2-처리완료" 시트에 이미 인증 성공으로 기록돼 있으면 재제출을 받지 않는다.
+      // 2026-10-22: 예전엔 "이미 인증되었는데 다시 제출하시겠습니까?" 확인창으로 재제출을 허용했으나, 이제는 당첨자 이름으로
+      // 본인 확인을 한 뒤 기존 인증정보 수정으로만 안내한다(추가 인증 없음).
+      hideVerifiedBlock();
+      submitBtn.disabled = true;
+      const checkLabel = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 확인 중...';
+      let alreadyVerified = false, throttled = '';
       try {
         const checkRes = await fetch(SUBMIT_URL + '?action=checkReceiptStatus&receipt=' + encodeURIComponent(receiptNoInput.value.trim()) +
           '&building=' + encodeURIComponent(document.getElementById('building').value) +
           '&unit_no=' + encodeURIComponent(unitNoInput.value.trim()));
         const checkData = await checkRes.json();
-        if (checkData.ok && checkData.alreadyVerified) {
-          if (!confirm('이미 인증되었는데 다시 제출하시겠습니까?')) return;
-        }
+        alreadyVerified = !!(checkData.ok && checkData.alreadyVerified);
+        // 세대가 잠겨 있거나(이름을 여러 번 틀린 뒤 등) 서버가 붐비면 인증 완료 여부를 모르는 채 제출하지 않는다
+        if (!checkData.ok) throttled = throttleMessage(checkData.error);
       } catch (err) {
-        // 조회 자체가 실패해도 제출을 막지는 않는다
+        // 조회 자체가 실패(네트워크)해도 제출을 막지는 않는다
+      }
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = checkLabel;
+      if (throttled) {
+        setSubmitStatus(throttled, 'err', 'fa-circle-exclamation');
+        return;
+      }
+      if (alreadyVerified) {
+        showVerifiedBlock();
+        return;
       }
 
       submitBtn.disabled = true;
