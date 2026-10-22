@@ -1791,7 +1791,14 @@
       }
 
       // 접수번호로 명부를 조회한 결과: 접수번호 + 마스킹된 이름, 이미 인증된 세대면 동/호까지
-      function renderApplicantInfo(receiptNo, a) {
+      // 2026-10-23: 이미 인증된 세대의 동/호가 이번 제출의 동/호와 다르면 빨간 경고를 붙인다 — 접수번호는 공용 키라
+      // 남의 접수번호에 다른 동/호를 붙여 제출해도 검수 큐까지 들어오므로, 승인 전에 임원 눈에 띄게 한다.
+      // 비교는 서버(normalizeBuildingForMatch/normalizeUnitForMatch)와 같이 숫자만, 호수는 앞자리 0 제거.
+      function unitKeyDigits(v, stripZeros) {
+        const d = String(v == null ? '' : v).replace(/[^0-9]/g, '');
+        return stripZeros ? (d.replace(/^0+/, '') || d) : d;
+      }
+      function renderApplicantInfo(receiptNo, a, submittedBuilding, submittedUnit) {
         const box = document.getElementById('mgApplicantBox');
         const info = document.getElementById('mgApplicantInfo');
         let html = '접수번호 <b>' + esc(receiptNo) + '</b>';
@@ -1809,6 +1816,22 @@
           html += '<br>예비자명단: 예비번호 <b>' + esc(a.reserve.seq || '-') + '</b> · 이름 <b>' + esc(a.reserve.masked_name || '-') + '</b>';
         }
         info.innerHTML = html;
+        info.style.borderColor = '';
+        // 주민이 제출한 동/호는 textContent로만 붙인다(innerHTML에 원문 이어붙이기 금지)
+        if (a && a.found && a.verified && a.building && a.unit_no) {
+          const sameB = unitKeyDigits(a.building) === unitKeyDigits(submittedBuilding);
+          const sameU = unitKeyDigits(a.unit_no, true) === unitKeyDigits(submittedUnit, true);
+          if (!sameB || !sameU) {
+            const warn = document.createElement('div');
+            warn.id = 'mgUnitMismatchWarn';
+            warn.style.cssText = 'margin-top:8px; padding:8px 10px; background:rgba(200,60,60,0.1); color:#b3312c; border-radius:6px; font-weight:600;';
+            warn.textContent = '⚠ 동/호 불일치: 이번 제출은 ' + String(submittedBuilding || '-') + ' ' + String(submittedUnit || '-') +
+              '인데, 이 접수번호는 ' + String(a.building) + ' ' + String(a.unit_no) + '로 이미 인증되어 있습니다. ' +
+              '다른 세대가 같은 접수번호로 제출했을 수 있으니 캡처의 동/호를 확인한 뒤 처리하세요.';
+            info.appendChild(warn);
+            info.style.borderColor = '#b3312c';
+          }
+        }
         box.style.display = 'block';
       }
 
@@ -1843,7 +1866,7 @@
         const a = data.applicant;
         mgName.value = (a && a.found && a.masked_name) ? a.masked_name
           : (a && a.reserve && a.reserve.found && a.reserve.masked_name) ? a.reserve.masked_name : '';
-        renderApplicantInfo(data.receipt_no, data.applicant);
+        renderApplicantInfo(data.receipt_no, data.applicant, data.building, data.unit_no);
         if (data.image) {
           mgImage.src = data.image;
           mgImage.style.display = 'block';
