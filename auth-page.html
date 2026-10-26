@@ -940,6 +940,7 @@
             <button type="button" id="mgFailBtn" class="btn-submit" style="background:linear-gradient(135deg,#b3312c,#d9524b)">실패</button>
             <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
           </div>
+          <button type="button" id="mgSkipBtn" style="width:100%; margin-top:10px; padding:11px; border-radius:8px; border:1.5px solid var(--beige-warm); background:var(--white); color:var(--gray); font-weight:700; cursor:pointer;">건너뛰기 (처리하지 않고 다음 건)</button>
 
           <div id="mgFailReasonPanel" style="display:none; margin-top:14px; padding:14px; background:var(--beige); border-radius:10px; border:1px solid var(--beige-warm);">
             <div style="font-size:0.85rem; font-weight:700; color:var(--navy); margin-bottom:10px;">실패 사유 선택 (신청자 이메일로 발송됩니다)</div>
@@ -948,7 +949,6 @@
               <span>동호수가 확인되지 않습니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
             </label>
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
-          <button type="button" id="mgSkipBtn" style="width:100%; margin-top:10px; padding:11px; border-radius:8px; border:1.5px solid var(--beige-warm); background:var(--white); color:var(--gray); font-weight:700; cursor:pointer;">건너뛰기 (처리하지 않고 다음 건)</button>
               <input type="radio" name="mgFailReasonChoice" value="preset2" style="margin-top:3px; flex-shrink:0;">
               <span>이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
             </label>
@@ -1733,6 +1733,7 @@
       const mgName = document.getElementById('mgName');
       const mgSuccessBtn = document.getElementById('mgSuccessBtn');
       const mgFailBtn = document.getElementById('mgFailBtn');
+      const mgSkipBtn = document.getElementById('mgSkipBtn');
       const mgFailReasonPanel = document.getElementById('mgFailReasonPanel');
       const mgFailReasonCustom = document.getElementById('mgFailReasonCustom');
       const mgFailCancelBtn = document.getElementById('mgFailCancelBtn');
@@ -1772,6 +1773,7 @@
 
       let adminCreds = null; // {admin_id, admin_pw}
       let currentItem = null;
+      const skippedIds = []; // 이번 접속 동안 건너뛴 submission_id (시트에는 기록 안 함, 새로고침하면 초기화)
 
       function setMgLoginResult(text, type) {
         mgLoginResult.textContent = text;
@@ -1814,7 +1816,6 @@
             : '<br>아직 인증되지 않은 세대';
         }
         if (a && a.reserve && a.reserve.found) {
-      const mgSkipBtn = document.getElementById('mgSkipBtn');
           html += '<br>예비자명단: 예비번호 <b>' + esc(a.reserve.seq || '-') + '</b> · 이름 <b>' + esc(a.reserve.masked_name || '-') + '</b>';
         }
         info.innerHTML = html;
@@ -1856,7 +1857,6 @@
         }
         if (data.done) {
           mgDoneCard.style.display = 'block';
-      const skippedIds = []; // 이번 접속 동안 건너뛴 submission_id (시트에는 기록 안 함, 새로고침하면 초기화)
           return;
         }
         currentItem = data;
@@ -1976,6 +1976,11 @@
         }
       });
 
+      mgSkipBtn.addEventListener('click', () => {
+        if (!currentItem) return;
+        skippedIds.push(String(currentItem.submission_id));
+        loadNextItem();
+      });
       mgSuccessBtn.addEventListener('click', () => {
         mgFailReasonPanel.style.display = 'none';
         decide('성공');
@@ -2077,11 +2082,6 @@
           if (!data || !data.ok) {
             if (!silent) rpSetListStatus('신고 목록을 불러오지 못했습니다: ' + rpErr(data && data.error), 'err');
             return;
-      mgSkipBtn.addEventListener('click', () => {
-        if (!currentItem) return;
-        skippedIds.push(String(currentItem.submission_id));
-        loadNextItem();
-      });
           }
           rpReports = Array.isArray(data.reports) ? data.reports : [];
           rpUpdateTabLabel(data.counts);
