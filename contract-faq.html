@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XBMCQDJSZD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XBMCQDJSZD');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>계약 자주 묻는 질문 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e; --orange-dark: #c44e1e; --orange-soft: #fdeee6;
+      --navy: #1a3a5c; --navy-light: #2a5a8c; --navy-dark: #0d1b2a; --navy-soft: #e8eef5;
+      --beige: #fdf8f5; --beige-dark: #f5efe8; --gray: #6b5b52; --line: #ece3dc;
+      --white: #fff; --shadow: 0 4px 20px rgba(26,58,92,0.08);
+      --warn: #b45309; --warn-soft: #fff4e0; --ok: #1f7a4d;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', sans-serif; color: #333; line-height: 1.75; background: var(--beige); }
+    .top-bar { background: linear-gradient(135deg, var(--orange), var(--orange-dark)); padding: 12px 16px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+    .back-btn { color: var(--white); text-decoration: none; font-size: 0.85rem; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.15); white-space: nowrap; }
+    .top-bar-title { color: var(--white); font-weight: 700; font-size: 1rem; }
+    .page-header { background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light)); color: var(--white); text-align: center; padding: 36px 16px 30px; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 900; }
+    .page-header p { opacity: 0.85; font-size: 0.92rem; margin-top: 6px; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+    .card { background: var(--white); border-radius: 12px; box-shadow: var(--shadow); padding: 18px; margin-bottom: 16px; }
+    .disclaimer { border-left: 4px solid var(--orange); font-size: 0.88rem; color: var(--gray); }
+    .disclaimer strong { color: var(--dark, #2c1810); }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chip-t { font-size: 0.78rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; }
+    .t-official { background: var(--navy-soft); color: var(--navy); }
+    .t-inquiry { background: var(--orange-soft); color: var(--orange-dark); }
+    .t-member { background: #efefef; color: #555; }
+    details.official > summary { cursor: pointer; font-weight: 700; color: var(--navy); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    details.official > summary::-webkit-details-marker { display: none; }
+    details.official[open] > summary .fa-chevron-down { transform: rotate(180deg); }
+    .tbl { overflow-x: auto; margin: 10px 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+    th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--beige-dark); font-weight: 700; white-space: nowrap; }
+    td:first-child { white-space: nowrap; font-weight: 500; }
+    /* 로그인 */
+    .login h2 { font-size: 1rem; color: var(--navy); margin-bottom: 4px; }
+    .login .desc { font-size: 0.84rem; color: var(--gray); margin-bottom: 10px; }
+    .login-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr auto; gap: 8px; }
+    .login input { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem; font-family: inherit; }
+    .btn { border: none; border-radius: 8px; padding: 10px 16px; font-weight: 700; font-family: inherit; cursor: pointer; font-size: 0.9rem; }
+    .btn-primary { background: var(--orange); color: var(--white); }
+    .btn-primary:disabled { opacity: 0.5; cursor: default; }
+    .btn-ghost { background: transparent; color: var(--gray); border: 1px solid var(--line); }
+    .signed { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 0.9rem; }
+    .signed .who { color: var(--ok); font-weight: 700; }
+    .msg { font-size: 0.85rem; margin-top: 8px; display: none; }
+    .msg.show { display: block; }
+    .msg.err { color: #b42318; }
+    .msg.ok { color: var(--ok); }
+    /* 필터 */
+    .filters { position: sticky; top: 52px; z-index: 50; background: var(--beige); padding: 8px 0 10px; }
+    .search { width: 100%; padding: 11px 14px 11px 38px; border: 1px solid var(--line); border-radius: 10px; font-size: 0.95rem; font-family: inherit; background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b5b52' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 13px center; }
+    .cats { display: flex; gap: 6px; overflow-x: auto; margin-top: 8px; padding-bottom: 2px; scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .cat { flex: 0 0 auto; border: 1px solid var(--line); background: var(--white); border-radius: 999px; padding: 5px 12px; font-size: 0.82rem; cursor: pointer; font-family: inherit; color: var(--gray); }
+    .cat.on { background: var(--navy); border-color: var(--navy); color: var(--white); }
+    /* 질문 */
+    .sec-title { font-size: 1.05rem; font-weight: 900; color: var(--navy); margin: 22px 2px 8px; }
+    .sec-note { font-size: 0.84rem; color: var(--gray); margin: -2px 2px 10px; }
+    .q { background: var(--white); border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 10px; overflow: hidden; }
+    .q-head { width: 100%; text-align: left; background: none; border: none; font-family: inherit; padding: 14px 16px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+    .q-id { flex: 0 0 auto; font-size: 0.78rem; font-weight: 700; color: var(--orange-dark); background: var(--orange-soft); border-radius: 6px; padding: 2px 7px; margin-top: 3px; }
+    .q-title { flex: 1; font-size: 0.97rem; font-weight: 700; color: #222; line-height: 1.5; }
+    .q-meta { flex: 0 0 auto; display: flex; gap: 6px; align-items: center; color: var(--gray); font-size: 0.78rem; margin-top: 3px; }
+    .warn { color: var(--warn); background: var(--warn-soft); border-radius: 6px; padding: 1px 6px; font-weight: 700; }
+    .q-head .fa-chevron-down { transition: transform .2s; }
+    .q.open .q-head .fa-chevron-down { transform: rotate(180deg); }
+    .q-body { display: none; padding: 0 16px 16px; }
+    .q.open .q-body { display: block; }
+    .tier { border-radius: 10px; padding: 12px 14px; margin-top: 10px; font-size: 0.9rem; }
+    .tier h4 { font-size: 0.82rem; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .tier.official { background: var(--navy-soft); }
+    .tier.official h4 { color: var(--navy); }
+    .tier.inquiry { background: var(--orange-soft); }
+    .tier.inquiry h4 { color: var(--orange-dark); }
+    .tier.member { background: #f4f4f4; }
+    .tier.member h4 { color: #555; }
+    .tier.empty { color: #888; font-size: 0.85rem; }
+    .tier ul { padding-left: 1.2em; }
+    .tier li { margin: 2px 0; }
+    .tier p + ul, .tier ul + p { margin-top: 4px; }
+    .tier .note { color: var(--gray); }
+    /* 댓글 */
+    .cmts { border-top: 1px dashed var(--line); margin-top: 14px; padding-top: 12px; }
+    .cmts h5 { font-size: 0.85rem; color: var(--navy); margin-bottom: 6px; }
+    .cmt { background: var(--beige); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 0.88rem; }
+    .cmt .by { font-size: 0.76rem; color: var(--gray); display: flex; justify-content: space-between; gap: 8px; }
+    .cmt .txt { white-space: pre-wrap; word-break: break-word; margin-top: 2px; }
+    .cmt .del { background: none; border: none; color: #b42318; font-size: 0.76rem; cursor: pointer; font-family: inherit; }
+    .cmt-empty { font-size: 0.84rem; color: #999; }
+    .cmt-form textarea { width: 100%; min-height: 70px; padding: 9px; border: 1px solid var(--line); border-radius: 8px; font-family: inherit; font-size: 0.9rem; resize: vertical; }
+    .cmt-form .row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.78rem; color: var(--gray); gap: 8px; }
+    .cmt-login { font-size: 0.84rem; color: var(--gray); }
+    .cmt-login a { color: var(--orange-dark); font-weight: 700; }
+    .none { text-align: center; color: var(--gray); padding: 30px 0; display: none; }
+    .foot { text-align: center; font-size: 0.78rem; color: #999; margin-top: 28px; }
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.3rem; }
+      .login-row { grid-template-columns: 1fr 1fr; }
+      .login-row input:first-child { grid-column: 1 / -1; }
+      .login-row .btn { grid-column: 1 / -1; }
+      .q-meta .cnt-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 메인 페이지</a>
+    <span class="top-bar-title">계약 자주 묻는 질문</span>
+  </div>
+
+  <div class="page-header">
+    <h1>정당계약 자주 묻는 질문</h1>
+    <p>카톡방에서 많이 나온 질문을 공식 답변 · 문의 답변 · 회원 의견으로 나눠 정리했습니다</p>
+  </div>
+
+  <div class="wrap">
+    <div class="card disclaimer">
+      <p><strong>공식 안내가 아닙니다.</strong> 입주예정자 대화를 정리한 참고 자료입니다. 최종 확인은 분양사무실(031-538-1777)과, 자금조달계획서는 분당구청 부동산정보과에서 하세요.</p>
+      <div class="legend">
+        <span class="chip-t t-official">① 공식 답변 — LH/DL 문자·안내문·공고문·입예협 공지</span>
+        <span class="chip-t t-inquiry">② 문의 답변 — 분양사무실 등에 직접 물어 받은 답</span>
+        <span class="chip-t t-member">③ 회원 의견 — 경험담·추측</span>
+      </div>
+      <p style="margin-top:8px"><span class="warn">⚠ 엇갈림</span> 표시는 답이 서로 다른 질문입니다. <span id="builtAt"></span></p>
+    </div>
+
+    <div class="card login" id="loginCard">
+      <div id="loginForm">
+        <h2><i class="fas fa-comments"></i> 댓글은 인증 완료 세대만 쓸 수 있습니다</h2>
+        <p class="desc">청약 인증을 마친 세대의 접수번호·동·호수로 확인합니다(자료실과 같은 확인, 30분 유지). 댓글에는 <strong>동만</strong> 표시됩니다.</p>
+        <div class="login-row">
+          <input id="inReceipt" inputmode="numeric" autocomplete="off" placeholder="접수번호">
+          <input id="inBuilding" inputmode="numeric" autocomplete="off" placeholder="동 (예: 105)">
+          <input id="inUnit" inputmode="numeric" autocomplete="off" placeholder="호 (예: 1201)">
+          <button class="btn btn-primary" id="loginBtn">확인</button>
+        </div>
+        <div class="msg" id="loginMsg"></div>
+      </div>
+      <div class="signed" id="signedBox" hidden>
+        <span><i class="fas fa-circle-check"></i> <span class="who" id="whoText"></span> 로 댓글을 쓸 수 있습니다</span>
+        <button class="btn btn-ghost" id="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+
+    <details class="card official" open>
+      <summary>확정된 공식 안내 (먼저 읽기) <i class="fas fa-chevron-down"></i></summary>
+      <div id="officialBox"></div>
+    </details>
+
+    <div class="filters">
+      <input class="search" id="search" type="search" placeholder="질문·답변 검색 (예: 전세, 인지세, 증여)">
+      <div class="cats" id="cats"></div>
+    </div>
+
+    <div id="list"></div>
+    <p class="none" id="none">검색 결과가 없습니다.</p>
+    <p class="foot">질문 번호는 고정이며, 새로 확인된 내용은 해당 질문에 추가됩니다.</p>
+  </div>
+
+  <script src="contract-faq-data.js"></script>
+  <script>
+  'use strict';
+  // auth-page.html·documents.html과 같은 Apps Script 배포. 댓글 요청은 action이 'faq'로 시작하며 Faq.gs가 처리한다.
+  // 로그인은 자료실과 같은 docAuth 토큰(sessionStorage 'docSession' 공용 — 자료실에서 확인했으면 여기서도 바로 쓴다).
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
+  const MAX_LEN = 500;
+  const DATA = window.CONTRACT_FAQ || { sections: [], official: '' };
+  const $ = (id) => document.getElementById(id);
+  let session = null;
+  let comments = {};
+  let activeCat = 0;
+
+  async function api(payload) {
+    const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+    return res.json();
+  }
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function showMsg(node, text, kind) { node.className = 'msg' + (text ? ' show ' + kind : ''); node.textContent = text || ''; }
+
+  // ---------- 본문 (운영진이 만든 데이터라 HTML 그대로) ----------
+  $('officialBox').innerHTML = DATA.official;
+  if (DATA.built) $('builtAt').textContent = '(정리 기준 ' + DATA.built + ')';
+
+  const cats = $('cats');
+  [{ no: 0, title: '전체' }].concat(DATA.sections).forEach((s) => {
+    const b = el('button', 'cat' + (s.no === 0 ? ' on' : ''), s.no === 0 ? '전체' : s.no + '. ' + s.title);
+    b.addEventListener('click', () => { activeCat = s.no; [...cats.children].forEach((c) => c.classList.toggle('on', c === b)); applyFilter(); });
+    cats.appendChild(b);
+  });
+
+  const TIERS = [['official', '① 공식 답변', 'fa-building-columns', '확인 안 됨 — 아직 공식 안내가 없습니다.'],
+                 ['inquiry', '② 문의 답변', 'fa-phone', '아직 문의해서 받은 답이 없습니다.'],
+                 ['member', '③ 회원 의견', 'fa-users', '아직 회원 의견이 없습니다.']];
+  const qNodes = [];
+  const list = $('list');
+  DATA.sections.forEach((s) => {
+    const secBox = el('section');
+    secBox.dataset.sec = s.no;
+    secBox.appendChild(el('h2', 'sec-title', s.no + '. ' + s.title));
+    if (s.note) { const n = el('div', 'sec-note'); n.innerHTML = s.note; secBox.appendChild(n); }
+    s.questions.forEach((q) => {
+      const box = el('div', 'q');
+      box.id = 'q-' + q.id;
+      const head = el('button', 'q-head');
+      head.type = 'button';
+      head.appendChild(el('span', 'q-id', q.id));
+      head.appendChild(el('span', 'q-title', q.title));
+      const meta = el('span', 'q-meta');
+      if (q.disputed) meta.appendChild(el('span', 'warn', '⚠ 엇갈림'));
+      const cnt = el('span', 'cnt');
+      meta.appendChild(cnt);
+      const chev = el('i', 'fas fa-chevron-down');
+      meta.appendChild(chev);
+      head.appendChild(meta);
+      head.addEventListener('click', () => { box.classList.toggle('open'); if (box.classList.contains('open')) history.replaceState(null, '', '#q-' + q.id); });
+      box.appendChild(head);
+      const body = el('div', 'q-body');
+      TIERS.forEach(([k, label, icon, emptyText]) => {
+        const t = el('div', 'tier ' + k + (q[k] ? '' : ' empty'));
+        const h = el('h4');
+        h.innerHTML = '<i class="fas ' + icon + '"></i>';
+        h.appendChild(document.createTextNode(label));
+        t.appendChild(h);
+        const c = el('div');
+        if (q[k]) c.innerHTML = q[k]; else c.textContent = emptyText;
+        t.appendChild(c);
+        body.appendChild(t);
+      });
+      const cm = el('div', 'cmts');
+      body.appendChild(cm);
+      box.appendChild(body);
+      secBox.appendChild(box);
+      qNodes.push({ q, box, cm, cnt, sec: s.no, text: (q.title + ' ' + body.textContent).toLowerCase() });
+    });
+    list.appendChild(secBox);
+  });
+
+  function applyFilter() {
+    const kw = $('search').value.trim().toLowerCase();
+    let shown = 0;
+    qNodes.forEach((n) => {
+      const ok = (activeCat === 0 || n.sec === activeCat) && (!kw || n.text.indexOf(kw) >= 0);
+      n.box.hidden = !ok;
+      if (ok) shown++;
+      if (ok && kw) n.box.classList.add('open');
+    });
+    document.querySelectorAll('#list section').forEach((sec) => {
+      sec.hidden = ![...sec.querySelectorAll('.q')].some((b) => !b.hidden);
+    });
+    $('none').style.display = shown ? 'none' : 'block';
+  }
+  $('search').addEventListener('input', applyFilter);
+
+  // ---------- 댓글 ----------
+  function renderComments() {
+    qNodes.forEach((n) => {
+      const arr = comments[n.q.id] || [];
+      n.cnt.textContent = arr.length ? '💬 ' + arr.length : '';
+      n.cm.textContent = '';
+      n.cm.appendChild(el('h5', null, '댓글 · 추가 정보 ' + (arr.length ? '(' + arr.length + ')' : '')));
+      if (!arr.length) n.cm.appendChild(el('p', 'cmt-empty', '아직 댓글이 없습니다. 현장에서 확인한 내용이 있으면 남겨 주세요.'));
+      arr.forEach((c) => {
+        const box = el('div', 'cmt');
+        const by = el('div', 'by');
+        by.appendChild(el('span', null, (c.dong ? c.dong + '동 입주예정자' : '입주예정자') + ' · ' + c.at));
+        if (c.mine) {
+          const del = el('button', 'del', '삭제');
+          del.addEventListener('click', () => removeComment(c.id));
+          by.appendChild(del);
+        }
+        box.appendChild(by);
+        box.appendChild(el('div', 'txt', c.text));
+        n.cm.appendChild(box);
+      });
+      if (session) {
+        const f = el('div', 'cmt-form');
+        const ta = el('textarea');
+        ta.maxLength = MAX_LEN;
+        ta.placeholder = '현장에서 확인한 내용, 정정할 점 등을 남겨 주세요 (개인정보는 쓰지 마세요)';
+        const row = el('div', 'row');
+        const left = el('span', null, '0 / ' + MAX_LEN);
+        const btn = el('button', 'btn btn-primary', '등록');
+        const msg = el('div', 'msg');
+        ta.addEventListener('input', () => { left.textContent = ta.value.length + ' / ' + MAX_LEN; });
+        btn.addEventListener('click', () => postComment(n.q.id, ta, btn, msg));
+        row.appendChild(left); row.appendChild(btn);
+        f.appendChild(ta); f.appendChild(row); f.appendChild(msg);
+        n.cm.appendChild(f);
+      } else {
+        const p = el('p', 'cmt-login');
+        p.appendChild(document.createTextNode('댓글은 인증 완료 세대만 쓸 수 있습니다. '));
+        const a = el('a', null, '세대 확인하기');
+        a.href = '#loginCard';
+        a.addEventListener('click', (e) => { e.preventDefault(); $('loginCard').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => $('inReceipt').focus(), 400); });
+        p.appendChild(a);
+        n.cm.appendChild(p);
+      }
+    });
+  }
+
+  async function loadComments() {
+    try {
+      const r = await api({ action: 'faqComments', token: session ? session.token : '' });
+      if (r.ok) {
+        comments = r.comments || {};
+        if (session && !r.signed_in) { clearSession('확인 시간이 지나 다시 세대 확인이 필요합니다.'); return; }
+      }
+    } catch (e) { /* 댓글을 못 불러와도 본문은 그대로 */ }
+    renderComments();
+  }
+
+  async function postComment(qid, ta, btn, msg) {
+    const text = ta.value.trim();
+    if (text.length < 2) { showMsg(msg, '두 글자 이상 입력해 주세요.', 'err'); return; }
+    btn.disabled = true;
+    try {
+      const r = await api({ action: 'faqPost', token: session.token, qid, text });
+      if (r.ok) {
+        (comments[qid] = comments[qid] || []).push(r.comment);
+        renderComments();
+        const n = qNodes.find((x) => x.q.id === qid);
+        if (n) n.box.classList.add('open');
+      } else if (r.error === 'EXPIRED') {
+        clearSession('확인 시간(30분)이 지나 다시 세대 확인이 필요합니다. 쓰던 내용은 복사해 두세요.');
+      } else if (r.error === 'DAILY_LIMIT') {
+        showMsg(msg, '하루에 쓸 수 있는 댓글 수(' + r.max + '개)를 넘었습니다.', 'err');
+      } else if (r.error === 'TOO_LONG') {
+        showMsg(msg, MAX_LEN + '자 이하로 줄여 주세요.', 'err');
+      } else if (r.error === 'BUSY') {
+        showMsg(msg, '지금 요청이 많습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      } else {
+        showMsg(msg, '등록에 실패했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      }
+    } catch (e) {
+      showMsg(msg, '서버에 연결하지 못했습니다.', 'err');
+    } finally { btn.disabled = false; }
+  }
+
+  async function removeComment(id) {
+    if (!confirm('이 댓글을 삭제할까요?')) return;
+    try {
+      const r = await api({ action: 'faqDelete', token: session.token, id });
+      if (r.ok) {
+        Object.keys(comments).forEach((k) => { comments[k] = comments[k].filter((c) => c.id !== id); });
+        renderComments();
+      } else if (r.error === 'EXPIRED') {
+        clearSession('확인 시간이 지나 다시 세대 확인이 필요합니다.');
+      } else { alert('삭제하지 못했습니다.'); }
+    } catch (e) { alert('서버에 연결하지 못했습니다.'); }
+  }
+
+  // ---------- 세대 확인 (자료실 docAuth 재사용) ----------
+  function setSignedUI() {
+    $('loginForm').hidden = !!session;
+    $('signedBox').hidden = !session;
+    if (session) $('whoText').textContent = (session.display && session.display.unit) || '인증 세대';
+  }
+  function clearSession(note) {
+    session = null;
+    try { sessionStorage.removeItem('docSession'); } catch (e) {}
+    setSignedUI();
+    renderComments();
+    if (note) showMsg($('loginMsg'), note, 'err');
+  }
+  async function login() {
+    const receipt = $('inReceipt').value.trim(), building = $('inBuilding').value.trim(), unit_no = $('inUnit').value.trim();
+    if (!receipt || !building || !unit_no) { showMsg($('loginMsg'), '접수번호·동·호수를 모두 입력해 주세요.', 'err'); return; }
+    $('loginBtn').disabled = true;
+    try {
+      const r = await api({ action: 'docAuth', receipt, building, unit_no });
+      if (r.ok) {
+        session = { token: r.token, grade: r.grade, display: r.display };
+        try { sessionStorage.setItem('docSession', JSON.stringify(session)); } catch (e) {}
+        showMsg($('loginMsg'), '', '');
+        setSignedUI();
+        await loadComments();
+      } else if (r.error === 'LOCKED') {
+        showMsg($('loginMsg'), '여러 번 틀려 30분간 잠겼습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      } else if (r.error === 'BUSY') {
+        showMsg($('loginMsg'), '지금 접속이 많습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      } else if (r.error === 'NOT_VERIFIED') {
+        showMsg($('loginMsg'), '일치하는 인증 완료 세대가 없습니다' + (r.remaining ? ' (남은 시도 ' + r.remaining + '회)' : '') + '. 청약 인증을 먼저 해 주세요.', 'err');
+      } else {
+        showMsg($('loginMsg'), '확인에 실패했습니다. 잠시 후 다시 시도해 주세요.', 'err');
+      }
+    } catch (e) {
+      showMsg($('loginMsg'), '서버에 연결하지 못했습니다. 네트워크를 확인해 주세요.', 'err');
+    } finally { $('loginBtn').disabled = false; }
+  }
+  $('loginBtn').addEventListener('click', login);
+  $('inUnit').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+  $('logoutBtn').addEventListener('click', () => clearSession(''));
+
+  try { const saved = JSON.parse(sessionStorage.getItem('docSession') || 'null'); if (saved && saved.token) session = saved; } catch (e) {}
+  setSignedUI();
+  renderComments();
+  loadComments();
+  if (location.hash.indexOf('#q-') === 0) { const t = document.querySelector(location.hash); if (t) { t.classList.add('open'); t.scrollIntoView(); } }
+  </script>
+</body>
+</html>
