@@ -21,4 +21,4 @@ _originals/
 
 # 예외: 페이지가 읽어 그리는 공개용 내용 파일 (qna.html → qna-data.md, contract-tips.html → contract-tips-data.md)
 !qna-data.md
-!contract-tips-data.md
+!contract-tips-*.md
