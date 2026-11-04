@@ -18,3 +18,7 @@ _originals/
 # 내부 인프라/자격증명 위치가 담긴 문서 — 공개 저장소에 올리지 않음
 *.md
 *status.html
+
+# 예외: 페이지가 읽어 그리는 공개용 내용 파일 (qna.html → qna-data.md, contract-tips.html → contract-tips-data.md)
+!qna-data.md
+!contract-tips-data.md
