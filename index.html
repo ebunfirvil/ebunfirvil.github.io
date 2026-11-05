@@ -533,6 +533,25 @@
       margin: 0 0 16px;
     }
 
+    /* 팝업 보조 안내 상자 — 유리난간 동의서 내려받기·메일 (2026-11-05) */
+    .notice-popup-sub {
+      background: #F4F6FA;
+      border: 1px solid var(--beige-dark);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin: -6px 0 16px;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--gray);
+    }
+    .notice-popup-sub b { color: var(--navy); }
+    .notice-popup-sub a {
+      color: var(--orange-dark);
+      font-weight: 700;
+      text-decoration: underline;
+      word-break: keep-all;
+    }
+
     .notice-popup-highlight {
       display: flex;
       align-items: center;
@@ -2383,6 +2402,13 @@
       <i class="fas fa-file-contract notice-popup-icon"></i>
       <h3>위임장 · 회원 안내</h3>
       <p>더 나은 우리 집을 위해<br>위임장을 제출하면 <b>준회원</b>,<br>정회원비를 납부하면 <b>정회원</b>이 됩니다.</p>
+      <!-- 유리난간 설계변경 동의서 안내 (2026-11-05 추가) — 정당계약 현장에서 못 쓴 분용 -->
+      <div class="notice-popup-sub">
+        <b><i class="fas fa-file-pdf"></i> 유리난간 설계변경 동의서</b><br>
+        계약 현장(입예협 부스)에서 작성하지 못하신 분은<br>
+        <a href="files/glass-railing-consent.pdf" target="_blank" rel="noopener">동의서 PDF 내려받기</a> 후 작성해<br>
+        <a href="mailto:ns-manager@naver.com">ns-manager@naver.com</a>으로 스캔본을 보내 주세요.
+      </div>
       <div class="notice-popup-highlight">
         <div class="hl-rate">
           <span class="hl-num" id="delegateRateNum">53%</span>
