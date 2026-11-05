@@ -535,19 +535,61 @@
 
     /* 팝업 보조 안내 상자 — 유리난간 동의서 내려받기·메일 (2026-11-05) */
     .notice-popup-sub {
-      background: #F4F6FA;
-      border: 1px solid var(--beige-dark);
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin: -6px 0 16px;
-      font-size: 0.82rem;
-      line-height: 1.6;
-      color: var(--gray);
+      background: #FFF4E8;
+      border: 2px solid var(--orange);
+      border-radius: 10px;
+      padding: 12px 12px 10px;
+      margin: -4px 0 16px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #5a3a24;
+      text-align: center;
     }
-    .notice-popup-sub b { color: var(--navy); }
-    .notice-popup-sub a {
+    .notice-popup-sub .sub-title {
+      font-size: 1rem;
+      font-weight: 800;
       color: var(--orange-dark);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .notice-popup-sub .sub-badge {
+      background: var(--orange-dark);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 999px;
+      line-height: 1.2;
+    }
+    .notice-popup-sub p {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #5a3a24;
+    }
+    .notice-popup-sub p b { color: var(--orange-dark); }
+    .notice-popup-sub .sub-btn {
+      display: block;
+      background: var(--orange);
+      color: #fff;
       font-weight: 700;
+      font-size: 0.92rem;
+      padding: 10px 0;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-bottom: 8px;
+    }
+    .notice-popup-sub .sub-btn:hover { background: var(--orange-dark); }
+    .notice-popup-sub .sub-mail {
+      display: inline-block;
+      color: var(--navy);
+      font-weight: 800;
+      font-size: 0.95rem;
       text-decoration: underline;
       word-break: keep-all;
     }
@@ -2404,10 +2446,10 @@
       <p>더 나은 우리 집을 위해<br>위임장을 제출하면 <b>준회원</b>,<br>정회원비를 납부하면 <b>정회원</b>이 됩니다.</p>
       <!-- 유리난간 설계변경 동의서 안내 (2026-11-05 추가) — 정당계약 현장에서 못 쓴 분용 -->
       <div class="notice-popup-sub">
-        <b><i class="fas fa-file-pdf"></i> 유리난간 설계변경 동의서</b><br>
-        계약 현장(입예협 부스)에서 작성하지 못하신 분은<br>
-        <a href="files/glass-railing-consent.pdf" target="_blank" rel="noopener">동의서 PDF 내려받기</a> 후 작성해<br>
-        <a href="mailto:ns-manager@naver.com">ns-manager@naver.com</a>으로 스캔본을 보내 주세요.
+        <div class="sub-title"><span class="sub-badge">NEW</span><i class="fas fa-file-signature"></i> 유리난간 설계변경 동의서</div>
+        <p>계약 현장(입예협 부스)에서 <b>작성하지 못하신 분</b>은<br>동의서를 내려받아 작성한 뒤 스캔본·사진을 메일로 보내 주세요.</p>
+        <a href="files/glass-railing-consent.pdf" target="_blank" rel="noopener" class="sub-btn"><i class="fas fa-file-pdf"></i> 동의서 PDF 내려받기</a>
+        <a href="mailto:ns-manager@naver.com?subject=유리난간%20동의서%20(동/호수)" class="sub-mail"><i class="fas fa-envelope"></i> ns-manager@naver.com</a>
       </div>
       <div class="notice-popup-highlight">
         <div class="hl-rate">
