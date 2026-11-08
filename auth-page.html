@@ -904,6 +904,11 @@
         </div>
         <!-- 2026-10-12 G42: 검수 카드가 숨겨져 있어도 보이도록 카드 밖에 둔다 -->
         <div class="lookup-result" id="mgReviewStatus" style="margin-bottom:14px;"></div>
+        <!-- 2026-11-08: '앞으로 안보기'로 숨긴 요청 건수 + 다시 보이기 -->
+        <div id="mgHiddenInfo" style="display:none; margin-bottom:12px; font-size:0.82rem; color:var(--gray);">
+          <span id="mgHiddenText"></span>
+          <button type="button" id="mgUnhideBtn" style="margin-left:8px; padding:4px 10px; border-radius:6px; border:1px solid var(--beige-warm); background:var(--white); color:var(--navy); font-size:0.8rem; cursor:pointer;">모두 다시 보이기</button>
+        </div>
         <div class="form-card" id="mgReviewCard" style="display:none">
           <div class="form-field" id="mgImageField">
             <label>인증샷</label>
@@ -941,6 +946,9 @@
             <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
           </div>
           <button type="button" id="mgSkipBtn" style="width:100%; margin-top:10px; padding:11px; border-radius:8px; border:1.5px solid var(--beige-warm); background:var(--white); color:var(--gray); font-weight:700; cursor:pointer;">건너뛰기 (처리하지 않고 다음 건)</button>
+          <label style="display:flex; align-items:center; gap:6px; margin-top:8px; font-size:0.82rem; color:var(--gray); cursor:pointer;">
+            <input type="checkbox" id="mgSkipForever" style="width:auto; margin:0;">앞으로 안보기 (건너뛸 때 이 요청을 검수 목록에서 계속 숨김 — 모든 관리자 화면 공통)
+          </label>
 
           <div id="mgFailReasonPanel" style="display:none; margin-top:14px; padding:14px; background:var(--beige); border-radius:10px; border:1px solid var(--beige-warm);">
             <div style="font-size:0.85rem; font-weight:700; color:var(--navy); margin-bottom:10px;">실패 사유 선택 (신청자 이메일로 발송됩니다)</div>
@@ -1784,6 +1792,16 @@
       let adminCreds = null; // {admin_id, admin_pw}
       let currentItem = null;
       const skippedIds = []; // 이번 접속 동안 건너뛴 submission_id (시트에는 기록 안 함, 새로고침하면 초기화)
+      const mgSkipForever = document.getElementById('mgSkipForever');
+      const mgHiddenInfo = document.getElementById('mgHiddenInfo');
+      const mgHiddenText = document.getElementById('mgHiddenText');
+      const mgUnhideBtn = document.getElementById('mgUnhideBtn');
+      // 서버가 알려 준 숨긴 요청 건수(대기 중인 것만)를 표시한다
+      function showHiddenCount(n) {
+        n = Number(n) || 0;
+        mgHiddenInfo.style.display = n > 0 ? 'block' : 'none';
+        mgHiddenText.textContent = '앞으로 안보기로 숨긴 요청 ' + n + '건';
+      }
 
       function setMgLoginResult(text, type) {
         mgLoginResult.textContent = text;
@@ -1865,6 +1883,7 @@
           setMgReviewStatus('다음 건을 불러오지 못했습니다: ' + (data.error || '') + ' — 새로고침 버튼을 눌러 다시 시도해 주세요.', 'err');
           return;
         }
+        showHiddenCount(data.hidden_count);
         if (data.done) {
           mgDoneCard.style.display = 'block';
           return;
@@ -1986,10 +2005,40 @@
         }
       });
 
-      mgSkipBtn.addEventListener('click', () => {
+      mgSkipBtn.addEventListener('click', async () => {
         if (!currentItem) return;
-        skippedIds.push(String(currentItem.submission_id));
-        loadNextItem();
+        const sid = String(currentItem.submission_id);
+        skippedIds.push(sid);
+        let hideErr = '';
+        // 2026-11-08: '앞으로 안보기'면 서버 숨김 목록에 올린다(실패해도 이번 접속에선 건너뛰기로 동작)
+        if (mgSkipForever.checked) {
+          mgSkipBtn.disabled = true;
+          try {
+            const res = await callManageApi({ action: 'hideReviewItem', submission_id: sid });
+            if (!res.ok) hideErr = '앞으로 안보기 저장 실패(' + (res.error || '') + ') — 이번 접속에서만 건너뜁니다.';
+          } catch (err) {
+            hideErr = '앞으로 안보기 저장 실패(네트워크) — 이번 접속에서만 건너뜁니다.';
+          } finally {
+            mgSkipBtn.disabled = false;
+            mgSkipForever.checked = false;
+          }
+        }
+        await loadNextItem();
+        if (hideErr) setMgReviewStatus(hideErr, 'err');
+      });
+      mgUnhideBtn.addEventListener('click', async () => {
+        if (!confirm('앞으로 안보기로 숨긴 요청을 모두 다시 검수 목록에 보이게 할까요?')) return;
+        mgUnhideBtn.disabled = true;
+        try {
+          const res = await callManageApi({ action: 'unhideReviewItems' });
+          if (!res.ok) { setMgReviewStatus('다시 보이기 실패: ' + (res.error || ''), 'err'); return; }
+          skippedIds.length = 0;
+          loadNextItem();
+        } catch (err) {
+          setMgReviewStatus('다시 보이기 실패(네트워크)', 'err');
+        } finally {
+          mgUnhideBtn.disabled = false;
+        }
       });
       mgSuccessBtn.addEventListener('click', () => {
         mgFailReasonPanel.style.display = 'none';
