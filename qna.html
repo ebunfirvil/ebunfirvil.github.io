@@ -141,6 +141,35 @@
     .md-card td + td, .md-card th + th { border-left: 1px solid var(--beige-dark); }
     .md-card hr { border: none; border-top: 1px solid var(--beige-dark); margin: 24px 0; }
     .md-card img { display: block; max-width: 100%; height: auto; margin: 8px 0 16px; border: 1px solid var(--beige-dark); border-radius: 10px; }
+    /* md 안의 이미지는 작은 썸네일로 접어 두고, "크게 보기"(또는 썸네일 탭)로 전체 화면에 띄운다 */
+    .md-fig { display: flex; align-items: center; gap: 14px; margin: 8px 0 18px; }
+    .md-fig img { width: 96px; height: 96px; object-fit: cover; object-position: top; margin: 0; cursor: zoom-in; flex: none; }
+    .md-fig-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 8px; cursor: pointer;
+      border: 1px solid var(--orange); background: var(--white); color: var(--orange-dark); font-weight: 700; font-size: 0.88rem;
+    }
+    .md-fig-btn:hover { background: var(--orange); color: var(--white); }
+    .md-lightbox {
+      position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center;
+      background: rgba(10, 20, 40, 0.6); padding: 16px;
+    }
+    .md-lightbox.open { display: flex; }
+    .md-modal {
+      background: var(--white); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      width: 100%; max-width: 560px; max-height: calc(100vh - 32px); display: flex; flex-direction: column; overflow: hidden;
+    }
+    .md-modal-head {
+      display: flex; align-items: center; gap: 10px; padding: 12px 14px 12px 18px;
+      border-bottom: 1px solid var(--beige-dark); background: var(--beige);
+    }
+    .md-lightbox-cap { flex: 1; margin: 0; color: var(--navy); font-weight: 700; font-size: 0.95rem; line-height: 1.4; }
+    .md-lightbox-close {
+      flex: none; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--beige-dark); cursor: pointer;
+      background: var(--white); color: var(--navy); font-weight: 700; font-size: 0.88rem;
+    }
+    .md-lightbox-close:hover { background: var(--orange); color: var(--white); border-color: var(--orange); }
+    .md-modal-body { flex: 1 1 auto; min-height: 0; overflow: auto; -webkit-overflow-scrolling: touch; padding: 14px; background: #f3efe8; }
+    .md-lightbox img { display: block; width: 100%; height: auto; margin: 0; border-radius: 8px; border: 1px solid var(--beige-dark); }
     .md-loading { text-align: center; color: var(--gray); padding: 40px 0; }
 
     /* ===== EDIT PANEL ===== */
@@ -286,6 +315,16 @@
       <p style="font-size:0.75em;opacity:0.7;margin-top:4px;">이 사이트의 글·이미지·코드를 허락 없이 복제·배포하거나 AI 학습·데이터 수집에 이용하는 것을 금합니다.</p>
   </div>
 
+  <div class="md-lightbox" id="mdLightbox" aria-hidden="true">
+    <div class="md-modal" role="dialog" aria-modal="true" aria-labelledby="mdLightboxCap">
+      <div class="md-modal-head">
+        <p class="md-lightbox-cap" id="mdLightboxCap"></p>
+        <button type="button" class="md-lightbox-close" id="mdLightboxClose">✕ 닫기</button>
+      </div>
+      <div class="md-modal-body"><img id="mdLightboxImg" alt=""></div>
+    </div>
+  </div>
+
   <script>
     const REPO_OWNER = 'ebunfirvil';
     const REPO_NAME = 'ebunfirvil.github.io';
@@ -325,10 +364,39 @@
           if (heads[i]) td.setAttribute('data-label', heads[i]);
         }));
       });
+      // md 안의 이미지: 작은 썸네일 + "크게 보기" 버튼으로 접고, 누르면 전체 화면 보기
+      qnaContent.querySelectorAll('img').forEach(img => {
+        const fig = document.createElement('div'); fig.className = 'md-fig';
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'md-fig-btn';
+        btn.innerHTML = '<i class="fas fa-search-plus"></i> 크게 보기';
+        const par = img.parentElement;
+        const alone = par && par.tagName === 'P' && par.childNodes.length === 1;
+        (alone ? par : img).replaceWith(fig);
+        fig.appendChild(img); fig.appendChild(btn);
+        img.title = '누르면 크게 보기';
+        const open = () => openLightbox(img.getAttribute('src'), img.getAttribute('alt') || '');
+        img.addEventListener('click', open); btn.addEventListener('click', open);
+      });
       if (!window.DOMPurify) {
         qnaContent.textContent = '보안 모듈을 불러오지 못해 내용을 표시할 수 없습니다. 새로고침해 주세요.';
       }
     }
+
+    const lightbox = document.getElementById('mdLightbox');
+    const lightboxImg = document.getElementById('mdLightboxImg');
+    const lightboxCap = document.getElementById('mdLightboxCap');
+    function openLightbox(src, alt) {
+      lightboxImg.src = src; lightboxImg.alt = alt; lightboxCap.textContent = alt;
+      lightbox.classList.add('open'); lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open'); lightbox.setAttribute('aria-hidden', 'true');
+      lightboxImg.removeAttribute('src'); document.body.style.overflow = '';
+    }
+    document.getElementById('mdLightboxClose').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox(); });
 
     let currentSha = null;
 
