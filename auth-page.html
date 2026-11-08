@@ -982,7 +982,7 @@
       <div id="mgHistoryPanel" style="display:none">
         <div class="lookup-card">
           <h3><i class="fas fa-magnifying-glass"></i> 신청 이력 조회</h3>
-          <p style="font-size:0.82rem; color:var(--gray); margin:0 0 14px;">접수번호 또는 당첨동/호수 중 아는 것만 입력해서 조회하세요. "1-처리중"과 "2-처리완료"에 있는 이력만 표시됩니다.</p>
+          <p style="font-size:0.82rem; color:var(--gray); margin:0 0 14px;">접수번호·당첨동/호수·카톡닉네임·네이버ID 중 아는 것만 입력해서 조회하세요. 카톡닉네임·네이버ID는 2글자 이상 일부만 넣어도 되고, 본인·배우자 칸과 회원명부까지 찾습니다. "1-처리중"과 "2-처리완료"에 있는 이력만 표시됩니다.</p>
           <div class="form-field">
             <label for="mgSearchReceipt">접수번호</label>
             <input type="text" id="mgSearchReceipt" placeholder="접수번호" inputmode="numeric">
@@ -994,6 +994,14 @@
           <div class="form-field">
             <label for="mgSearchUnit">호수</label>
             <input type="text" id="mgSearchUnit" placeholder="예: 501">
+          </div>
+          <div class="form-field">
+            <label for="mgSearchKakao">카톡닉네임</label>
+            <input type="text" id="mgSearchKakao" placeholder="예: 아기맹수" autocomplete="off">
+          </div>
+          <div class="form-field">
+            <label for="mgSearchNaver">네이버ID</label>
+            <input type="text" id="mgSearchNaver" placeholder="예: abc123" autocomplete="off" autocapitalize="off" spellcheck="false">
           </div>
           <div class="lookup-row">
             <button type="button" id="mgSearchBtn" style="width:100%">조회</button>
@@ -1756,6 +1764,8 @@
       const mgSearchReceipt = document.getElementById('mgSearchReceipt');
       const mgSearchBuilding = document.getElementById('mgSearchBuilding');
       const mgSearchUnit = document.getElementById('mgSearchUnit');
+      const mgSearchKakao = document.getElementById('mgSearchKakao');
+      const mgSearchNaver = document.getElementById('mgSearchNaver');
       const mgSearchBtn = document.getElementById('mgSearchBtn');
       const mgSearchStatus = document.getElementById('mgSearchStatus');
       const mgSearchResults = document.getElementById('mgSearchResults');
@@ -2490,8 +2500,10 @@
         const receipt = mgSearchReceipt.value.trim();
         const building = mgSearchBuilding.value.trim();
         const unit = mgSearchUnit.value.trim();
-        if (!receipt && !building && !unit) {
-          setMgSearchStatus('접수번호 또는 당첨동/호수 중 하나는 입력해 주세요.', 'err');
+        const kakao = mgSearchKakao.value.trim();
+        const naver = mgSearchNaver.value.trim();
+        if (!receipt && !building && !unit && !kakao && !naver) {
+          setMgSearchStatus('접수번호·당첨동/호수·카톡닉네임·네이버ID 중 하나는 입력해 주세요.', 'err');
           mgSearchResults.innerHTML = '';
           return;
         }
@@ -2499,8 +2511,12 @@
         setMgSearchStatus('조회 중...', 'info');
         mgSearchResults.innerHTML = '';
         try {
-          const data = await callManageApi({ action: 'searchHistory', receipt, building, unit_no: unit });
+          const data = await callManageApi({ action: 'searchHistory', receipt, building, unit_no: unit, kakao, naver });
           if (!data.ok) {
+            if (data.error === 'QUERY_TOO_SHORT') {
+              setMgSearchStatus('카톡닉네임·네이버ID는 2글자 이상 입력해 주세요.', 'err');
+              return;
+            }
             setMgSearchStatus('조회 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
             return;
           }
@@ -2517,7 +2533,7 @@
         }
       }
       mgSearchBtn.addEventListener('click', runHistorySearch);
-      [mgSearchReceipt, mgSearchBuilding, mgSearchUnit].forEach((el) => {
+      [mgSearchReceipt, mgSearchBuilding, mgSearchUnit, mgSearchKakao, mgSearchNaver].forEach((el) => {
         el.addEventListener('keydown', (e) => { if (e.key === 'Enter') runHistorySearch(); });
       });
     }
