@@ -499,19 +499,32 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.35);
       word-break: keep-all;
       overflow-wrap: break-word;
+      /* 화면보다 길면 팝업 안에서 스크롤 — 닫기 버튼이 화면 밖으로 나가지 않게 */
+      max-height: 100%;
+      max-height: calc(100dvh - 40px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
+    /* 닫기 버튼: 팝업 안쪽을 스크롤해도 오른쪽 위에 붙어 있음 */
     .notice-popup-close {
-      position: absolute;
-      top: 12px;
-      right: 14px;
+      position: sticky;
+      top: -24px; /* 기준이 안쪽 여백 아래라서 음수 — 팝업 윗변에서 약 8px */
+      display: block;
+      z-index: 2;
+      width: 34px;
+      height: 34px;
+      margin: -24px -20px -10px auto;
+      padding: 0;
       font-size: 1.6rem;
       font-weight: bold;
       color: var(--gray);
       cursor: pointer;
-      line-height: 1;
-      background: none;
+      line-height: 34px;
+      text-align: center;
+      background: rgba(255,255,255,0.92);
       border: none;
+      border-radius: 50%;
     }
 
     .notice-popup-content i.notice-popup-icon {
@@ -1970,6 +1983,160 @@
       opacity: 1;
       transform: translateY(0);
     }
+    /* ===== 중도금 금액 확인 모달 (주요 일정) ===== */
+    .timeline-pay-btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .timeline-pay-btn:hover { background: var(--orange-dark); }
+
+    .pay-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .pay-modal.active { display: flex; }
+    .pay-modal-content {
+      background: var(--white);
+      border-radius: 14px;
+      max-width: 460px;
+      width: 100%;
+      max-height: 100%;
+      max-height: calc(100dvh - 32px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 26px 22px 20px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      text-align: left;
+    }
+    .pay-modal-content h3 {
+      font-size: 1.1rem;
+      color: var(--navy);
+      margin: 0 30px 4px 0;
+    }
+    .pay-modal-sub {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+    .pay-seg {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .pay-seg button {
+      flex: 1;
+      padding: 9px 6px;
+      border: 1px solid var(--beige-warm);
+      background: var(--beige);
+      color: var(--gray);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .pay-seg button.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: var(--white);
+    }
+    .pay-selects {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .pay-selects label {
+      flex: 1;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gray);
+    }
+    .pay-selects select {
+      display: block;
+      width: 100%;
+      margin-top: 4px;
+      padding: 9px 8px;
+      border: 1px solid var(--beige-warm);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--dark);
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+    .pay-result { font-size: 0.88rem; color: var(--dark); }
+    .pay-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--beige-dark);
+    }
+    .pay-row .pay-label small {
+      display: block;
+      font-size: 0.74rem;
+      color: var(--gray);
+      font-weight: 400;
+    }
+    .pay-row .pay-amt {
+      font-weight: 700;
+      color: var(--navy);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .pay-row.is-none .pay-amt { font-weight: 400; color: var(--gray); }
+    .pay-row.is-total {
+      border-bottom: none;
+      background: var(--beige);
+      border-radius: 8px;
+      padding: 11px 12px;
+      margin-top: 8px;
+    }
+    .pay-row.is-total .pay-amt { color: var(--orange-dark); font-size: 1.05rem; }
+    .pay-group-title {
+      margin: 16px 0 2px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .pay-empty {
+      background: var(--beige);
+      border-radius: 8px;
+      padding: 16px 14px;
+      text-align: center;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    .pay-notes {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--beige-dark);
+      font-size: 0.74rem;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    .pay-notes a { color: var(--orange-dark); }
   </style>
   <meta name="robots" content="noai, noimageai">
   <meta name="tdm-reservation" content="1">
@@ -2767,7 +2934,8 @@
           <div class="timeline-content">
             <div class="timeline-date">2027.04.12</div>
             <h3>중도금 납부 (본청약 당첨자)</h3>
-            <p>분양가 중도금: 본청약 당첨자 10%<br>발코니 확장·시스템에어컨 중도금: 본청약 당첨자 20%<br>금액은 타입·층수마다 다름 / 옵션 중도금은 미정</p>
+            <p>분양가 중도금: 본청약 당첨자 10%<br>발코니 확장 중도금: 본청약 당첨자 20%<br>시스템에어컨 중도금: 본청약 당첨자 30%<br>금액은 타입·층수마다 다름 / 옵션 중도금은 미정</p>
+            <button type="button" class="timeline-pay-btn" onclick="openPayModal('2027-04-12')"><i class="fas fa-calculator"></i> 금액 확인</button>
           </div>
         </div>
         <div class="timeline-item fade-in" data-start="2028-02-14" data-end="2028-02-14">
@@ -2775,6 +2943,7 @@
             <div class="timeline-date">2028.02.14</div>
             <h3>중도금 납부 (본청약·사전청약 당첨자)</h3>
             <p>분양가 중도금: 본청약 당첨자 10%, 사전청약 당첨자 20%<br>발코니 확장·시스템에어컨 중도금: 사전청약 당첨자 20%<br>금액은 타입·층수마다 다름 / 옵션 중도금은 미정</p>
+            <button type="button" class="timeline-pay-btn" onclick="openPayModal('2028-02-14')"><i class="fas fa-calculator"></i> 금액 확인</button>
           </div>
         </div>
         <div class="timeline-item fade-in" data-start="2029-02-01" data-end="2029-02-01">
@@ -2787,6 +2956,30 @@
       </div>
     </div>
   </section>
+
+  <!-- 중도금 금액 확인 모달 -->
+  <div id="payModal" class="pay-modal" role="dialog" aria-modal="true" aria-labelledby="payModalTitle" onclick="if(event.target===this)closePayModal()">
+    <div class="pay-modal-content">
+      <button class="notice-popup-close" onclick="closePayModal()" aria-label="닫기">&times;</button>
+      <h3 id="payModalTitle">중도금 금액 확인</h3>
+      <div class="pay-modal-sub">당첨 구분·타입·층을 고르면 이 날짜에 낼 금액이 나옵니다.</div>
+      <div class="pay-seg" id="payKindSeg">
+        <button type="button" data-kind="pre">사전청약 당첨자</button>
+        <button type="button" data-kind="main">본청약 당첨자</button>
+      </div>
+      <div class="pay-selects">
+        <label>타입<select id="payType"></select></label>
+        <label>층<select id="payFloor"></select></label>
+      </div>
+      <div class="pay-result" id="payResult"></div>
+      <div class="pay-notes">
+        ※ 입주자모집공고(2026.05.29) 기준 금액이며, 발코니 확장·시스템에어컨은 부가가치세 포함입니다.<br>
+        ※ 중도금 납부일은 건축공정에 따라 바뀔 수 있습니다.<br>
+        ※ 그 밖의 옵션(추가선택품목Ⅲ) 중도금 일정은 미정(별도 안내)입니다.<br>
+        ※ 정확한 금액은 본인 계약서를 확인하세요. <a href="https://www.elife.co.kr/jsp/front/po/210114/static/pdf/210114_notice_260702.pdf" target="_blank" rel="noopener">입주자모집공고 원문</a>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== NEWS ===== -->
   <section id="news">
@@ -3184,6 +3377,138 @@
 
     updateTimelineProgress();
     setInterval(updateTimelineProgress, 3600000); // 매시간 재확인 (자정 넘어가는 경우 대비)
+
+    // 중도금 금액 확인 모달 (입주자모집공고 기준)
+    const PAY_FLOORS = ['1층', '2층', '3층', '4층', '5층 이상'];
+    const PAY_DATA = {
+      // price: 층별 주택가격, balcony: 발코니 확장금액, aircon: 시스템에어컨 [구성, 판매가격]
+      '51A': { price: [555310000, 561220000, 573030000, 584850000, 590760000], balcony: 5213000, aircon: 'S' },
+      '55A': { price: [598310000, 604680000, 617410000, 630140000, 636510000], balcony: 5138000, aircon: 'M' },
+      '55B': { price: [598110000, 604470000, 617200000, 629920000, 636290000], balcony: 4556000, aircon: 'M' },
+      '59A': { price: [641430000, 648260000, 661900000, 675550000, 682380000], balcony: 6620000, aircon: 'L' },
+      '59T': { price: [675890000, 682720000], balcony: 2383000, aircon: 'L' }
+    };
+    const PAY_AIRCON = {
+      S: [['일반형(LG/삼성) 거실+침실1 · 2대', 3600000], ['일반형(LG/삼성) 거실+침실1+침실2 · 3대', 5200000],
+          ['프리미엄형(LG) 거실+침실1 · 2대', 4000000], ['프리미엄형(LG) 거실+침실1+침실2 · 3대', 5800000]],
+      M: [['일반형(LG/삼성) 거실+침실1 · 2대', 3600000], ['일반형(LG/삼성) 거실+침실1+침실2 · 3대', 5200000],
+          ['일반형(LG/삼성) 거실+침실1+침실2+알파룸 · 4대', 6600000],
+          ['프리미엄형(LG) 거실+침실1 · 2대', 4000000], ['프리미엄형(LG) 거실+침실1+침실2 · 3대', 5800000],
+          ['프리미엄형(LG) 거실+침실1+침실2+알파룸 · 4대', 7400000]],
+      L: [['일반형(LG/삼성) 거실+침실1 · 2대', 3800000], ['일반형(LG/삼성) 거실+침실1+침실2+침실3 · 4대', 6800000],
+          ['프리미엄형(LG) 거실+침실1 · 2대', 4200000], ['프리미엄형(LG) 거실+침실1+침실2+침실3 · 4대', 7600000]]
+    };
+    // 날짜·당첨 구분별 납부 비율(%). 없는 항목은 그 날짜에 납부 없음
+    const PAY_RATES = {
+      '2027-04-12': { main: { price: 10, priceNote: '1회차', balcony: 20, aircon: 30 } },
+      '2028-02-14': { main: { price: 10, priceNote: '2회차' }, pre: { price: 20, balcony: 20, aircon: 20 } }
+    };
+    const PAY_KIND_NAME = { pre: '사전청약 당첨자', main: '본청약 당첨자' };
+    let payDate = '2027-04-12';
+    let payKind = 'main';
+
+    function payWon(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+
+    function payRow(label, small, amt, cls) {
+      const row = document.createElement('div');
+      row.className = 'pay-row' + (cls ? ' ' + cls : '');
+      const l = document.createElement('div');
+      l.className = 'pay-label';
+      l.textContent = label;
+      if (small) {
+        const s = document.createElement('small');
+        s.textContent = small;
+        l.appendChild(s);
+      }
+      const a = document.createElement('div');
+      a.className = 'pay-amt';
+      a.textContent = amt;
+      row.appendChild(l);
+      row.appendChild(a);
+      return row;
+    }
+
+    function fillPayFloors() {
+      const type = document.getElementById('payType').value;
+      const sel = document.getElementById('payFloor');
+      const prev = sel.selectedIndex;
+      const n = PAY_DATA[type].price.length;
+      sel.textContent = '';
+      for (let i = 0; i < n; i++) sel.add(new Option(PAY_FLOORS[i], i));
+      sel.selectedIndex = prev >= 0 && prev < n ? prev : 0;
+    }
+
+    function renderPay() {
+      const box = document.getElementById('payResult');
+      box.textContent = '';
+      document.querySelectorAll('#payKindSeg button').forEach(b => b.classList.toggle('active', b.dataset.kind === payKind));
+      const rate = PAY_RATES[payDate][payKind];
+      if (!rate) {
+        const empty = document.createElement('div');
+        empty.className = 'pay-empty';
+        empty.textContent = PAY_KIND_NAME[payKind] + '는 이 날짜에 납부할 중도금이 없습니다. 중도금은 2028.02.14에 한 번 납부합니다.';
+        box.appendChild(empty);
+        return;
+      }
+      const type = document.getElementById('payType').value;
+      const d = PAY_DATA[type];
+      const price = d.price[Number(document.getElementById('payFloor').value)];
+      const priceAmt = price * rate.price / 100;
+      box.appendChild(payRow('분양가 중도금 (' + (rate.priceNote ? rate.priceNote + ' ' : '') + rate.price + '%)', '주택가격 ' + payWon(price), payWon(priceAmt)));
+      let total = priceAmt;
+      if (rate.balcony) {
+        const b = d.balcony * rate.balcony / 100;
+        total += b;
+        box.appendChild(payRow('발코니 확장 중도금 (' + rate.balcony + '%)', '확장금액 ' + payWon(d.balcony), payWon(b)));
+      } else {
+        box.appendChild(payRow('발코니 확장 중도금', '2027.04.12에 납부', '이 날짜 납부 없음', 'is-none'));
+      }
+      box.appendChild(payRow('분양가 + 발코니 확장 합계', '', payWon(total), 'is-total'));
+
+      const title = document.createElement('div');
+      title.className = 'pay-group-title';
+      if (rate.aircon) {
+        title.textContent = '시스템에어컨 중도금 (' + rate.aircon + '%) — 선택한 구성만 추가';
+        box.appendChild(title);
+        PAY_AIRCON[d.aircon].forEach(([name, cost]) => {
+          box.appendChild(payRow(name, '판매가격 ' + payWon(cost), payWon(cost * rate.aircon / 100)));
+        });
+      } else {
+        title.textContent = '시스템에어컨 중도금';
+        box.appendChild(title);
+        box.appendChild(payRow('전 구성', '2027.04.12에 납부', '이 날짜 납부 없음', 'is-none'));
+      }
+    }
+
+    function openPayModal(date) {
+      payDate = date;
+      if (!PAY_RATES[date][payKind]) payKind = Object.keys(PAY_RATES[date])[0];
+      document.getElementById('payModalTitle').textContent = date.replace(/-/g, '.') + ' 중도금 금액 확인';
+      renderPay();
+      document.getElementById('payModal').classList.add('active');
+    }
+
+    function closePayModal() {
+      document.getElementById('payModal').classList.remove('active');
+    }
+
+    (function initPayModal() {
+      const typeSel = document.getElementById('payType');
+      Object.keys(PAY_DATA).forEach(t => typeSel.add(new Option(t, t)));
+      fillPayFloors();
+      typeSel.addEventListener('change', () => { fillPayFloors(); renderPay(); });
+      document.getElementById('payFloor').addEventListener('change', renderPay);
+      document.querySelectorAll('#payKindSeg button').forEach(b => b.addEventListener('click', () => {
+        payKind = b.dataset.kind;
+        renderPay();
+      }));
+      document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape') return;
+        closePayModal();
+        // 처음에 뜨는 공지 팝업도 ESC로 닫기 (각 팝업의 닫기 버튼과 같은 동작)
+        document.querySelectorAll('.notice-popup.active .notice-popup-close').forEach(btn => btn.click());
+      });
+    })();
 
     // ===== SITE INFO (단지안내) =====
     const amenities = [
