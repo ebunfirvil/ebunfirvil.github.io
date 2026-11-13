@@ -68,9 +68,9 @@
 * 배우자 — 카톡닉네임
 * 배우자 — 네이버ID (닉네임이 아닌 계정명)
 
->아직 당첨자 본인 인증을 하지 않으셨다면 먼저 인증이 필요합니다. 인증 이미지는 동/호수가 나오도록 해주세요.
+>아직 당첨자 본인 인증을 하지 않으셨다면 먼저 인증이 필요합니다. 인증 이미지는 **계약서 표지**를 동·호수·주택형(타입)이 나오도록 찍어 올려주세요.
 
->[LH청약플러스](https://apply.lh.or.kr) > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 [바로가기](https://apply.lh.or.kr/lhapply/apply/pr/przwin/selectPrzwinRdList.do?mi=1110)
+>접수번호는 여기서 확인할 수 있습니다: [LH청약플러스](https://apply.lh.or.kr) > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회 [바로가기](https://apply.lh.or.kr/lhapply/apply/pr/przwin/selectPrzwinRdList.do?mi=1110)
 
 >업로드는 이미지 파일만 가능합니다.
 

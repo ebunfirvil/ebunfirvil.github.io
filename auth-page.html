@@ -519,7 +519,7 @@
   <!-- PAGE HEADER -->
   <div class="page-header">
     <h1>청약 당첨자 인증</h1>
-    <p>당첨 화면 캡쳐 이미지와 정보를 제출해 주세요.</p>
+    <p>계약서 표지 사진과 정보를 제출해 주세요.</p>
   </div>
 
   <div class="content-wrap">
@@ -533,7 +533,7 @@
 
     <div class="notice-banner">
       <i class="fas fa-info-circle"></i>
-      <span>인증샷을 업로드하신 뒤, 사진에 나온 접수번호·주택형·당첨동·호수를 그대로 입력해 주세요. 제출된 원본 사진으로 관리자가 확인한 뒤 신청하신 메일로 입장 코드를 보내드립니다.</span>
+      <span>계약서 표지 사진을 업로드하신 뒤, 계약서에 나온 주택형·동·호수를 그대로 입력해 주세요. 접수번호(본청약·사전청약)는 LH청약플러스 당첨/낙찰 결과조회 화면이나 당첨 문자에서 확인하실 수 있습니다. 제출된 원본 사진으로 관리자가 확인한 뒤 신청하신 메일로 입장 코드를 보내드립니다.</span>
     </div>
 
     <form class="form-card" id="authForm" novalidate>
@@ -558,7 +558,7 @@
             <li>동 / 호수</li>
             <li>네이버 아이디 (카페 등업용)</li>
             <li>카카오톡 닉네임 (오픈채팅방 매칭용)</li>
-            <li>위 정보가 기입된 "당첨/낙찰 결과확인" 캡쳐화면</li>
+            <li>계약서 표지 사진 (동/호수·주택형·계약자 이름 표시)</li>
           </ul>
 
           <div class="pn-section">보유 및 이용 기간</div>
@@ -591,14 +591,10 @@
           <label for="imageInput">인증샷 업로드<span class="req">*</span></label>
           <label class="file-drop" for="imageInput">
             <i class="fas fa-camera"></i>
-            <div class="file-drop-text">당첨 화면 캡쳐 이미지를 선택하세요 (jpg/png/heic, 최대 6MB)</div>
+            <div class="file-drop-text">계약서 표지 사진을 선택하세요 (jpg/png/heic, 최대 6MB)</div>
             <div class="file-drop-guide">
-              <div class="guide-title" id="reserveGuide" style="display:none">예비당첨자는 <b>계약서 표지</b>를 찍어 올려 주세요 (동·호수와 계약자 이름이 잘리지 않아야 합니다)</div>
-              <div class="guide-title" id="captureGuideTitle">아래 두 화면 중 하나로 캡쳐해 주세요 (접수번호·동·호수가 잘리지 않아야 합니다)</div>
-              <ol id="captureGuideList">
-                <li>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면 — 접수번호·동·호수 포함</li>
-                <li>당첨 문자(SMS) — 발신자번호·접수번호·동/호수 포함</li>
-              </ol>
+              <!-- 2026-11-14: 본청약·사전청약·예비당첨자 모두 계약서 표지로 인증(당첨 화면 캡쳐·문자 안내 삭제) -->
+              <div class="guide-title" id="captureGuideTitle"><b>계약서 표지</b>를 찍어 올려 주세요 (동·호수·주택형(타입)과 계약자 이름이 잘리지 않아야 합니다)</div>
             </div>
             <input type="file" id="imageInput" name="image" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" required>
           </label>
@@ -608,7 +604,7 @@
           </div>
           <div class="size-error" id="sizeError">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.</span>
+            <span>사진은 6MB 이하로 올려 주세요 — 용량이 크면 사진을 화면 캡처(스크린샷)해서 올리면 줄어듭니다.</span>
           </div>
 
         </div>
@@ -687,7 +683,7 @@
           <label for="receiptNo">접수번호 (5~6자리)<span class="req">*</span></label>
           <input type="text" id="receiptNo" name="receiptNo" required
             inputmode="numeric" pattern="\d{5,6}" maxlength="6" placeholder="예: 123456">
-          <div class="hint" id="receiptNoHint">인증샷을 보고 직접 입력해 주세요.</div>
+          <div class="hint" id="receiptNoHint">LH청약플러스 당첨/낙찰 결과조회 화면이나 당첨 문자에 나온 접수번호를 입력해 주세요.</div>
         </div>
         <!-- 2026-11-14 예비당첨자: 접수번호 대신 당첨자 실명(예비당첨자 명단의 마스킹 이름과 대조) -->
         <div class="form-field" id="reserveSeqField" style="display:none">
@@ -711,7 +707,7 @@
             <option value="59A">59A</option>
             <option value="59T">59T</option>
           </select>
-          <div class="hint" id="houseTypeHint">인증샷을 보고 직접 선택해 주세요.</div>
+          <div class="hint" id="houseTypeHint">계약서 표지를 보고 직접 선택해 주세요.</div>
         </div>
 
         <div class="form-field" id="buildingField">
@@ -734,13 +730,13 @@
             <option value="202동">202동</option>
             <option value="203동">203동</option>
           </select>
-          <div class="hint" id="buildingHint">인증샷을 보고 직접 선택해 주세요.</div>
+          <div class="hint" id="buildingHint">계약서 표지를 보고 직접 선택해 주세요.</div>
         </div>
 
         <div class="form-field">
           <label for="unitNo"><span id="unitNoLabelText">호수</span><span class="req">*</span></label>
           <input type="text" id="unitNo" name="unitNo" required placeholder="예: 1502">
-          <div class="hint" id="unitNoHint">인증샷을 보고 직접 입력해 주세요.</div>
+          <div class="hint" id="unitNoHint">계약서 표지를 보고 직접 입력해 주세요.</div>
         </div>
       </fieldset>
 
@@ -975,20 +971,20 @@
             <div style="font-size:0.85rem; font-weight:700; color:var(--navy); margin-bottom:10px;">실패 사유 선택 (신청자 이메일로 발송됩니다)</div>
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
               <input type="radio" name="mgFailReasonChoice" value="preset1" checked style="margin-top:3px; flex-shrink:0;">
-              <span>동호수가 확인되지 않습니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
+              <span>동호수가 확인되지 않습니다.<br>계약서 표지에서 동·호수·주택형(타입)이 가려지지 않게 찍어 다시 인증해 주세요.</span>
             </label>
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
               <input type="radio" name="mgFailReasonChoice" value="preset2" style="margin-top:3px; flex-shrink:0;">
-              <span>이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.</span>
+              <span>이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.<br>계약서 표지에서 동·호수·주택형(타입)이 가려지지 않게 찍어 다시 인증해 주세요.</span>
             </label>
-            <!-- 2026-10-22 추가: 필수 항목 누락(화면 캡처 / 문자 인증) -->
+            <!-- 2026-10-22 추가: 필수 항목 누락 / 2026-11-14: 계약서 표지 기준으로 문구 교체(4번은 당첨 화면·문자로 낸 제출용) -->
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
               <input type="radio" name="mgFailReasonChoice" value="preset3" style="margin-top:3px; flex-shrink:0;">
-              <span>접수번호, 당첨동, 호수가 모두 나와야 합니다.<br>LH청약플러스 &gt; 청약 &gt; 청약결과확인 &gt; 당첨/낙찰 결과조회 화면에서 접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.</span>
+              <span>동, 호수, 주택형(타입)이 모두 나와야 합니다.<br>계약서 표지에서 동·호수·주택형(타입)이 모두 보이도록 찍어 다시 인증해 주세요.</span>
             </label>
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; font-size:0.85rem; cursor:pointer; line-height:1.5;">
               <input type="radio" name="mgFailReasonChoice" value="preset4" style="margin-top:3px; flex-shrink:0;">
-              <span>문자메시지로 인증하시는 경우 발신자번호, 접수번호, 당첨동·호수가 모두 나와야 합니다.<br>당첨 안내 문자(SMS) 화면에서 발신자번호·접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.</span>
+              <span>당첨 화면 캡쳐·문자메시지 대신 계약서 표지로 인증해 주세요.<br>계약서 표지에서 동·호수·주택형(타입)이 모두 보이도록 찍어 다시 인증해 주세요.</span>
             </label>
             <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; font-size:0.85rem; cursor:pointer;">
               <input type="radio" name="mgFailReasonChoice" value="custom" style="margin-top:3px; flex-shrink:0;">
@@ -1184,9 +1180,6 @@
       winnerNameField.style.display = on ? '' : 'none';
       winnerNameInput.required = on;
       if (!on) winnerNameInput.value = '';
-      document.getElementById('reserveGuide').style.display = on ? '' : 'none';
-      document.getElementById('captureGuideTitle').style.display = on ? 'none' : '';
-      document.getElementById('captureGuideList').style.display = on ? 'none' : '';
     }
     applyTypeSelect.addEventListener('change', applyReserveUi);
     applyReserveUi(); // 브라우저가 폼 값을 복원한 채 열릴 수 있으므로 한 번 맞춘다
@@ -1396,7 +1389,7 @@
     const MS_AUTH = {
       verified: ['ok', '인증 완료', null],
       processing: ['pending', '인증 진행 중', '입예협에서 검토 중입니다. 잠시 후 다시 확인해 주세요.'],
-      failed: ['bad', '인증 실패', '동호수가 보이도록 다시 제출해 주세요. LH청약플러스 > 청약 > 청약결과 확인 > 당첨/낙찰 결과조회에서 동호수를 가리지 말고 캡쳐해 제출해 주세요.']
+      failed: ['bad', '인증 실패', '동호수가 보이도록 다시 제출해 주세요. 계약서 표지에서 동·호수·주택형(타입)이 가려지지 않게 찍어 제출해 주세요.']
     };
     // authStatus(verified/processing/failed)를 주면 인증 줄을 넣는다. 관리자 이력 카드는 주지 않는다.
     function renderMembershipBlock(container, m, isAdmin, authStatus, cafe) {
@@ -2094,11 +2087,11 @@
       }
 
       const MG_FAIL_REASON_PRESETS = {
-        preset1: '동호수가 확인되지 않습니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.',
-        preset2: '이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 동호수 가리지 마시고 인증하셔야 합니다.',
-        // 2026-10-22 추가: 필수 항목 누락 — 화면 캡처는 접수번호·당첨동·호수, 문자 인증은 발신자번호까지
-        preset3: '접수번호, 당첨동, 호수가 모두 나와야 합니다.\nLH청약플러스 > 청약 > 청약결과확인 > 당첨/낙찰 결과조회 화면에서 접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.',
-        preset4: '문자메시지로 인증하시는 경우 발신자번호, 접수번호, 당첨동·호수가 모두 나와야 합니다.\n당첨 안내 문자(SMS) 화면에서 발신자번호·접수번호·당첨동·호수가 모두 보이도록 가리지 마시고 인증하셔야 합니다.'
+        preset1: '동호수가 확인되지 않습니다.\n계약서 표지에서 동·호수·주택형(타입)이 가려지지 않게 찍어 다시 인증해 주세요.',
+        preset2: '이미지가 손상되었습니다. 다시 인증 요청 부탁드립니다.\n계약서 표지에서 동·호수·주택형(타입)이 가려지지 않게 찍어 다시 인증해 주세요.',
+        // 2026-10-22 추가: 필수 항목 누락 / 2026-11-14: 모두 계약서 표지 기준(4번은 당첨 화면·문자로 낸 제출용)
+        preset3: '동, 호수, 주택형(타입)이 모두 나와야 합니다.\n계약서 표지에서 동·호수·주택형(타입)이 모두 보이도록 찍어 다시 인증해 주세요.',
+        preset4: '당첨 화면 캡쳐·문자메시지 대신 계약서 표지로 인증해 주세요.\n계약서 표지에서 동·호수·주택형(타입)이 모두 보이도록 찍어 다시 인증해 주세요.'
       };
 
       function getMgFailReasonChoice() {
@@ -3030,7 +3023,7 @@
       }
       if (selectedFile.size > MAX_FILE_BYTES) {
         sizeError.classList.add('show');
-        setSubmitStatus('사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.', 'err', 'fa-circle-exclamation');
+        setSubmitStatus('사진은 6MB 이하로 올려 주세요 — 용량이 크면 사진을 화면 캡처(스크린샷)해서 올리면 줄어듭니다.', 'err', 'fa-circle-exclamation');
         return;
       }
 
@@ -3143,8 +3136,8 @@
           // 2026-10-12 G16: 서버가 검증에서 거절한 경우의 안내
           const SUBMIT_ERR = {
             BAD_RECEIPT: '접수번호는 5~6자리 숫자여야 합니다.', BAD_UNIT: '당첨동·호수를 확인해 주세요.',
-            BAD_IMAGE: '인증 이미지를 첨부해 주세요.', IMAGE_TOO_LARGE: '사진은 6MB 이하로 올려 주세요 — 화면 캡처는 보통 1~3MB입니다.',
-            BAD_IMAGE_TYPE: '이미지는 JPG·PNG·HEIC 형식만 올릴 수 있습니다.', IMAGE_TYPE: '선택한 파일이 이미지 형식과 맞지 않습니다. 화면 캡처 원본(JPG·PNG·HEIC)을 올려 주세요.', BUSY: '지금 제출이 몰리거나 자동 처리 중입니다. 잠시 후 다시 제출해 주세요.',
+            BAD_IMAGE: '인증 이미지를 첨부해 주세요.', IMAGE_TOO_LARGE: '사진은 6MB 이하로 올려 주세요 — 용량이 크면 사진을 화면 캡처(스크린샷)해서 올리면 줄어듭니다.',
+            BAD_IMAGE_TYPE: '이미지는 JPG·PNG·HEIC 형식만 올릴 수 있습니다.', IMAGE_TYPE: '선택한 파일이 이미지 형식과 맞지 않습니다. 사진 원본(JPG·PNG·HEIC)을 올려 주세요.', BUSY: '지금 제출이 몰리거나 자동 처리 중입니다. 잠시 후 다시 제출해 주세요.',
             TOO_MANY_SUBMISSIONS: '이 동·호수로 제출 가능한 횟수를 넘었습니다. 이미 제출하셨다면 조회 화면에서 확인하시고, 문제가 있으면 입예협에 문의해 주세요.',
             SERVER_ERROR: '서버에서 처리하지 못했습니다.'
           };
