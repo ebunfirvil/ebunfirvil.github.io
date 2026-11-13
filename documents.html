@@ -150,12 +150,18 @@
   <section class="card" id="authCard">
     <h3><i class="fas fa-user-check"></i> 본인 확인</h3>
     <p class="desc">청약 인증 때 사용한 접수번호와 당첨동/호수를 입력해 주세요. 세 가지가 모두 일치해야 조회됩니다.</p>
-    <div class="row">
+    <div class="row" id="receiptRow">
       <input type="text" id="receipt" placeholder="접수번호" inputmode="numeric" autocomplete="off">
     </div>
+    <div class="row" id="nameRow" style="display:none">
+      <input type="text" id="name" placeholder="당첨자 이름(실명)" autocomplete="off" maxlength="20">
+    </div>
     <div class="row">
-      <div class="suffix"><input type="text" id="building" placeholder="103" inputmode="numeric" autocomplete="off"><span>동</span></div>
-      <div class="suffix"><input type="text" id="unitNo" placeholder="501" inputmode="numeric" autocomplete="off"><span>호</span></div>
+      <div class="suffix"><input type="text" id="building" placeholder="103" inputmode="numeric" autocomplete="off"><span id="buildingSuffix">동</span></div>
+      <div class="suffix"><input type="text" id="unitNo" placeholder="501" inputmode="numeric" autocomplete="off"><span id="unitSuffix">호</span></div>
+    </div>
+    <div class="row">
+      <label style="font-size:0.84rem; color:var(--gray);"><input type="checkbox" id="reserveChk" style="width:auto; margin-right:6px;">예비당첨자입니다 (접수번호 대신 당첨자 이름)</label>
     </div>
     <div class="row">
       <button type="button" class="btn" id="authBtn"><i class="fas fa-magnifying-glass"></i> 확인</button>
@@ -292,7 +298,14 @@
 
     const authBtn = $('authBtn'), authMsg = $('authMsg');
     authBtn.addEventListener('click', doAuth);
-    ['receipt', 'building', 'unitNo'].forEach((id) => $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') doAuth(); }));
+    ['receipt', 'name', 'building', 'unitNo'].forEach((id) => $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') doAuth(); }));
+    // 2026-11-14 예비당첨자: 접수번호 칸 대신 당첨자 이름 칸(서버가 동/호+실명으로 예비당첨자 명단에서 접수번호를 찾는다)
+    $('reserveChk').addEventListener('change', (e) => {
+      const on = e.target.checked;
+      $('receiptRow').style.display = on ? 'none' : '';
+      $('nameRow').style.display = on ? '' : 'none';
+      if (on) $('receipt').value = ''; else $('name').value = '';
+    });
     $('logoutBtn').addEventListener('click', () => { clearSession(); });
     $('modalClose').addEventListener('click', () => $('gradeModal').classList.remove('show'));
     $('gradeModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); });
@@ -300,11 +313,15 @@
     if (session && session.token) refreshList();
 
     async function doAuth() {
-      const receipt = $('receipt').value.trim(), building = $('building').value.trim(), unit_no = $('unitNo').value.trim();
-      if (!receipt || !building || !unit_no) { showMsg(authMsg, '접수번호, 동, 호수를 모두 입력해 주세요.', 'err'); return; }
+      const reserve = $('reserveChk').checked;
+      const receipt = reserve ? '' : $('receipt').value.trim(), name = reserve ? $('name').value.trim() : '';
+      const building = $('building').value.trim(), unit_no = $('unitNo').value.trim();
+      if ((reserve ? !name : !receipt) || !building || !unit_no) {
+        showMsg(authMsg, reserve ? '당첨자 이름, 동, 호수를 모두 입력해 주세요.' : '접수번호, 동, 호수를 모두 입력해 주세요.', 'err'); return;
+      }
       authBtn.disabled = true; showMsg(authMsg, '확인 중…', 'info');
       try {
-        const r = await api({ action: 'docAuth', receipt, building, unit_no });
+        const r = await api(reserve ? { action: 'docAuth', reserve: true, name, building, unit_no } : { action: 'docAuth', receipt, building, unit_no });
         if (r.ok) {
           session = { token: r.token, grade: r.grade, display: r.display };
           sessionStorage.setItem('docSession', JSON.stringify(session));
@@ -314,6 +331,8 @@
           showMsg(authMsg, '여러 번 틀려 30분간 잠겼습니다. 잠시 후 다시 시도해 주세요.', 'err');
         } else if (r.error === 'BUSY') {
           showMsg(authMsg, '지금 접속이 많습니다. 잠시 후 다시 시도해 주세요.', 'err');
+        } else if (r.error === 'BAD_NAME') {
+          showMsg(authMsg, '당첨자 이름은 한글 또는 영문으로만 입력해 주세요.', 'err');
         } else if (r.error === 'NOT_VERIFIED') {
           // N10 인증 절차 안내
           showMsg(authMsg, `일치하는 인증 완료 세대가 없습니다${r.remaining ? ` (남은 시도 ${r.remaining}회)` : ''}.<br>아직 청약 인증을 하지 않으셨다면 <a href="auth-page.html">청약 인증 페이지</a>에서 먼저 인증해 주세요. 인증 처리에는 시간이 걸릴 수 있습니다.`, 'err');
