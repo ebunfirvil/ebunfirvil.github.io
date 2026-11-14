@@ -595,6 +595,8 @@
             <div class="file-drop-guide">
               <!-- 2026-11-14: 본청약·사전청약·예비당첨자 모두 계약서 표지로 인증(당첨 화면 캡쳐·문자 안내 삭제) -->
               <div class="guide-title" id="captureGuideTitle"><b>계약서 표지</b>를 찍어 올려 주세요 (동·호수·주택형(타입)과 계약자 이름이 잘리지 않아야 합니다)</div>
+              <!-- 2026-11-14: 예비당첨자를 고르면 보인다 — 계약 전이라 계약서가 없는 분은 각서 화면으로 임시 인증 -->
+              <div class="guide-title" id="reserveDocGuide" style="display:none; margin:8px 0 0; color:var(--navy); font-weight:600;">아직 계약 전이라 계약서가 없는 예비당첨자는 <b>'미비서류 보완 각서' 화면</b>을 올려 주세요. <b>임시 인증</b>으로 처리되며, 계약을 마치신 뒤 '인증결과 조회'에서 계약서 표지로 <b>추가 인증</b>을 제출하셔야 합니다.</div>
             </div>
             <input type="file" id="imageInput" name="image" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" required>
           </label>
@@ -807,6 +809,19 @@
       <p class="ms-hint" id="lookupReserveInfo" style="display:none"></p>
       <div class="ms-block" id="lookupMembership" style="display:none"></div>
       <div class="ms-block" id="lookupRoster" style="display:none"></div>
+      <!-- 2026-11-14 임시 인증('미비서류 보완 각서' 화면으로 승인된 예비당첨자): 계약 뒤 계약서 표지로 추가 인증 제출 -->
+      <div class="ms-block" id="supBox" style="display:none">
+        <div class="ms-title"><i class="fas fa-circle-info"></i> <span id="supTitle">임시 인증 상태입니다</span></div>
+        <p class="ms-hint" id="supText" style="font-size:0.84rem; color:var(--navy);"></p>
+        <div id="supForm" style="display:none">
+          <label for="supFile" style="display:block; font-size:0.82rem; font-weight:700; color:var(--navy); margin:8px 0 4px;">계약서 표지 사진 (jpg/png/heic, 최대 6MB)</label>
+          <input type="file" id="supFile" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" style="width:100%; max-width:100%; font-size:0.84rem;">
+          <div class="lookup-row" style="margin-top:8px;">
+            <button type="button" id="supBtn" style="width:100%"><i class="fas fa-upload"></i> 추가 인증 제출</button>
+          </div>
+        </div>
+        <div class="lookup-result" id="supStatus"></div>
+      </div>
       <div class="lookup-row" id="lookupKakaoRow" style="display:none; margin-top:10px;">
         <button type="button" id="lookupKakaoBtn" style="width:100%"><i class="fas fa-comment"></i> 입장코드 확인</button>
       </div>
@@ -958,6 +973,12 @@
             <label for="mgName">이름</label>
             <input type="text" id="mgName" placeholder="이름을 입력하세요 (예: 홍*동)">
           </div>
+          <!-- 2026-11-14 예비당첨자 제출에만 보인다: 추가 인증 제출 표시 + 임시 인증(각서) 체크 -->
+          <div id="mgSupplementNote" style="display:none; margin-bottom:10px; padding:8px 10px; background:rgba(232,98,46,0.12); color:var(--orange-dark); border-radius:6px; font-size:0.85rem; font-weight:600; line-height:1.5;"></div>
+          <label id="mgProvisionalRow" style="display:none; align-items:flex-start; gap:8px; margin-bottom:12px; padding:10px 12px; background:var(--beige); border:1px solid var(--beige-warm); border-radius:8px; font-size:0.85rem; line-height:1.5; cursor:pointer;">
+            <input type="checkbox" id="mgProvisional" style="width:auto; margin:3px 0 0; flex-shrink:0;">
+            <span><b>임시 인증</b> — 계약서가 아니라 '미비서류 보완 각서' 화면입니다. 체크하고 '성공'을 누르면 임시 인증으로 기록되고, 승인 메일과 조회 화면에서 계약 완료 후 추가 인증(계약서 표지)을 안내합니다.</span>
+          </label>
           <div style="display:flex; gap:10px;">
             <button type="button" id="mgFailBtn" class="btn-submit" style="background:linear-gradient(135deg,#b3312c,#d9524b)">실패</button>
             <button type="button" id="mgSuccessBtn" class="btn-submit">성공</button>
@@ -1061,10 +1082,10 @@
       <div id="mgReservePanel" style="display:none">
         <div class="lookup-card">
           <h3><i class="fas fa-list-ol"></i> 예비당첨자 인증 범위</h3>
-          <p class="rp-counts">신청형별마다 인증을 허용할 예비순번의 상한을 정합니다. 상한 안의 순번만 제출할 수 있고, 0이면 그 신청형별은 막힙니다. 저장한 값이 없으면 기본값(51A 80 · 55A 62 · 55B 58 · 59A 30 · 59T 5)을 씁니다. 이미 인증된 분에게는 소급하지 않습니다.</p>
+          <p class="rp-counts">신청형별마다 인증을 허용할 예비순번의 상한을 정합니다. 상한 안의 순번만 제출할 수 있고, 0이면 그 신청형별은 막힙니다. 저장한 값이 없으면 기본값(51A 80 · 55A 62 · 55B 58 · 59A 30 · 59T 5)을 씁니다. 이미 인증된 분에게는 소급하지 않습니다. '임시 인증'은 미비서류 보완 각서로 승인돼 계약서 추가 인증을 기다리는 세대 수입니다.</p>
           <div class="tw" style="overflow-x:auto;">
             <table class="rsv-table" style="width:100%; border-collapse:collapse; font-size:0.86rem;">
-              <thead><tr><th>신청형별</th><th>인원</th><th>인증 완료</th><th>현재 상한</th><th>새 상한</th></tr></thead>
+              <thead><tr><th>신청형별</th><th>인원</th><th>인증 완료</th><th>임시 인증</th><th>현재 상한</th><th>새 상한</th></tr></thead>
               <tbody id="rsvBody"></tbody>
             </table>
           </div>
@@ -1129,11 +1150,14 @@
     // 실측 기준(qwen3-vl:8b, CPU 추론): 웜 9초 ~ 콜드(서버 재시작 직후) 114초. DSM 리버스
     // 프록시 타임아웃(300초)보다는 항상 짧게 잡아 서버가 응답 없이 계속 붙들지 않게 함.
 
-    const submissionId = (crypto.randomUUID ? crypto.randomUUID() :
-      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-      }));
+    function newSubmissionId() {
+      return (crypto.randomUUID ? crypto.randomUUID() :
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        }));
+    }
+    const submissionId = newSubmissionId();
 
     const form = document.getElementById('authForm');
     const imageInput = document.getElementById('imageInput');
@@ -1180,6 +1204,7 @@
       winnerNameField.style.display = on ? '' : 'none';
       winnerNameInput.required = on;
       if (!on) winnerNameInput.value = '';
+      document.getElementById('reserveDocGuide').style.display = on ? '' : 'none'; // 계약서가 없으면 각서 화면으로 임시 인증
     }
     applyTypeSelect.addEventListener('change', applyReserveUi);
     applyReserveUi(); // 브라우저가 폼 값을 복원한 채 열릴 수 있으므로 한 번 맞춘다
@@ -1564,6 +1589,82 @@
       return 'image/jpeg';
     }
 
+    // ── 2026-11-14 임시 인증 → 추가 인증 제출 ──────────────────────────────────────────────
+    // 예비당첨자가 계약서 대신 '미비서류 보완 각서' 화면으로 승인되면 서버가 조회 응답에 reserve_provisional을 싣는다.
+    // 계약 뒤 여기서 계약서 표지 사진만 올리면(submitSupplement) 나머지 값은 서버가 승인된 행에서 옮겨 검수 대기열에 넣는다.
+    const supBox = document.getElementById('supBox');
+    const supText = document.getElementById('supText');
+    const supForm = document.getElementById('supForm');
+    const supFile = document.getElementById('supFile');
+    const supBtn = document.getElementById('supBtn');
+    const supStatus = document.getElementById('supStatus');
+    const SUP_NEED_TEXT = "계약서 대신 '미비서류 보완 각서' 화면으로 확인한 임시 인증입니다. 계약을 마치신 뒤 계약서 표지(동·호수·주택형(타입)이 보이는 면) 사진을 아래에서 올려 추가 인증을 제출해 주세요.";
+    const SUP_PENDING_TEXT = '임시 인증 상태이며, 제출하신 추가 인증(계약서 표지)을 검수하고 있습니다. 검수가 끝나면 메일로 알려 드립니다.';
+    const SUP_ERR = {
+      NOT_FOUND: '입력하신 동·호수와 이름으로 인증 기록을 찾지 못했습니다. 다시 조회해 주세요.',
+      NOT_PROVISIONAL: '추가 인증 대상이 아닙니다(이미 정식 인증으로 처리됐을 수 있습니다). 다시 조회해 확인해 주세요.',
+      ALREADY_PENDING: '이미 제출하신 추가 인증을 검수하고 있습니다. 검수가 끝난 뒤 다시 확인해 주세요.',
+      TOO_MANY_SUBMISSIONS: '이 동·호수로 제출 가능한 횟수를 넘었습니다. 내일 다시 시도하시거나 입예협에 문의해 주세요.',
+      BAD_IMAGE: '계약서 표지 사진을 선택해 주세요.',
+      IMAGE_TOO_LARGE: '사진은 6MB 이하로 올려 주세요 — 용량이 크면 사진을 화면 캡처(스크린샷)해서 올리면 줄어듭니다.',
+      BAD_IMAGE_TYPE: '이미지는 JPG·PNG·HEIC 형식만 올릴 수 있습니다.',
+      IMAGE_TYPE: '선택한 파일이 이미지 형식과 맞지 않습니다. 사진 원본(JPG·PNG·HEIC)을 올려 주세요.',
+      BAD_NAME: '당첨자 이름은 한글 또는 영문으로만 입력해 주세요.',
+      BAD_UNIT: '동·호수를 확인한 뒤 다시 조회해 주세요.',
+      SERVER_ERROR: '서버에서 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.'
+    };
+    // 조회에 성공한 시점의 동/호+이름과 이번 제출의 submission_id(같은 요청을 다시 눌러도 한 번만 접수되게)를 고정해 둔다
+    let supIdentity = null;
+    function setSupStatus(text, type) {
+      supStatus.textContent = text;
+      supStatus.className = 'lookup-result' + (text ? ' show' : '') + (type ? ' ' + type : '');
+    }
+    function showSupplement(data, keys) {
+      supIdentity = null;
+      supFile.value = '';
+      setSupStatus('', '');
+      if (!data || !data.reserve_provisional || !keys || !keys.reserve) { supBox.style.display = 'none'; return; }
+      const pending = !!data.reserve_supplement_pending;
+      supText.textContent = pending ? SUP_PENDING_TEXT : SUP_NEED_TEXT;
+      supForm.style.display = pending ? 'none' : 'block';
+      if (!pending) supIdentity = { keys, sid: newSubmissionId() };
+      supBox.style.display = 'block';
+    }
+    supBtn.addEventListener('click', async () => {
+      const id = supIdentity;
+      if (!id) { setSupStatus('먼저 조회해 주세요.', 'err'); return; }
+      const file = supFile.files[0];
+      if (!file) { setSupStatus(SUP_ERR.BAD_IMAGE, 'err'); return; }
+      if (file.size > MAX_FILE_BYTES) { setSupStatus(SUP_ERR.IMAGE_TOO_LARGE, 'err'); return; }
+      supBtn.disabled = true;
+      setSupStatus('제출 중입니다. 잠시만 기다려 주세요...', 'processing');
+      try {
+        const dataUrl = await readFileAsDataURL(file);
+        const res = await fetch(SUBMIT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'submitSupplement', reserve: true, name: id.keys.name, building: id.keys.building, unit_no: id.keys.unit_no,
+            submission_id: id.sid, image_base64: dataUrl.slice(dataUrl.indexOf(',') + 1), image_mime: submitMime(file), image_filename: file.name })
+        });
+        if (!res.ok) throw new Error('서버 응답 오류: ' + res.status);
+        const data = await res.json();
+        if (supIdentity !== id) return; // 그사이 다시 조회했으면 예전 응답으로 화면을 바꾸지 않는다
+        if (!data.ok) {
+          if (data.error === 'ALREADY_PENDING') { supForm.style.display = 'none'; supIdentity = null; supText.textContent = SUP_PENDING_TEXT; }
+          setSupStatus(SUP_ERR[data.error] || throttleMessage(data.error) || '제출하지 못했습니다. 다시 조회한 뒤 시도해 주세요.', 'err');
+          return;
+        }
+        supForm.style.display = 'none';
+        supIdentity = null;
+        supText.textContent = SUP_PENDING_TEXT;
+        setSupStatus('추가 인증을 제출했습니다. 검수가 끝나면 메일로 알려 드립니다.', 'ok');
+      } catch (err) {
+        if (supIdentity === id) setSupStatus('제출 중 오류가 발생했습니다. 잠시 후 같은 버튼을 다시 눌러 주세요.', 'err');
+      } finally {
+        supBtn.disabled = false;
+      }
+    });
+
     // 2026-10-22: 조회 결과 상태('verified'/'processing'/'failed'/'none', 조회 전·실패는 null). runLookup이 돌려준다.
     let lookupStatus = null;
     async function runLookup() {
@@ -1583,6 +1684,7 @@
       editInfoRow.style.display = 'none';
       showLookupMembership(null);
       showLookupRoster(null);
+      showSupplement(null);
       closeEditInfoCard();
       const prevLabel = lookupBtn.textContent;
       lookupBtn.textContent = '조회 중...';
@@ -1609,11 +1711,13 @@
         lookupStatus = data.status || null; // 2026-10-22: 호출부(goToLookupTab)가 '인증 완료'일 때만 수정 화면을 열도록
         showLookupMembership(data);
         showLookupRoster(data.roster);
+        showSupplement(data, lastLookupIdentity.keys); // 2026-11-14: 임시 인증이면 안내 + 추가 인증 제출
         // 인증 결과는 표의 "인증" 줄이 보여주므로(2026-10-08) 조회가 되면 위쪽 띠는 비운다
         if (MS_AUTH[data.status]) lookupResult.className = 'lookup-result';
         if (data.status === 'processing') {
           editInfoRow.style.display = 'flex';
         } else if (data.status === 'verified') {
+          // 2026-11-14: 임시 인증 세대가 추가 인증을 검수받는 동안에도 서버가 verified로 답한다(입장코드 유지)
           // 인증 완료된 사람만 "입장코드 확인" 버튼을 보여주고, 누를 때만 팝업을 띄운다(자동 표시 안 함)
           kakaoConfig = { code: data.kakao_code || '', active: !!data.kakao_code };
           if (kakaoConfig.active && kakaoConfig.code) lookupKakaoRow.style.display = 'flex';
@@ -2041,6 +2145,16 @@
         mgName.value = (a && a.found && a.masked_name) ? a.masked_name
           : (a && a.reserve && a.reserve.found && a.reserve.masked_name) ? a.reserve.masked_name : '';
         renderApplicantInfo(data.receipt_no, data.applicant, data.building, data.unit_no, data.reserve_check);
+        // 2026-11-14 임시 인증: 예비당첨자 제출에만 체크 칸을 보이고 건마다 해제해 둔다(앞 건의 체크가 넘어오지 않게)
+        const mgProvisional = document.getElementById('mgProvisional');
+        const mgSupplementNote = document.getElementById('mgSupplementNote');
+        mgProvisional.checked = false;
+        document.getElementById('mgProvisionalRow').style.display = data.apply_type === RESERVE_TYPE ? 'flex' : 'none';
+        const wasProvisional = !!(data.reserve_check && data.reserve_check.provisional);
+        mgSupplementNote.textContent = data.supplement
+          ? "추가 인증 제출입니다 — 임시 인증 세대가 계약서 표지를 다시 올렸습니다. 계약서 표지가 맞으면 '임시 인증' 체크 없이 '성공'을 눌러 주세요(정식 인증으로 바뀝니다)."
+          : (wasProvisional ? "이 세대는 현재 임시 인증(각서) 상태입니다. 계약서 표지가 맞으면 '임시 인증' 체크 없이 '성공'을 눌러 주세요(정식 인증으로 바뀝니다)." : '');
+        mgSupplementNote.style.display = (data.supplement || wasProvisional) ? 'block' : 'none';
         if (data.image) {
           mgImage.src = data.image;
           mgImage.style.display = 'block';
@@ -2064,6 +2178,13 @@
           result: result
         };
         if (result === '실패') payload.fail_reason = failReason || '';
+        // 2026-11-14 임시 인증: 예비당첨자 제출을 각서 화면으로 승인할 때만 싣는다(서버가 예비자명단 '인증 서류' 칸에 기록)
+        const provisionalReceipt = currentItem.receipt_no || '';
+        if (result === '성공' && currentItem.apply_type === RESERVE_TYPE && document.getElementById('mgProvisional').checked) payload.provisional = true;
+        // 임시 인증 세대(추가 인증 제출 포함)를 체크 없이 승인하면 서버가 '계약서'로 바꾼다 — 바뀌었는지 응답으로 확인한다.
+        // 기준은 "지금 명단에 임시로 적혀 있는가"뿐이다(추가 인증 제출이라도 이미 '계약서'로 고쳐진 세대는 바꿀 것이 없어 경고하지 않는다)
+        const upgradeExpected = result === '성공' && currentItem.apply_type === RESERVE_TYPE && payload.provisional !== true &&
+          !!(currentItem.reserve_check && currentItem.reserve_check.provisional);
         // 2026-10-12 G42: 네트워크 오류 등으로 던져져도 버튼이 잠긴 채 남지 않게 try/finally
         let data;
         try {
@@ -2083,7 +2204,33 @@
             : '저장 중 오류가 발생했습니다: ' + (data.error || ''), 'err');
           return;
         }
-        loadNextItem();
+        // 2026-11-14: 승인은 됐는데 임시 인증 표시를 못 적은 경우(예비자명단에 없는 접수번호·H열을 다른 용도로 쓰는 시트)는 다음 건을 띄운 뒤에도 알린다
+        const provisionalMissed = payload.provisional === true && data.reserve_provisional !== true;
+        // 임시였던 세대를 정식으로 승인했는데 '계약서'로 바뀌지 않은 경우(조회 카드에 추가 인증 요청이 계속 남는다)
+        const upgradeMissed = upgradeExpected && data.reserve_supplemented !== true;
+        // 예비자명단에 이 접수번호의 다른 동/호가 이미 적혀 있어 동/호·인증 서류를 아무것도 적지 못한 경우는 원인을 따로 알린다
+        const reserveConflict = data.reserve_conflict === true;
+        await loadNextItem();
+        if (provisionalMissed || upgradeMissed) {
+          const rest = mgReviewStatus.textContent;
+          const docWord = provisionalMissed ? '임시(각서)' : '계약서';
+          let msg;
+          if (reserveConflict) {
+            msg = "승인은 저장됐지만, 예비자명단(LH)에 이 접수번호의 다른 동/호가 이미 적혀 있어 인증 서류를 기록하지 못했습니다. 접수번호 " +
+              provisionalReceipt + " 행의 F·G열(동·호)을 확인해 바로잡고, H열에 '" + docWord + "'를 직접 적어 주세요.";
+          } else if (data.reserve_marked === false) {
+            // 예비자명단에 이 접수번호 행이 없다(명단을 다시 붙였거나 접수번호가 바뀐 경우) — 머리글 문제가 아니다
+            msg = "승인은 저장됐지만, 예비자명단(LH)에서 접수번호 " + provisionalReceipt + " 행을 찾지 못해 인증 서류를 기록하지 못했습니다. 명단 C열(접수번호)을 확인하고, 그 행의 H열에 '" +
+              docWord + "'를 직접 적어 주세요.";
+          } else if (provisionalMissed) {
+            msg = "승인은 저장됐지만 '임시 인증' 표시를 기록하지 못했습니다. 예비자명단(LH) 탭 H열 머리글이 '인증 서류'인지 확인하고, 접수번호 " +
+              provisionalReceipt + " 행의 H열에 '임시(각서)'를 직접 적어 주세요.";
+          } else {
+            msg = "승인은 저장됐지만 임시 인증을 정식(계약서)으로 바꾸지 못했습니다. 예비자명단(LH) 탭 H열 머리글이 '인증 서류'인지 확인하고, 접수번호 " +
+              provisionalReceipt + " 행의 H열을 '계약서'로 직접 고쳐 주세요(그대로 두면 조회 화면에 추가 인증 요청이 계속 보입니다).";
+          }
+          setMgReviewStatus(msg + (rest ? '\n' + rest : ''), 'err');
+        }
       }
 
       const MG_FAIL_REASON_PRESETS = {
@@ -2258,6 +2405,7 @@
           tr.appendChild(label);
           tr.appendChild(msEl('td', '', String(t.count)));
           tr.appendChild(msEl('td', '', String(t.verified)));
+          tr.appendChild(msEl('td', '', t.provisional == null ? '-' : String(t.provisional))); // 각서로 승인돼 계약서 추가 인증을 기다리는 세대
           tr.appendChild(msEl('td', '', String(t.limit) + (t.is_default ? ' (기본값)' : '')));
           const td = document.createElement('td');
           const input = document.createElement('input');
