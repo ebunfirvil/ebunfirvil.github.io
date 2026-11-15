@@ -19,6 +19,8 @@ _originals/
 *.md
 *status.html
 
-# 예외: 페이지가 읽어 그리는 공개용 내용 파일 (qna.html → qna-data.md, contract-tips.html → contract-tips-data.md)
-!qna-data.md
-!contract-tips-*.md
+# 2026-11-15: Q&A·계약 후기 & Tip 페이지는 공개 저장소에서 내림 — 파일은 로컬에만 둠
+# (내용 파일 qna-data.md·contract-tips-*.md는 위 *.md 규칙으로 함께 제외된다)
+qna.html
+contract-tips.html
+img/qna/
