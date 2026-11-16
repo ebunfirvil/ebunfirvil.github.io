@@ -1583,6 +1583,27 @@
     .news-body p a { color: var(--orange); font-weight: 600; text-decoration: none; }
     .news-body p a:hover { text-decoration: underline; }
 
+    /* 2026-11-16: 최근 소식 5건만 보이고, 위쪽 '이전 소식 더 보기' 버튼으로 나머지를 펼친다(스크립트가 없으면 전부 보임) */
+    .news-item.news-old { display: none; }
+    .news-more {
+      align-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border: 1px solid var(--orange);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--orange);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .news-more:hover { background: var(--orange); color: var(--white); }
+    .news-more[hidden] { display: none; }
+
     .news-tag {
       display: inline-block;
       background: rgba(232, 98, 46, 0.15);
@@ -2986,6 +3007,7 @@
         <p>단지 관련 최신 뉴스를 확인하세요</p>
       </div>
       <div class="news-list">
+        <button type="button" class="news-more" id="newsMore" hidden><i class="fas fa-chevron-up"></i> <span id="newsMoreText">이전 소식 더 보기</span></button>
         <div class="news-item fade-in">
           <div class="news-date">
             <span class="day">05.29</span>
@@ -3316,6 +3338,22 @@
     }, { threshold: 0.1 });
 
     fadeElements.forEach(el => observer.observe(el));
+
+    // 뉴스: 최근 5건만 보이고 위쪽 버튼으로 이전 소식을 펼친다(2026-11-16). 목록은 오래된 것이 위, 최신이 아래.
+    (function () {
+      var NEWS_SHOWN = 5;
+      var items = document.querySelectorAll('#news .news-item');
+      var btn = document.getElementById('newsMore');
+      var hiddenCount = items.length - NEWS_SHOWN;
+      if (!btn || hiddenCount <= 0) return;
+      for (var i = 0; i < hiddenCount; i++) items[i].classList.add('news-old');
+      document.getElementById('newsMoreText').textContent = '이전 소식 ' + hiddenCount + '건 더 보기';
+      btn.hidden = false;
+      btn.addEventListener('click', function () {
+        for (var j = 0; j < items.length; j++) items[j].classList.remove('news-old');
+        btn.hidden = true;
+      });
+    })();
 
     // Close mobile nav on link click
     document.querySelectorAll('#mainNav a').forEach(link => {
