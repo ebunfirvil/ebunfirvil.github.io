@@ -1597,6 +1597,19 @@
     }
     .news-item.news-peek:hover, .news-item.news-peek:focus-visible { opacity: 0.85; transform: none; box-shadow: none; }
     .news-item.news-peek:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+    /* 2026-11-16: 위 겹꺽쇠 = 한 칸씩 위 소식 펼치기, 아래 겹꺽쇠 = 한 칸씩 다시 접기 */
+    .news-nav { display: flex; justify-content: center; gap: 12px; }
+    .news-nav[hidden], .news-nav button[hidden] { display: none; }
+    .news-nav button {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; padding: 0;
+      border: 0; border-radius: 50%;
+      background: transparent; color: var(--orange);
+      cursor: pointer; opacity: 0.75;
+      transition: opacity 0.2s ease, background 0.2s ease;
+    }
+    .news-nav button:hover, .news-nav button:focus-visible { opacity: 1; background: rgba(232, 98, 46, 0.1); }
+    .news-nav button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 
     .news-tag {
       display: inline-block;
@@ -3001,6 +3014,10 @@
         <p>단지 관련 최신 뉴스를 확인하세요</p>
       </div>
       <div class="news-list">
+        <div class="news-nav" id="newsNav" hidden>
+          <button type="button" id="newsUp" aria-label="이전 소식 한 칸 더 보기" title="이전 소식 한 칸 더 보기"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M6 12l6-6 6 6M6 18l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="button" id="newsDown" aria-label="펼친 소식 한 칸 접기" title="펼친 소식 한 칸 접기" hidden><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M6 6l6 6 6-6M6 12l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
         <div class="news-item fade-in">
           <div class="news-date">
             <span class="day">05.29</span>
@@ -3332,32 +3349,39 @@
 
     fadeElements.forEach(el => observer.observe(el));
 
-    // 뉴스: 최근 5건만 보이고, 그 바로 위 소식 하나를 흐리게 살짝 보여 준다. 흐린 소식을 누르면(또는 Enter/Space)
-    // 이전 소식이 모두 펼쳐진다(2026-11-16). 목록은 오래된 것이 위, 최신이 아래.
+    // 뉴스(2026-11-16): 최근 5건만 또렷하게, 그 바로 위 소식 하나는 흐리게 살짝 보인다.
+    // 위 겹꺽쇠(또는 흐린 소식)를 누르면 한 칸씩 위 소식이 펼쳐지고, 아래 겹꺽쇠를 누르면 한 칸씩 다시 접힌다.
+    // 목록은 오래된 것이 위, 최신이 아래. 스크립트가 없으면 전부 보임.
     (function () {
-      var NEWS_SHOWN = 5;
+      var MIN_SHOWN = 5;
       var items = document.querySelectorAll('#news .news-item');
-      var hiddenCount = items.length - NEWS_SHOWN;
-      if (hiddenCount <= 0) return;
-      var peek = items[hiddenCount - 1];
-      for (var i = 0; i < hiddenCount - 1; i++) items[i].classList.add('news-old');
-      peek.classList.add('news-peek');
-      peek.setAttribute('role', 'button');
-      peek.setAttribute('tabindex', '0');
-      peek.setAttribute('aria-label', '이전 소식 ' + hiddenCount + '건 펼치기');
-      peek.setAttribute('title', '이전 소식 펼치기');
-      function expand(e) {
-        if (e) e.preventDefault();
-        for (var j = 0; j < items.length; j++) items[j].classList.remove('news-old');
-        peek.classList.remove('news-peek');
-        peek.removeAttribute('role'); peek.removeAttribute('tabindex');
-        peek.removeAttribute('aria-label'); peek.removeAttribute('title');
-        peek.removeEventListener('click', expand);
-        peek.removeEventListener('keydown', onKey);
+      var nav = document.getElementById('newsNav');
+      var up = document.getElementById('newsUp');
+      var down = document.getElementById('newsDown');
+      if (!nav || items.length <= MIN_SHOWN) return;
+      var shown = MIN_SHOWN;
+      function render() {
+        var first = items.length - shown;          // 또렷하게 보이는 첫 소식
+        for (var i = 0; i < items.length; i++) {
+          var it = items[i];
+          var isPeek = i === first - 1;
+          it.classList.toggle('news-old', i < first - 1);
+          it.classList.toggle('news-peek', isPeek);
+          if (isPeek) { it.setAttribute('aria-hidden', 'true'); } else { it.removeAttribute('aria-hidden'); }
+        }
+        up.hidden = shown >= items.length;
+        down.hidden = shown <= MIN_SHOWN;
+        nav.hidden = false;
       }
-      function onKey(e) { if (e.key === 'Enter' || e.key === ' ') expand(e); }
-      peek.addEventListener('click', expand);
-      peek.addEventListener('keydown', onKey);
+      function more() { if (shown < items.length) { shown++; render(); } }
+      up.addEventListener('click', more);
+      down.addEventListener('click', function () { if (shown > MIN_SHOWN) { shown--; render(); } });
+      for (var k = 0; k < items.length; k++) {
+        items[k].addEventListener('click', function (e) {
+          if (this.classList.contains('news-peek')) { e.preventDefault(); more(); }
+        });
+      }
+      render();
     })();
 
     // Close mobile nav on link click
