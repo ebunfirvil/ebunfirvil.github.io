@@ -1589,10 +1589,12 @@
       align-self: center;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 22px;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
       border: 1px solid var(--orange);
-      border-radius: 999px;
+      border-radius: 50%;
       background: transparent;
       color: var(--orange);
       font: inherit;
@@ -3007,7 +3009,7 @@
         <p>단지 관련 최신 뉴스를 확인하세요</p>
       </div>
       <div class="news-list">
-        <button type="button" class="news-more" id="newsMore" hidden><i class="fas fa-chevron-up"></i> <span id="newsMoreText">이전 소식 더 보기</span></button>
+        <button type="button" class="news-more" id="newsMore" hidden aria-label="이전 소식 더 보기" title="이전 소식 더 보기"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 15l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="news-item fade-in">
           <div class="news-date">
             <span class="day">05.29</span>
@@ -3347,7 +3349,6 @@
       var hiddenCount = items.length - NEWS_SHOWN;
       if (!btn || hiddenCount <= 0) return;
       for (var i = 0; i < hiddenCount; i++) items[i].classList.add('news-old');
-      document.getElementById('newsMoreText').textContent = '이전 소식 ' + hiddenCount + '건 더 보기';
       btn.hidden = false;
       btn.addEventListener('click', function () {
         for (var j = 0; j < items.length; j++) items[j].classList.remove('news-old');
