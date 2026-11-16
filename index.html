@@ -1583,28 +1583,20 @@
     .news-body p a { color: var(--orange); font-weight: 600; text-decoration: none; }
     .news-body p a:hover { text-decoration: underline; }
 
-    /* 2026-11-16: 최근 소식 5건만 보이고, 위쪽 '이전 소식 더 보기' 버튼으로 나머지를 펼친다(스크립트가 없으면 전부 보임) */
+    /* 2026-11-16: 최근 소식 5건만 또렷하게 보이고, 바로 위 소식 하나는 위로 갈수록 흐려지게 살짝만 보인다.
+       흐린 소식을 누르면 이전 소식이 그 자리(최근 5건 바로 위)에 펼쳐진다. 스크립트가 없으면 전부 보임. */
     .news-item.news-old { display: none; }
-    .news-more {
-      align-self: center;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      border: 1px solid var(--orange);
-      border-radius: 50%;
-      background: transparent;
-      color: var(--orange);
-      font: inherit;
-      font-size: 0.9rem;
-      font-weight: 600;
+    .news-item.news-peek {
+      max-height: 64px;
+      overflow: hidden;
+      opacity: 0.55;
       cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 100%);
+      transition: opacity 0.2s ease;
     }
-    .news-more:hover { background: var(--orange); color: var(--white); }
-    .news-more[hidden] { display: none; }
+    .news-item.news-peek:hover, .news-item.news-peek:focus-visible { opacity: 0.85; transform: none; box-shadow: none; }
+    .news-item.news-peek:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 
     .news-tag {
       display: inline-block;
@@ -3009,7 +3001,6 @@
         <p>단지 관련 최신 뉴스를 확인하세요</p>
       </div>
       <div class="news-list">
-        <button type="button" class="news-more" id="newsMore" hidden aria-label="이전 소식 더 보기" title="이전 소식 더 보기"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 15l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="news-item fade-in">
           <div class="news-date">
             <span class="day">05.29</span>
@@ -3341,19 +3332,32 @@
 
     fadeElements.forEach(el => observer.observe(el));
 
-    // 뉴스: 최근 5건만 보이고 위쪽 버튼으로 이전 소식을 펼친다(2026-11-16). 목록은 오래된 것이 위, 최신이 아래.
+    // 뉴스: 최근 5건만 보이고, 그 바로 위 소식 하나를 흐리게 살짝 보여 준다. 흐린 소식을 누르면(또는 Enter/Space)
+    // 이전 소식이 모두 펼쳐진다(2026-11-16). 목록은 오래된 것이 위, 최신이 아래.
     (function () {
       var NEWS_SHOWN = 5;
       var items = document.querySelectorAll('#news .news-item');
-      var btn = document.getElementById('newsMore');
       var hiddenCount = items.length - NEWS_SHOWN;
-      if (!btn || hiddenCount <= 0) return;
-      for (var i = 0; i < hiddenCount; i++) items[i].classList.add('news-old');
-      btn.hidden = false;
-      btn.addEventListener('click', function () {
+      if (hiddenCount <= 0) return;
+      var peek = items[hiddenCount - 1];
+      for (var i = 0; i < hiddenCount - 1; i++) items[i].classList.add('news-old');
+      peek.classList.add('news-peek');
+      peek.setAttribute('role', 'button');
+      peek.setAttribute('tabindex', '0');
+      peek.setAttribute('aria-label', '이전 소식 ' + hiddenCount + '건 펼치기');
+      peek.setAttribute('title', '이전 소식 펼치기');
+      function expand(e) {
+        if (e) e.preventDefault();
         for (var j = 0; j < items.length; j++) items[j].classList.remove('news-old');
-        btn.hidden = true;
-      });
+        peek.classList.remove('news-peek');
+        peek.removeAttribute('role'); peek.removeAttribute('tabindex');
+        peek.removeAttribute('aria-label'); peek.removeAttribute('title');
+        peek.removeEventListener('click', expand);
+        peek.removeEventListener('keydown', onKey);
+      }
+      function onKey(e) { if (e.key === 'Enter' || e.key === ' ') expand(e); }
+      peek.addEventListener('click', expand);
+      peek.addEventListener('keydown', onKey);
     })();
 
     // Close mobile nav on link click
