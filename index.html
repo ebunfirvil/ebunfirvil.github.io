@@ -1583,24 +1583,21 @@
     .news-body p a { color: var(--orange); font-weight: 600; text-decoration: none; }
     .news-body p a:hover { text-decoration: underline; }
 
-    /* 2026-11-16: 최근 소식 5건만 또렷하게 보이고, 바로 위 소식 하나는 위로 갈수록 흐려지게 살짝만 보인다.
-       흐린 소식을 누르면 이전 소식이 그 자리(최근 5건 바로 위)에 펼쳐진다. 스크립트가 없으면 전부 보임. */
-    .news-item.news-old { display: none; }
-    .news-item.news-peek {
+    /* 2026-11-16: 뉴스·주요 일정 공용 '5건 창'. 창 밖 항목은 숨기고, 창 바로 위/아래 항목 하나는 흐리게 살짝 보인다.
+       겹꺽쇠 버튼(위/아래)이나 흐린 항목을 누르면 창이 한 칸씩 굴러가듯 움직인다. 스크립트가 없으면 전부 보임. */
+    .roll-hide { display: none !important; }
+    .roll-peek-top, .roll-peek-bottom {
       max-height: 64px;
       overflow: hidden;
       opacity: 0.55;
       cursor: pointer;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 100%);
-      mask-image: linear-gradient(to bottom, transparent 0%, #000 100%);
-      transition: opacity 0.2s ease;
     }
-    .news-item.news-peek:hover, .news-item.news-peek:focus-visible { opacity: 0.85; transform: none; box-shadow: none; }
-    .news-item.news-peek:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
-    /* 2026-11-16: 위 겹꺽쇠 = 한 칸씩 위 소식 펼치기, 아래 겹꺽쇠 = 한 칸씩 다시 접기 */
-    .news-nav { display: flex; justify-content: center; gap: 12px; }
-    .news-nav[hidden], .news-nav button[hidden] { display: none; }
-    .news-nav button {
+    .roll-peek-top { -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 100%); }
+    .roll-peek-bottom { -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 100%); mask-image: linear-gradient(to top, transparent 0%, #000 100%); }
+    .roll-peek-top:hover, .roll-peek-bottom:hover { opacity: 0.85; transform: none; box-shadow: none; }
+    .roll-nav { display: flex; justify-content: center; gap: 12px; }
+    .roll-nav[hidden] { display: none; }
+    .roll-nav button {
       display: inline-flex; align-items: center; justify-content: center;
       width: 72px; height: 40px; padding: 0;
       border: 0; border-radius: 999px;
@@ -1608,8 +1605,10 @@
       cursor: pointer; opacity: 0.75;
       transition: opacity 0.2s ease, background 0.2s ease;
     }
-    .news-nav button:hover, .news-nav button:focus-visible { opacity: 1; background: rgba(232, 98, 46, 0.1); }
-    .news-nav button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+    .roll-nav button:hover, .roll-nav button:focus-visible { opacity: 1; background: rgba(232, 98, 46, 0.1); }
+    .roll-nav button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+    .timeline-wrap > .roll-nav:first-child { margin-bottom: 12px; }
+    .timeline-wrap > .roll-nav:last-child { margin-top: 12px; }
 
     .news-tag {
       display: inline-block;
@@ -2897,6 +2896,10 @@
         <h2>주요 일정</h2>
         <p>2026년 기준 주요 청약 및 계약 일정</p>
       </div>
+      <div class="timeline-wrap">
+      <div class="roll-nav" id="timelineNav" hidden>
+        <button type="button" id="timelineUp" aria-label="이전 일정 한 칸 보기" title="이전 일정 한 칸 보기"><svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true"><path d="M6 12l14-6 14 6M6 19l14-6 14 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
       <div class="timeline">
         <div class="timeline-item fade-in" data-start="2026-05-29" data-end="2026-05-29">
           <div class="timeline-content">
@@ -2978,6 +2981,10 @@
           </div>
         </div>
       </div>
+      <div class="roll-nav" id="timelineNavBottom" hidden>
+        <button type="button" id="timelineDown" aria-label="다음 일정 한 칸 보기" title="다음 일정 한 칸 보기"><svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true"><path d="M6 5l14 6 14-6M6 12l14 6 14-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      </div>
     </div>
   </section>
 
@@ -3014,7 +3021,7 @@
         <p>단지 관련 최신 뉴스를 확인하세요</p>
       </div>
       <div class="news-list">
-        <div class="news-nav" id="newsNav" hidden>
+        <div class="roll-nav" id="newsNav" hidden>
           <button type="button" id="newsUp" aria-label="이전 소식 한 칸 더 보기" title="이전 소식 한 칸 더 보기"><svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true"><path d="M6 12l14-6 14 6M6 19l14-6 14 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
         <div class="news-item fade-in">
@@ -3138,7 +3145,7 @@
             <p>2026.11.16 기준 전체 933세대 중 70%가 넘는 세대가 위임장을 제출해 주셨습니다. 10월 1일 50%를 넘긴 지 한 달 반 만입니다. 참여해 주신 모든 분들께 감사드리며, 아직 제출하지 않으신 분들도 함께해 주세요.<br><a href="https://doc.signok.com/linkUrl?aQaaDwnow6kE" target="_blank" rel="noopener"><i class="fas fa-file-signature"></i> 위임장 제출하기 →</a></p>
           </div>
         </div>
-        <div class="news-nav" id="newsNavBottom" hidden>
+        <div class="roll-nav" id="newsNavBottom" hidden>
           <button type="button" id="newsDown" aria-label="펼친 소식 한 칸 접기" title="펼친 소식 한 칸 접기"><svg viewBox="0 0 40 24" width="40" height="24" aria-hidden="true"><path d="M6 5l14 6 14-6M6 12l14 6 14-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </div>
@@ -3351,44 +3358,6 @@
 
     fadeElements.forEach(el => observer.observe(el));
 
-    // 뉴스(2026-11-16): 5건씩 보이는 창. 처음엔 최신 5건, 그 바로 위 소식 하나는 흐리게 살짝 보인다.
-    // 위 겹꺽쇠(또는 흐린 소식)를 누르면 창이 한 칸 위로(이전 소식 하나 들어오고 맨 아래 최신 하나 빠짐),
-    // 목록 맨 아래 겹꺽쇠를 누르면 한 칸 아래로. 아래 겹꺽쇠는 맨 밑이 최신 소식이 아닐 때만 보인다.
-    // 목록은 오래된 것이 위, 최신이 아래. 스크립트가 없으면 전부 보임.
-    (function () {
-      var WINDOW = 5;
-      var items = document.querySelectorAll('#news .news-item');
-      var nav = document.getElementById('newsNav');
-      var up = document.getElementById('newsUp');
-      var down = document.getElementById('newsDown');
-      var navBottom = document.getElementById('newsNavBottom');
-      if (!nav || !navBottom || items.length <= WINDOW) return;
-      var maxOffset = items.length - WINDOW;
-      var offset = 0;                              // 0 = 맨 밑이 최신
-      function render() {
-        var last = items.length - 1 - offset;      // 창의 맨 아래
-        var first = last - WINDOW + 1;             // 창의 맨 위
-        for (var i = 0; i < items.length; i++) {
-          var it = items[i];
-          var isPeek = i === first - 1;
-          it.classList.toggle('news-old', i < first - 1 || i > last);
-          it.classList.toggle('news-peek', isPeek);
-          if (isPeek) { it.setAttribute('aria-hidden', 'true'); } else { it.removeAttribute('aria-hidden'); }
-        }
-        nav.hidden = offset >= maxOffset;          // 위로 더 갈 소식이 있을 때만
-        navBottom.hidden = offset <= 0;            // 맨 밑이 최신이 아닐 때만
-      }
-      function goUp() { if (offset < maxOffset) { offset++; render(); } }
-      up.addEventListener('click', goUp);
-      down.addEventListener('click', function () { if (offset > 0) { offset--; render(); } });
-      for (var k = 0; k < items.length; k++) {
-        items[k].addEventListener('click', function (e) {
-          if (this.classList.contains('news-peek')) { e.preventDefault(); goUp(); }
-        });
-      }
-      render();
-    })();
-
     // Close mobile nav on link click
     document.querySelectorAll('#mainNav a').forEach(link => {
       link.addEventListener('click', () => {
@@ -3477,6 +3446,77 @@
 
     updateTimelineProgress();
     setInterval(updateTimelineProgress, 3600000); // 매시간 재확인 (자정 넘어가는 경우 대비)
+
+    // 2026-11-16: 뉴스·주요 일정 공용 '5건 창'. 위 겹꺽쇠(또는 위쪽 흐린 항목)를 누르면 창이 한 칸 위로,
+    // 아래 겹꺽쇠(또는 아래쪽 흐린 항목)를 누르면 한 칸 아래로 굴러가듯 움직인다(FLIP: 남는 항목은 제자리에서 미끄러지고,
+    // 새로 들어오는 항목은 그 방향에서 밀려 들어온다). 버튼은 그쪽에 더 볼 항목이 있을 때만 보인다.
+    function setupRoller(o) {
+      var items = o.items, n = items.length, W = o.size;
+      if (!o.topNav || !o.bottomNav || n <= W) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var first = Math.max(0, Math.min(n - W, o.start));   // 창의 맨 위 항목 번호
+      function apply() {
+        for (var i = 0; i < n; i++) {
+          var it = items[i];
+          var inWin = i >= first && i < first + W;
+          var top = i === first - 1, bottom = i === first + W;
+          it.classList.toggle('roll-hide', !inWin && !top && !bottom);
+          it.classList.toggle('roll-peek-top', top);
+          it.classList.toggle('roll-peek-bottom', bottom);
+          if (top || bottom) { it.setAttribute('aria-hidden', 'true'); } else { it.removeAttribute('aria-hidden'); }
+          if (inWin || top || bottom) it.classList.add('visible');   // fade-in 관찰자를 기다리지 않게
+        }
+        o.topNav.hidden = first <= 0;
+        o.bottomNav.hidden = first + W >= n;
+      }
+      function move(step) {
+        var next = Math.max(0, Math.min(n - W, first + step));
+        if (next === first) return;
+        var before = new Map();
+        for (var i = 0; i < n; i++) if (!items[i].classList.contains('roll-hide')) before.set(items[i], items[i].getBoundingClientRect().top);
+        first = next; apply();
+        if (reduce || !items[0].animate) return;
+        var opts = {duration: 420, easing: 'cubic-bezier(.22,.8,.24,1)'};
+        for (var k = 0; k < n; k++) {
+          var el = items[k];
+          if (el.classList.contains('roll-hide')) continue;
+          var nowTop = el.getBoundingClientRect().top;
+          if (before.has(el)) {
+            var dy = before.get(el) - nowTop;
+            if (Math.abs(dy) > 1) el.animate([{transform: 'translateY(' + dy + 'px)'}, {transform: 'translateY(0)'}], opts);
+          } else {
+            el.animate([{opacity: 0, transform: 'translateY(' + (step < 0 ? -36 : 36) + 'px)'}], opts);
+          }
+        }
+      }
+      o.upBtn.addEventListener('click', function () { move(-1); });
+      o.downBtn.addEventListener('click', function () { move(1); });
+      for (var k = 0; k < n; k++) {
+        items[k].addEventListener('click', function (e) {
+          if (this.classList.contains('roll-peek-top')) { e.preventDefault(); move(-1); }
+          else if (this.classList.contains('roll-peek-bottom')) { e.preventDefault(); move(1); }
+        });
+      }
+      apply();
+    }
+
+    // 뉴스: 오래된 것이 위, 최신이 아래 — 처음엔 최신 5건(맨 밑이 최신이면 아래 버튼 없음)
+    (function () {
+      var items = document.querySelectorAll('#news .news-item');
+      setupRoller({items: items, size: 5, start: items.length - 5,
+        topNav: document.getElementById('newsNav'), upBtn: document.getElementById('newsUp'),
+        bottomNav: document.getElementById('newsNavBottom'), downBtn: document.getElementById('newsDown')});
+    })();
+
+    // 주요 일정: 처음엔 진행 중/다음 일정이 위에서 두 번째에 오도록(그 위에 지난 일정 하나)
+    (function () {
+      var items = document.querySelectorAll('#timeline .timeline-item');
+      var cur = items.length - 1;   // 진행 중/다음 일정이 없으면(모두 지남) 맨 끝
+      for (var i = 0; i < items.length; i++) if (items[i].classList.contains('is-current')) { cur = i; break; }
+      setupRoller({items: items, size: 5, start: cur - 1,
+        topNav: document.getElementById('timelineNav'), upBtn: document.getElementById('timelineUp'),
+        bottomNav: document.getElementById('timelineNavBottom'), downBtn: document.getElementById('timelineDown')});
+    })();
 
     // 중도금 금액 확인 모달 (입주자모집공고 기준)
     const PAY_FLOORS = ['1층', '2층', '3층', '4층', '5층 이상'];
