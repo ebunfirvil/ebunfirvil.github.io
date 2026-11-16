@@ -3351,36 +3351,39 @@
 
     fadeElements.forEach(el => observer.observe(el));
 
-    // 뉴스(2026-11-16): 최근 5건만 또렷하게, 그 바로 위 소식 하나는 흐리게 살짝 보인다.
-    // 위 겹꺽쇠(또는 흐린 소식)를 누르면 한 칸씩 위 소식이 펼쳐지고, 목록 맨 아래 겹꺽쇠를 누르면 한 칸씩 다시 접힌다.
+    // 뉴스(2026-11-16): 5건씩 보이는 창. 처음엔 최신 5건, 그 바로 위 소식 하나는 흐리게 살짝 보인다.
+    // 위 겹꺽쇠(또는 흐린 소식)를 누르면 창이 한 칸 위로(이전 소식 하나 들어오고 맨 아래 최신 하나 빠짐),
+    // 목록 맨 아래 겹꺽쇠를 누르면 한 칸 아래로. 아래 겹꺽쇠는 맨 밑이 최신 소식이 아닐 때만 보인다.
     // 목록은 오래된 것이 위, 최신이 아래. 스크립트가 없으면 전부 보임.
     (function () {
-      var MIN_SHOWN = 5;
+      var WINDOW = 5;
       var items = document.querySelectorAll('#news .news-item');
       var nav = document.getElementById('newsNav');
       var up = document.getElementById('newsUp');
       var down = document.getElementById('newsDown');
       var navBottom = document.getElementById('newsNavBottom');
-      if (!nav || !navBottom || items.length <= MIN_SHOWN) return;
-      var shown = MIN_SHOWN;
+      if (!nav || !navBottom || items.length <= WINDOW) return;
+      var maxOffset = items.length - WINDOW;
+      var offset = 0;                              // 0 = 맨 밑이 최신
       function render() {
-        var first = items.length - shown;          // 또렷하게 보이는 첫 소식
+        var last = items.length - 1 - offset;      // 창의 맨 아래
+        var first = last - WINDOW + 1;             // 창의 맨 위
         for (var i = 0; i < items.length; i++) {
           var it = items[i];
           var isPeek = i === first - 1;
-          it.classList.toggle('news-old', i < first - 1);
+          it.classList.toggle('news-old', i < first - 1 || i > last);
           it.classList.toggle('news-peek', isPeek);
           if (isPeek) { it.setAttribute('aria-hidden', 'true'); } else { it.removeAttribute('aria-hidden'); }
         }
-        nav.hidden = shown >= items.length;       // 위 겹꺽쇠: 더 펼칠 소식이 있을 때만
-        navBottom.hidden = shown <= MIN_SHOWN;     // 아래 겹꺽쇠(목록 맨 아래): 한 칸이라도 펼쳤을 때만
+        nav.hidden = offset >= maxOffset;          // 위로 더 갈 소식이 있을 때만
+        navBottom.hidden = offset <= 0;            // 맨 밑이 최신이 아닐 때만
       }
-      function more() { if (shown < items.length) { shown++; render(); } }
-      up.addEventListener('click', more);
-      down.addEventListener('click', function () { if (shown > MIN_SHOWN) { shown--; render(); } });
+      function goUp() { if (offset < maxOffset) { offset++; render(); } }
+      up.addEventListener('click', goUp);
+      down.addEventListener('click', function () { if (offset > 0) { offset--; render(); } });
       for (var k = 0; k < items.length; k++) {
         items[k].addEventListener('click', function (e) {
-          if (this.classList.contains('news-peek')) { e.preventDefault(); more(); }
+          if (this.classList.contains('news-peek')) { e.preventDefault(); goUp(); }
         });
       }
       render();
