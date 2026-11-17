@@ -134,7 +134,8 @@
     nav ul li a {
       color: rgba(255,255,255,0.85);
       text-decoration: none;
-      padding: 8px 16px;
+      padding: 8px 12px;   /* 2026-11-18: '서비스' 메뉴 추가로 16→12px(한 줄 유지) */
+      white-space: nowrap;
       border-radius: 6px;
       font-size: 0.9rem;
       font-weight: 500;
@@ -1753,6 +1754,22 @@
       padding: 10px 24px;
     }
 
+    /* 2026-11-18: 입주민 서비스 — 카드(community-card 모양 재사용)를 늘려 가는 칸 */
+    #services { background: var(--white); }
+    .service-grid { display: flex; flex-wrap: wrap; justify-content: center; }
+    .service-grid > .community-card { flex: 0 1 370px; }
+    .cc-service { background: linear-gradient(135deg, var(--orange), var(--orange-light)); color: var(--white); }
+    .service-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+      color: var(--white); background: var(--orange); border-radius: 999px; padding: 2px 8px;
+      margin-left: 6px; vertical-align: middle;
+    }
+    .service-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .service-actions .btn-ghost {
+      background: var(--white); color: var(--orange); border: 2px solid var(--orange);
+    }
+    .service-actions .btn-ghost:hover { transform: translateY(-2px); }
+
     /* ===== CONTACT - 베이지 배경 ===== */
     #contact {
       background: var(--beige);
@@ -2197,6 +2214,7 @@
           <li><a href="#main" class="active">메인</a></li>
           <li><a href="#about">개요</a></li>
           <li><a href="#plans">평형</a></li>
+          <li><a href="#services">서비스</a></li>
           <li><a href="#siteinfo">단지안내</a></li>
           <li><a href="#timeline">일정</a></li>
           <li><a href="#news">뉴스</a></li>
@@ -2272,6 +2290,10 @@
       </div>
       <!-- 2026-10-12: 청약 접수·당첨자 제출 단계가 끝나 메인 버튼에서 뺌(페이지 apply-precautions.html·apply-documents.html은 그대로 둠) -->
       <!-- 2026-11-15: 정당계약이 끝나 계약 구비 서류·계약 자주 묻는 질문 버튼도 뺌(페이지 contract-documents.html·contract-faq.html은 그대로 둠) -->
+      <!-- 2026-11-18: 새로 연 서비스 바로가기 자리. 오픈 안내 기간이 끝나면 빼거나 다음 새 서비스로 바꿔 끼운다 -->
+      <div class="hero-buttons">
+        <a href="3d-walkthrough.html" class="btn btn-primary"><i class="fas fa-cube"></i> 3D 워크스루 걸어 보기</a>
+      </div>
     </div>
     <div class="scroll-indicator">
       <i class="fas fa-chevron-down"></i>
@@ -2426,6 +2448,29 @@
           <div class="units">10세대</div>
           <div class="price">약 6.7억 ~ 6.8억 원</div>
           <div class="floorplan-hint"><i class="fas fa-search-plus"></i> 평면도 보기</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES (입주민 서비스, 2026-11-18 추가) — 새 서비스는 service-grid에 카드 하나씩 추가 ===== -->
+  <section id="services">
+    <div class="container">
+      <div class="section-header fade-in">
+        <div class="section-tag">SERVICES</div>
+        <h2>입주민 서비스</h2>
+        <p>입주 전에 미리 써 보는 우리 단지 서비스</p>
+      </div>
+      <div class="community-grid service-grid">
+        <div class="community-card fade-in">
+          <div class="community-card-icon cc-service"><i class="fas fa-cube"></i></div>
+          <h3>3D 워크스루<span class="service-badge">NEW</span></h3>
+          <p>현관부터 거실 창 앞까지<br>우리 집을 미리 걸어 보세요</p>
+          <p style="font-size:0.8rem;">제작: 호랑이님</p>
+          <div class="service-actions">
+            <a href="3d-walkthrough.html" class="btn btn-primary"><i class="fas fa-walking"></i> 걸어 보기</a>
+            <a href="files/3d-walkthrough-intro.mp4" target="_blank" rel="noopener" class="btn btn-ghost"><i class="fas fa-play"></i> 소개 영상</a>
+          </div>
         </div>
       </div>
     </div>
