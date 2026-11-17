@@ -1583,7 +1583,7 @@
     .news-body p a { color: var(--orange); font-weight: 600; text-decoration: none; }
     .news-body p a:hover { text-decoration: underline; }
 
-    /* 2026-11-16: 뉴스·주요 일정 공용 '5건 창'. 창 밖 항목은 숨기고, 창 바로 위/아래 항목 하나는 흐리게 살짝 보인다.
+    /* 2026-11-16: 뉴스·주요 일정 공용 '3건 창'. 창 밖 항목은 숨기고, 창 바로 위/아래 항목 하나는 흐리게 살짝 보인다.
        겹꺽쇠 버튼(위/아래)이나 흐린 항목을 누르면 창이 한 칸씩 굴러가듯 움직인다. 스크립트가 없으면 전부 보임. */
     .roll-hide { display: none !important; }
     .roll-peek-top, .roll-peek-bottom {
@@ -3447,7 +3447,7 @@
     updateTimelineProgress();
     setInterval(updateTimelineProgress, 3600000); // 매시간 재확인 (자정 넘어가는 경우 대비)
 
-    // 2026-11-16: 뉴스·주요 일정 공용 '5건 창'. 위 겹꺽쇠(또는 위쪽 흐린 항목)를 누르면 창이 한 칸 위로,
+    // 2026-11-16: 뉴스·주요 일정 공용 '3건 창'. 위 겹꺽쇠(또는 위쪽 흐린 항목)를 누르면 창이 한 칸 위로,
     // 아래 겹꺽쇠(또는 아래쪽 흐린 항목)를 누르면 한 칸 아래로 굴러가듯 움직인다(FLIP: 남는 항목은 제자리에서 미끄러지고,
     // 새로 들어오는 항목은 그 방향에서 밀려 들어온다). 버튼은 그쪽에 더 볼 항목이 있을 때만 보인다.
     function setupRoller(o) {
@@ -3500,10 +3500,10 @@
       apply();
     }
 
-    // 뉴스: 오래된 것이 위, 최신이 아래 — 처음엔 최신 5건(맨 밑이 최신이면 아래 버튼 없음)
+    // 뉴스: 오래된 것이 위, 최신이 아래 — 처음엔 최신 3건(맨 밑이 최신이면 아래 버튼 없음)
     (function () {
       var items = document.querySelectorAll('#news .news-item');
-      setupRoller({items: items, size: 5, start: items.length - 5,
+      setupRoller({items: items, size: 3, start: items.length - 3,
         topNav: document.getElementById('newsNav'), upBtn: document.getElementById('newsUp'),
         bottomNav: document.getElementById('newsNavBottom'), downBtn: document.getElementById('newsDown')});
     })();
@@ -3513,7 +3513,7 @@
       var items = document.querySelectorAll('#timeline .timeline-item');
       var cur = items.length - 1;   // 진행 중/다음 일정이 없으면(모두 지남) 맨 끝
       for (var i = 0; i < items.length; i++) if (items[i].classList.contains('is-current')) { cur = i; break; }
-      setupRoller({items: items, size: 5, start: cur - 1,
+      setupRoller({items: items, size: 3, start: cur - 1,
         topNav: document.getElementById('timelineNav'), upBtn: document.getElementById('timelineUp'),
         bottomNav: document.getElementById('timelineNavBottom'), downBtn: document.getElementById('timelineDown')});
     })();
