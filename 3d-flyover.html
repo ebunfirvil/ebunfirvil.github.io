@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noai, noimageai">
+  <title>단지 3D 플라이오버 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e; --orange-dark: #c44e1e; --orange-light: #f0864e;
+      --navy: #1a3a5c; --navy-dark: #0d1b2a; --beige: #fdf8f5; --white: #ffffff;
+      --shadow-lg: 0 8px 28px rgba(26,58,92,0.18);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--navy-dark); color: var(--white); }
+    .btn { padding: 11px 20px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.92rem; font-family: inherit;
+      color: var(--white); background: linear-gradient(135deg, var(--orange), var(--orange-light)); cursor: pointer; white-space: nowrap; }
+    .btn:hover { box-shadow: var(--shadow-lg); }
+
+    /* ---- 뷰어: 얇은 주황 막대 + 나머지 전체가 격리 iframe ---- */
+    .viewer { position: fixed; left: 0; right: 0; top: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+    .bar { background: linear-gradient(90deg, var(--orange), var(--orange-dark)); color: var(--white); height: 40px; padding: 0 10px;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .bar a.back { color: var(--white); text-decoration: none; font-size: 0.85rem; white-space: nowrap; padding: 5px 8px; border-radius: 6px; background: rgba(255,255,255,.16); }
+    .bar .who { flex: 1; min-width: 0; font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stage { position: relative; flex: 1; min-height: 0; background: var(--navy-dark); }
+    .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--navy-dark); }
+    .stage-note { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      padding: 24px; text-align: center; color: #fff; background: rgba(13,27,42,.94); font-size: 0.95rem; line-height: 1.6; word-break: keep-all; }
+    .stage-note .ic { font-size: 1.8rem; opacity: .85; }
+    .spinner { width: 34px; height: 34px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--orange-light); border-radius: 50%; animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 480px) { .bar .who { font-size: 0.85rem; } .bar a.back .lbl { display: none; } }
+    @media print { body > * { display: none !important; } body::after { content: '이 자료는 인쇄할 수 없습니다.'; display: block; padding: 40px; font-size: 18px; color: #000; } }
+  </style>
+  <meta name="tdm-reservation" content="1">
+</head>
+<body>
+
+<div class="viewer" id="viewer">
+  <div class="bar">
+    <a class="back" href="index.html#services"><i class="fas fa-arrow-left"></i> <span class="lbl">홈페이지</span></a>
+    <div class="who">단지 3D 플라이오버</div>
+  </div>
+  <div class="stage" id="stage">
+    <iframe id="flyFrame" title="단지 3D 플라이오버" sandbox="allow-scripts allow-pointer-lock"></iframe>
+    <div class="stage-note" id="stageNote" hidden></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // 3d-walkthrough.html 과 같은 Apps Script 배포. 본문은 docFlyOpen(인증 없음)으로 받아 격리 iframe(srcdoc)에만 띄운다.
+  var API_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
+  // 본문(iframe)이 알려 오는 이동 요청 중 허용하는 것만(메시지 안의 주소로는 이동하지 않는다)
+  var NAV_ALLOWED = { walkthrough: '3d-walkthrough.html' };
+  function $(id) { return document.getElementById(id); }
+  var seqNo = 0; // 늦게 도착한 응답을 버리기 위한 요청 번호
+
+  function api(payload) {
+    return fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+      .then(function (res) { return res.json(); });
+  }
+
+  function showNote(icon, text, retry) {
+    var note = $('stageNote');
+    note.textContent = '';
+    var ic = document.createElement('div'); ic.className = 'ic';
+    if (icon === 'spin') { var sp = document.createElement('div'); sp.className = 'spinner'; ic.appendChild(sp); }
+    else { var i = document.createElement('i'); i.className = 'fas ' + icon; ic.appendChild(i); }
+    note.appendChild(ic);
+    var p = document.createElement('div'); p.textContent = text; note.appendChild(p);
+    if (retry) {
+      var el = document.createElement('button'); el.type = 'button'; el.className = 'btn'; el.id = 'retryBtn'; el.textContent = '다시 시도';
+      el.addEventListener('click', loadFly);
+      note.appendChild(el);
+    }
+    note.hidden = false;
+  }
+
+  // 읽기 한 번. 실패하면 자동으로 다시 부르지 않고 '다시 시도' 버튼만 보여 준다.
+  function loadFly() {
+    var seq = ++seqNo;
+    $('flyFrame').srcdoc = '';
+    showNote('spin', '단지 모형을 불러오는 중입니다…');
+    api({ action: 'docFlyOpen' })
+      .then(function (r) {
+        if (seq !== seqNo) return;
+        if (r && r.ok && typeof r.html === 'string') {
+          $('flyFrame').srcdoc = r.html;      // 서버가 준 본문은 격리 iframe 의 srcdoc 에만 넣는다
+          $('stageNote').hidden = true;
+        } else if (r && (r.error === 'UNKNOWN_ACTION' || r.error === 'NOT_READY')) {
+          showNote('fa-hourglass-half', '아직 준비 중입니다. 준비가 끝나면 이 페이지에서 볼 수 있습니다.');
+        } else {
+          showNote('fa-triangle-exclamation', '불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+        }
+      })
+      .catch(function () {
+        if (seq !== seqNo) return;
+        showNote('fa-triangle-exclamation', '서버에 연결하지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.', true);
+      });
+  }
+
+  window.addEventListener('message', function (e) {
+    var frame = $('flyFrame');
+    if (!frame || e.source !== frame.contentWindow) return;            // 우리 iframe 이 보낸 것만
+    var d = e.data;
+    if (!d || typeof d !== 'object' || d.type !== 'fvNav' || typeof d.to !== 'string') return;
+    if (!Object.prototype.hasOwnProperty.call(NAV_ALLOWED, d.to)) return; // 허용 목록 밖은 무시
+    window.location.href = NAV_ALLOWED[d.to];
+  });
+
+  loadFly();
+})();
+</script>
+</body>
+</html>
