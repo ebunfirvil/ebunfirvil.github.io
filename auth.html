@@ -685,13 +685,15 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 
   // ---------- 신청 화면 ----------
   var chosenFile = null;
+  // 카페 닉네임 꼴(오너 결정 2026-11-18): '{동}동 {타입} {닉}' 한 칸씩 띄어 씀. 카톡은 '{동}동/{타입}/{닉}'
+  function cafeNick(d, t, n) { return d + '동 ' + t + ' ' + n; }
   function refreshPrefix() {
     var d = $('#dong').value, t = radioVal('type');
     var pre = d && t ? d + '동/' + t + '/' : '';
     setPre('#nickPre', pre); setPre('#fnickPre', pre);
     var body = $('#nick').value.trim() || '닉네임';
     $('#nickEx').innerHTML = pre
-      ? '카톡 <b>' + esc(pre + body) + '</b>, 카페 <b>' + esc(d + '동' + t + body) + '</b> 꼴로 맞춰 주세요. 닉네임 칸에는 뒷부분만 적으시면 됩니다.'
+      ? '카톡 <b>' + esc(pre + body) + '</b>, 카페 <b>' + esc(cafeNick(d, t, body)) + '</b> 꼴로 맞춰 주세요. 닉네임 칸에는 뒷부분만 적으시면 됩니다.'
       : '동과 타입을 고르면 닉네임 앞머리가 자동으로 붙습니다. 뒤 닉네임만 적어 주세요.';
     // 받는 사람 표시 미리보기(D82): 동 3자리 + 호 4자리(앞 0 채움) + 이름. 101동 301호 → 1010301
     var h = normHo($('#ho').value), n = $('#name').value.trim();
@@ -1056,11 +1058,11 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         '소통방 인증코드', it.kakaoCode, 'talkCodeRow', kLink, '소통방 입장하기',
         '※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.');
     }
-    html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 붙여 쓴 닉네임을 써 주세요.</p>' +
+    html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 한 칸씩 띄어 쓴 닉네임을 써 주세요.</p>' +
       '<div class="nickrow"><div><small>카카오톡 (공지방·소통방)</small><b>' + esc(it.nickKakao) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.nickKakao) + '">복사</button></div>' +
-      '<div class="nickrow"><div><small>카페 (붙여 씀)</small><b>' + esc(it.nickCafe) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.nickCafe) + '">복사</button></div>' +
+      '<div class="nickrow"><div><small>카페 (띄어 씀)</small><b>' + esc(cafeNick(it.dong, it.type, it.nick)) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(cafeNick(it.dong, it.type, it.nick)) + '">복사</button></div>' +
       (it.fnick ? '<div class="nickrow"><div><small>가족 · 카카오톡 (공지방·소통방)</small><b>' + esc(it.dong + '동/' + it.type + '/' + it.fnick) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.dong + '동/' + it.type + '/' + it.fnick) + '">복사</button></div>' +
-        '<div class="nickrow"><div><small>가족 · 카페 (붙여 씀)</small><b>' + esc(it.dong + '동' + it.type + it.fnick) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.dong + '동' + it.type + it.fnick) + '">복사</button></div>' : '') +
+        '<div class="nickrow"><div><small>가족 · 카페 (띄어 씀)</small><b>' + esc(cafeNick(it.dong, it.type, it.fnick)) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(cafeNick(it.dong, it.type, it.fnick)) + '">복사</button></div>' : '') +
       '<p class="hint" style="color:var(--bad)">※ 닉네임 양식을 지키지 않으면 방에서 추방(카페는 강퇴)될 수 있습니다.</p></div>';
     var cafe = safeUrl(it.cafeLink) || safeUrl(CONFIG.cafe);
     html += '<div class="card"><h2>카페 안내</h2><p class="lead">입주예정자협의회 카페에도 가입해 주세요. 제출하신 네이버 아이디(<b>' + esc(it.naver) + '</b>)로 가입해 주세요.' + (it.fnaver ? ' 가족은 제출하신 가족 네이버 아이디(<b>' + esc(it.fnaver) + '</b>)로 가입해 주세요.' : '') + '</p>' +
