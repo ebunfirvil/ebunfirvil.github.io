@@ -37,12 +37,30 @@
     .stage-note .ic { font-size: 1.8rem; opacity: .85; }
     .spinner { width: 34px; height: 34px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--orange-light); border-radius: 50%; animation: spin .9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    /* ---- 표지(2026-11-18): 들어오면 3초 동안 보이고 옅어지며 넘어간다. 3D 워크스루 표지와 같은 꼴, 바탕은 흰색 ---- */
+    .splash { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: #fff; color: #051C2C;
+      text-align: center; transition: opacity .8s ease; }
+    .splash.out { opacity: 0; pointer-events: none; }
+    .splash-bar { display: block; width: 44px; height: 5px; margin: 0 auto; border-radius: 3px; background: #FF671D; }
+    .splash-title { margin: 22px 0 0; font-weight: 800; line-height: 1.28; }
+    .splash-title span { display: block; font-size: clamp(21px, 5.6vw, 34px); letter-spacing: -0.03em; }
+    .splash-title strong { display: block; margin-top: 2px; font-size: clamp(34px, 9.2vw, 60px); font-weight: 800; letter-spacing: -0.04em; }
+    .splash-org { margin: clamp(36px, 7vh, 64px) 0 0; font-size: clamp(15px, 3.8vw, 18px); font-weight: 700; letter-spacing: 0.04em; color: #556474; }
+    @media (prefers-reduced-motion: reduce) { .splash { transition: none; } }
     @media (max-width: 480px) { .bar .who { font-size: 0.85rem; } .bar a.back .lbl { display: none; } }
     @media print { body > * { display: none !important; } body::after { content: '이 자료는 인쇄할 수 없습니다.'; display: block; padding: 40px; font-size: 18px; color: #000; } }
   </style>
   <meta name="tdm-reservation" content="1">
 </head>
 <body>
+
+<div class="splash" id="splash">
+  <div>
+    <span class="splash-bar" aria-hidden="true"></span>
+    <p class="splash-title"><span>e편한세상 분당 퍼스트빌리지</span><strong>플라이오버</strong></p>
+    <p class="splash-org">입주예정자협의회</p>
+  </div>
+</div>
 
 <div class="viewer" id="viewer">
   <div class="bar">
@@ -70,6 +88,20 @@
       .then(function (res) { return res.json(); });
   }
 
+  // 표지: 처음 그려진 때부터 3초는 보이고, 본문이 준비되면 옅어지며 걷힌다. 오류면 바로 걷어 안내가 보이게 한다.
+  var SPLASH_MS = 3000, splashT0 = 0, splashGone = false;
+  function splashOut(now) {
+    if (splashGone) return; splashGone = true;
+    var el = $('splash');
+    if (now === true) { el.hidden = true; return; }
+    el.classList.add('out'); setTimeout(function () { el.hidden = true; }, 900);
+  }
+  function splashReady() {
+    if (!splashT0) { requestAnimationFrame(splashReady); return; }
+    setTimeout(splashOut, Math.max(0, SPLASH_MS - (performance.now() - splashT0)));
+  }
+  requestAnimationFrame(function () { splashT0 = performance.now(); setTimeout(splashOut, 12000); }); // 끝내 준비가 안 돼도 표지는 걷는다
+
   function showNote(icon, text, retry) {
     var note = $('stageNote');
     note.textContent = '';
@@ -95,16 +127,20 @@
       .then(function (r) {
         if (seq !== seqNo) return;
         if (r && r.ok && typeof r.html === 'string') {
+          $('flyFrame').addEventListener('load', splashReady, { once: true }); // 본문 문서가 올라오면 표지를 걷을 준비
           $('flyFrame').srcdoc = r.html;      // 서버가 준 본문은 격리 iframe 의 srcdoc 에만 넣는다
           $('stageNote').hidden = true;
         } else if (r && (r.error === 'UNKNOWN_ACTION' || r.error === 'NOT_READY')) {
+          splashOut(true);
           showNote('fa-hourglass-half', '아직 준비 중입니다. 준비가 끝나면 이 페이지에서 볼 수 있습니다.');
         } else {
+          splashOut(true);
           showNote('fa-triangle-exclamation', '불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
         }
       })
       .catch(function () {
         if (seq !== seqNo) return;
+        splashOut(true);
         showNote('fa-triangle-exclamation', '서버에 연결하지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.', true);
       });
   }
