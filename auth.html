@@ -446,7 +446,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         <h2>내 정보 수정</h2>
         <p class="lead">고치시면 바로 반영되고, 등록하신 이메일로 변경 알림을 보내 드립니다. 하루 5번까지 고치실 수 있습니다.</p>
         <dl class="kv" id="eFixed"></dl>
-        <p class="hint">이름, 동, 호수, 이메일, 이체 확인증은 여기서 고칠 수 없습니다. 이메일을 바꾸시려면 문의용 오픈채팅으로 알려 주세요.</p>
+        <p class="hint" id="eFixedHint">이름, 동, 호수, 이메일, 이체 확인증은 여기서 고칠 수 없습니다. 이메일을 바꾸시려면 문의용 오픈채팅으로 알려 주세요.</p>
         <hr class="sep">
         <div class="field" id="eTypeField">
           <div class="lab" id="eTypeLab">주택형(타입)</div>
@@ -459,7 +459,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         </div>
         <div class="field">
           <label for="enick">계약자 카카오톡 닉네임 <span class="opt">계약자·가족 중 한 분 필수</span></label>
-          <div class="affix"><span class="pre ph" id="enickPre" aria-hidden="true">동/타입/</span><input type="text" id="enick" autocomplete="off"></div><div class="msg warn" id="enickWarn"></div>
+          <div class="affix"><span class="pre ph" id="enickPre" aria-hidden="true">동/타입/</span><input type="text" id="enick" autocomplete="off"></div><div class="msg warn" id="enickWarn"></div><p class="hint" id="eNickEx"></p>
         </div>
         <div class="field">
           <label for="efnaver">가족 네이버 아이디 <span class="opt">계약자·가족 중 한 분 필수</span></label>
@@ -467,7 +467,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         </div>
         <div class="field">
           <label for="efnick">가족 카카오톡 닉네임 <span class="opt">계약자·가족 중 한 분 필수</span></label>
-          <div class="affix"><span class="pre ph" id="efnickPre" aria-hidden="true">동/타입/</span><input type="text" id="efnick" autocomplete="off"></div><div class="msg warn" id="efnickWarn"></div>
+          <div class="affix"><span class="pre ph" id="efnickPre" aria-hidden="true">동/타입/</span><input type="text" id="efnick" autocomplete="off"></div><div class="msg warn" id="efnickWarn"></div><p class="hint" id="eFnickEx"></p>
         </div>
         <div class="field">
           <div class="lab" id="ePrimLab">정회원 카페 계정</div>
@@ -483,6 +483,32 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         <button class="btn ghost sm" type="button" id="editBack">돌아가기</button>
       </div>
     </form>
+    <!-- 검수 중(대기) 세대만: 이체 확인증 다시 올리기(오너 요청 2026-11-18) -->
+    <div class="card" id="rephotoCard" style="display:none">
+      <h2>이체 확인증 다시 올리기</h2>
+      <p class="lead">검수 중에는 이체 확인증을 새 캡처로 바꾸실 수 있습니다. 은행 앱의 이체 확인증 화면을 캡처한 이미지 파일을 올려 주세요(PDF는 받지 않습니다).</p>
+      <div class="memo" aria-live="polite">
+        <small>확인증의 받는 사람 표시가 이렇게 보여야 합니다</small>
+        <span class="code" id="rMemoCode"></span>
+        <small>예: 101동 1701호 홍길동이면 1011701홍길동, 101동 301호면 1010301홍길동</small>
+      </div>
+      <ul class="rules">
+        <li>받는 사람 표시(동·호수·이름)가 보여야 합니다.</li>
+        <li class="no">화면의 어느 부분도 가리거나 지우지 마세요. 원본 캡처만 인증됩니다.</li>
+        <li>계약금을 나눠 보내셨으면 어느 한 장이면 됩니다.</li>
+      </ul>
+      <label class="drop" id="rDrop">
+        <input type="file" id="rfile" accept="image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif">
+        <span class="big">캡처 이미지 고르기</span>
+        <span class="small">사진 보관함에서 골라 주세요. JPEG·PNG·HEIC, 5MB까지</span>
+      </label>
+      <div class="preview" id="rPreview">
+        <div class="frame" id="rFrame"></div>
+        <div class="meta"><span id="rFileMeta"></span><button type="button" id="rFileClear">다시 고르기</button></div>
+      </div>
+      <div class="msg bad" id="rMsg" role="alert"></div>
+      <button class="btn" type="button" id="rephotoBtn" style="margin-top:14px">새 사진 올리기</button>
+    </div>
   </section>
 
   <footer class="help">
@@ -688,8 +714,10 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 
   // ---------- 신청 화면 ----------
   var chosenFile = null;
-  // 카페 닉네임 꼴(오너 결정 2026-11-18): '{동}동 {타입} {닉}' 한 칸씩 띄어 씀. 카톡은 '{동}동/{타입}/{닉}'
-  function cafeNick(d, t, n) { return d + '동 ' + t + ' ' + n; }
+  // 카페 닉네임 꼴(오너 결정 2026-11-18): '{동}동 {타입} {카톡 닉 본체 앞 5글자}' 한 칸씩 띄어 씀(5글자 이하면 전체).
+  // 카톡은 '{동}동/{타입}/{닉}' 길이 제한 없음. 글자 수는 화면에 보이는 글자 하나씩(Array.from)
+  var CAFE_NOTE = '카페 닉네임은 카톡 닉네임 앞 5글자까지만 씁니다.';
+  function cafeNick(d, t, n) { return d + '동 ' + t + ' ' + Array.from(String(n || '')).slice(0, 5).join(''); }
   function kakaoNick(d, t, n) { return d + '동/' + t + '/' + n; }
   function refreshPrefix() {
     var d = $('#dong').value, t = radioVal('type');
@@ -697,7 +725,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     setPre('#nickPre', pre); setPre('#fnickPre', pre);
     var body = $('#nick').value.trim() || '닉네임';
     $('#nickEx').innerHTML = pre
-      ? '카톡 <b>' + esc(pre + body) + '</b>, 카페 <b>' + esc(cafeNick(d, t, body)) + '</b> 꼴로 맞춰 주세요. 닉네임 칸에는 뒷부분만 적으시면 됩니다.'
+      ? '카톡 <b>' + esc(pre + body) + '</b>, 카페 <b>' + esc(cafeNick(d, t, body)) + '</b> 꼴로 맞춰 주세요. 닉네임 칸에는 뒷부분만 적으시면 됩니다. ' + esc(CAFE_NOTE)
       : '동과 타입을 고르면 닉네임 앞머리가 자동으로 붙습니다. 뒤 닉네임만 적어 주세요.';
     // 받는 사람 표시 미리보기(D82): 동 3자리 + 호 4자리(앞 0 채움) + 이름. 101동 301호 → 1010301
     var h = normHo($('#ho').value), n = $('#name').value.trim();
@@ -1073,7 +1101,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         '소통방 인증코드', it.kakaoCode, 'talkCodeRow', kLink, '소통방 입장하기',
         '※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.');
     }
-    html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 한 칸씩 띄어 쓴 닉네임을 써 주세요.</p>' +
+    html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 한 칸씩 띄어 쓴 닉네임을 써 주세요. ' + esc(CAFE_NOTE) + '</p>' +
       nickRows('', it.nick) + nickRows('가족 · ', it.fnick) +
       '<p class="hint" style="color:var(--bad)">※ 닉네임 양식을 지키지 않으면 방에서 추방(카페는 강퇴)될 수 있습니다.</p></div>';
     var cafe = safeUrl(it.cafeLink) || safeUrl(CONFIG.cafe);
@@ -1119,6 +1147,12 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     ['#enickWarn', '#efnickWarn', '#enaverMsg', '#efnaverMsg', '#eMsg'].forEach(function (s) { setMsg($(s), ''); });
     setMsg($('#ePrimMsg'), '', 'info');
     editBase = { naver: it.naver || '', nick: it.nick || '', fnaver: it.fnaver || '', fnick: it.fnick || '', primary: it.primary || '계약자', type: it.type };
+    $('#rephotoCard').style.display = waitState ? '' : 'none';
+    $('#eFixedHint').textContent = waitState
+      ? '이름, 동, 호수, 이메일은 여기서 고칠 수 없습니다. 이체 확인증은 아래에서 다시 올리실 수 있습니다(검수 중일 때만). 이메일을 바꾸시려면 문의용 오픈채팅으로 알려 주세요.'
+      : '이름, 동, 호수, 이메일, 이체 확인증은 여기서 고칠 수 없습니다. 이메일을 바꾸시려면 문의용 오픈채팅으로 알려 주세요.';
+    $('#rMemoCode').textContent = memoNum(it.dong, it.ho) + it.name;
+    rClear(); setMsg($('#rMsg'), '');
     editPrefix();
     show('#vEdit');
   }
@@ -1126,11 +1160,21 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var it = lastItem || {};
     var t = radioVal('etype') || it.type, pre = it.dong + '동/' + t + '/';
     setPre('#enickPre', pre); setPre('#efnickPre', pre);
+    editNickEx();
     var before = radioVal('eprimary');
     primSync('#enaver', '#efnaver', '#ePrimMe', '#ePrimFam', 'eprimary');
     var after = radioVal('eprimary');
     if (before && after !== before) setMsg($('#ePrimMsg'), '네이버 아이디가 있는 분으로 정회원 계정을 ' + after + '(으)로 바꿨습니다.', 'info');
   }
+  // 수정 화면의 카톡·카페 닉네임 미리보기(계약자·가족)
+  function editNickEx() {
+    var it = lastItem || {}, t = radioVal('etype') || it.type;
+    [['#enick', '#eNickEx'], ['#efnick', '#eFnickEx']].forEach(function (x) {
+      var n = stripPre($(x[0]).value).body.trim();
+      $(x[1]).innerHTML = n ? '카톡 <b>' + esc(kakaoNick(it.dong, t, n)) + '</b>, 카페 <b>' + esc(cafeNick(it.dong, t, n)) + '</b>. ' + esc(CAFE_NOTE) : '';
+    });
+  }
+  ['#enick', '#efnick'].forEach(function (sel) { $(sel).addEventListener('input', editNickEx); });
   $('#etypes').addEventListener('change', editPrefix);
   $('#efnaver').addEventListener('input', editPrefix);
   $('#enaver').addEventListener('input', editPrefix);
@@ -1174,6 +1218,79 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         $('#vLookupResult').insertBefore(note, $('#vLookupResult').firstChild);
       });
     }, function () { reset(); setMsg($('#eMsg'), '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.'); });
+  });
+
+  // ---------- 이체 확인증 다시 올리기(검수 중 세대) ----------
+  // 01: rephoto(열쇠 확인, 업로드 토큰) → 작업 웹앱 upload → 01: rephoto_finish(새 파일로 바꿈)
+  var rFile = null;
+  function rClear() { rFile = null; $('#rfile').value = ''; $('#rPreview').classList.remove('on'); $('#rDrop').style.display = ''; $('#rFrame').innerHTML = ''; }
+  $('#rfile').addEventListener('change', function (e) {
+    var file = e.target.files[0]; setMsg($('#rMsg'), '');
+    if (!file) return;
+    sniff(file).then(function (fmt) {
+      if (!fmt) { rClear(); setMsg($('#rMsg'), '이미지 파일만 올릴 수 있습니다. 은행 앱 이체 확인증 화면을 캡처한 JPEG·PNG·HEIC 파일을 골라 주세요(PDF는 받지 않습니다).'); return; }
+      if (file.size > MAX_BYTES) { rClear(); setMsg($('#rMsg'), '파일이 5MB를 넘습니다. 5MB까지 올릴 수 있습니다.'); return; }
+      rFile = { file: file, fmt: fmt };
+      var img = new Image(); img.alt = '새로 고른 이체 확인증 미리보기';
+      img.onerror = function () { $('#rFrame').innerHTML = '<div class="noimg">이 휴대폰에서는 HEIC 미리보기가 안 됩니다.<br>파일은 그대로 보내집니다.</div>'; };
+      img.src = URL.createObjectURL(file);
+      $('#rFrame').innerHTML = ''; $('#rFrame').appendChild(img);
+      $('#rFileMeta').textContent = fmt + ' · ' + kb(file.size);
+      $('#rPreview').classList.add('on'); $('#rDrop').style.display = 'none';
+    });
+  });
+  $('#rFileClear').addEventListener('click', rClear);
+  var R_ERR = {
+    NOT_FOUND: '조회 정보가 맞지 않습니다. 처음부터 다시 조회해 주세요.', DAY_LIMIT: MSG.DAY_LIMIT, EDIT_LIMIT: '오늘은 사진을 더 바꿀 수 없습니다. 급하시면 오픈채팅으로 문의해 주세요.',
+    NOT_EDITABLE: '검수가 끝난 신청은 사진을 바꿀 수 없습니다.', PENDING: MSG.PENDING, BUSY: '올리시는 분이 많습니다. 잠시 뒤 다시 눌러 주세요.',
+    BAD_FORMAT: '이미지 파일을 열 수 없습니다. 이체 확인증 캡처(JPEG·PNG·HEIC)를 다시 골라 주세요.', TOO_BIG: '파일이 5MB를 넘습니다.',
+    BAD_TOKEN: '시간이 지났습니다. 다시 눌러 주세요.', EXPIRED: '시간이 지났습니다. 다시 눌러 주세요.', BAD_RECEIPT: '사진을 받지 못했습니다. 다시 눌러 주세요.'
+  };
+  function rFail(where, r) { logErr(where, r); setMsg($('#rMsg'), (r && R_ERR[r.error]) || (r && r.msg) || '사진을 올리지 못했습니다. 잠시 뒤 다시 눌러 주세요.'); }
+  $('#rephotoBtn').addEventListener('click', function () {
+    if (!rFile) { setMsg($('#rMsg'), '이체 확인증 캡처를 골라 주세요.'); return; }
+    var btn = $('#rephotoBtn'); btn.disabled = true;
+    var done = function () { btn.disabled = false; btn.textContent = '새 사진 올리기'; };
+    var key = { name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email };
+    btn.textContent = '확인하는 중입니다'; setMsg($('#rMsg'), '');
+    var tries = 0;
+    function up(t) {
+      btn.textContent = '올리는 중입니다';
+      return fileB64(rFile.file).then(function (b64) { return post(workUrl(t), { op: 'upload', token: t.token, part: 1, b64: b64 }, 180000); })
+        .then(function (u) { return u; }, function () { return null; })
+        .then(function (u) {
+          if (u && u.ok) return { t: t, u: u };
+          if (u && (u.error === 'BAD_FORMAT' || u.error === 'TOO_BIG' || u.error === 'BAD_TOKEN' || u.error === 'EXPIRED')) return { fail: u };
+          if (tries++ >= 2) return { fail: u || { error: 'NET' } };
+          btn.textContent = '다른 길로 다시 올리는 중입니다';
+          var body = { op: 'reassign', token: t.token }; if (u && u.reject) body.reject = u.reject;
+          return api(body).then(function (n) { if (n.ok && !n.wait) return up(n); return { fail: n.ok ? { error: 'BUSY' } : n }; }, function () { return { fail: { error: 'NET' } }; });
+        });
+    }
+    // 마무리: 응답을 잃으면 같은 토큰·영수증으로 한 번 더(그때 BAD_TOKEN 이면 이미 바뀐 것), 묶기 실패 BUSY 는 3초 뒤 두 번까지
+    function fin(t, u, again, busy) {
+      btn.textContent = '마무리하는 중입니다';
+      return api(Object.assign({ op: 'rephoto_finish', token: t.token, receipt: u.receipt }, key)).then(function (r) {
+        if (r.ok) return r;
+        if (again && r.error === 'BAD_TOKEN') return { ok: true, maybe: true };
+        if (r.error === 'BUSY' && (busy || 0) < 2) return sleep(3000).then(function () { return fin(t, u, again, (busy || 0) + 1); });
+        return Promise.reject(r);
+      }, function () { if (!again) return fin(t, u, true, busy); return Promise.reject({ error: 'NET' }); });
+    }
+    api(Object.assign({ op: 'rephoto' }, key)).then(function (s) {
+      if (s.contact) takeContact(s.contact);
+      if (!s.ok) return Promise.reject(s);
+      if (s.wait) return Promise.reject({ error: 'WAIT', msg: '사진 받기가 잠시 막혀 있습니다. 잠시 뒤 다시 눌러 주세요.' });
+      return up(s).then(function (x) { if (x.fail) return Promise.reject(x.fail); return fin(x.t, x.u, false); });
+    }).then(function (r) {
+      done(); rClear();
+      doLookup().then(function () {
+        var note = document.createElement('div');
+        note.className = 'msg info on'; note.style.marginBottom = '14px'; note.id = 'rephotoDone';
+        note.innerHTML = '<b>새 사진으로 바뀌었습니다.</b> 검수 뒤 결과를 메일로 알려 드립니다.' + (r.maybe ? ' (연결이 한 번 끊겼으나 접수된 것으로 보입니다. 이상하면 문의해 주세요.)' : '');
+        $('#vLookupResult').insertBefore(note, $('#vLookupResult').firstChild);
+      });
+    }, function (r) { done(); rFail('rephoto', r); });
   });
 
   // ---------- 탭 ----------
