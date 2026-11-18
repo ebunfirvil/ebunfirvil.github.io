@@ -335,11 +335,11 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
           <input type="text" id="name" autocomplete="name" placeholder="계약서에 적힌 이름">
         </div>
         <div class="field">
-          <label for="naver">네이버 아이디 <span class="req">필수</span></label>
+          <label for="naver">네이버 아이디 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><input type="text" id="naver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" placeholder="아이디"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="naverMsg"></div>
         </div>
         <div class="field">
-          <label for="nick">카카오톡 닉네임 <span class="req">필수</span></label>
+          <label for="nick">카카오톡 닉네임 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><span class="pre ph" id="nickPre" aria-hidden="true">동/타입/</span><input type="text" id="nick" autocomplete="off" placeholder="닉네임"></div><div class="msg warn" id="nickWarn"></div>
           <p class="hint" id="nickEx">동과 타입을 고르면 닉네임 앞머리가 붙습니다.</p>
         </div>
@@ -347,22 +347,22 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 
       <div class="card">
         <h2><span class="n">5</span>가족 1명 <span class="opt" style="font-size:14px;font-weight:500;color:var(--ink-3)">선택</span></h2>
-        <p class="lead">함께 오픈채팅방과 카페에 들어오실 가족이 있으면 적어 주세요. 한 세대에 두 분까지입니다.</p>
+        <p class="lead">함께 오픈채팅방과 카페에 들어오실 가족이 있으면 적어 주세요. 한 세대에 두 분까지입니다. 네이버 아이디와 카카오톡 닉네임은 계약자·가족 가운데 한 분만 적으셔도 됩니다.</p>
         <div class="field">
-          <label for="fnaver">가족 네이버 아이디</label>
+          <label for="fnaver">가족 네이버 아이디 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><input type="text" id="fnaver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" placeholder="아이디"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="fnaverMsg"></div>
         </div>
         <div class="field">
-          <label for="fnick">가족 카카오톡 닉네임</label>
+          <label for="fnick">가족 카카오톡 닉네임 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><span class="pre ph" id="fnickPre" aria-hidden="true">동/타입/</span><input type="text" id="fnick" autocomplete="off" placeholder="닉네임"></div><div class="msg warn" id="fnickWarn"></div>
         </div>
         <div class="field">
           <div class="lab" id="primLab">정회원 카페 계정</div>
           <div class="pills" role="radiogroup" aria-labelledby="primLab">
-            <label><input type="radio" name="primary" value="계약자" checked><span>계약자</span></label>
+            <label><input type="radio" name="primary" value="계약자" id="primMe" checked><span>계약자</span></label>
             <label><input type="radio" name="primary" value="가족" id="primFam" disabled><span>가족</span></label>
           </div>
-          <p class="hint">정회원 등급을 받을 카페 계정입니다. 가족을 고르려면 가족 네이버 아이디를 적어 주세요.</p>
+          <p class="hint prim-hint">세대가 정회원이 되면, 여기서 고른 분의 카페 아이디가 정회원으로, 다른 한 분은 (정)가족회원으로 올라갑니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다. 한 분만 적으셨다면 그분으로 정해집니다.</p>
         </div>
       </div>
 
@@ -454,27 +454,28 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
           <p class="hint" id="eTypeHint"></p>
         </div>
         <div class="field">
-          <label for="enaver">계약자 네이버 아이디</label>
+          <label for="enaver">계약자 네이버 아이디 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><input type="text" id="enaver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="enaverMsg"></div>
         </div>
         <div class="field">
-          <label for="enick">계약자 카카오톡 닉네임</label>
+          <label for="enick">계약자 카카오톡 닉네임 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><span class="pre ph" id="enickPre" aria-hidden="true">동/타입/</span><input type="text" id="enick" autocomplete="off"></div><div class="msg warn" id="enickWarn"></div>
         </div>
         <div class="field">
-          <label for="efnaver">가족 네이버 아이디 <span class="opt">선택</span></label>
+          <label for="efnaver">가족 네이버 아이디 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><input type="text" id="efnaver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="efnaverMsg"></div>
         </div>
         <div class="field">
-          <label for="efnick">가족 카카오톡 닉네임 <span class="opt">선택</span></label>
+          <label for="efnick">가족 카카오톡 닉네임 <span class="opt">계약자·가족 중 한 분 필수</span></label>
           <div class="affix"><span class="pre ph" id="efnickPre" aria-hidden="true">동/타입/</span><input type="text" id="efnick" autocomplete="off"></div><div class="msg warn" id="efnickWarn"></div>
         </div>
         <div class="field">
           <div class="lab" id="ePrimLab">정회원 카페 계정</div>
           <div class="pills" role="radiogroup" aria-labelledby="ePrimLab">
-            <label><input type="radio" name="eprimary" value="계약자"><span>계약자</span></label>
+            <label><input type="radio" name="eprimary" value="계약자" id="ePrimMe"><span>계약자</span></label>
             <label><input type="radio" name="eprimary" value="가족" id="ePrimFam"><span>가족</span></label>
           </div>
+          <p class="hint prim-hint">세대가 정회원이 되면, 여기서 고른 분의 카페 아이디가 정회원으로, 다른 한 분은 (정)가족회원으로 올라갑니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다. 한 분만 적으셨다면 그분으로 정해집니다.</p>
           <div class="msg info" id="ePrimMsg"></div>
         </div>
         <div class="msg bad" id="eMsg" role="alert"></div>
@@ -682,11 +683,14 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     });
   });
   var NID_RE = /^[a-z0-9][a-z0-9_.-]{1,39}$/;
+  var NEED_NAVER = '계약자 또는 가족 중 한 분의 네이버 아이디를 적어 주세요.';
+  var NEED_NICK = '계약자 또는 가족 중 한 분의 카톡 닉네임을 적어 주세요.';
 
   // ---------- 신청 화면 ----------
   var chosenFile = null;
   // 카페 닉네임 꼴(오너 결정 2026-11-18): '{동}동 {타입} {닉}' 한 칸씩 띄어 씀. 카톡은 '{동}동/{타입}/{닉}'
   function cafeNick(d, t, n) { return d + '동 ' + t + ' ' + n; }
+  function kakaoNick(d, t, n) { return d + '동/' + t + '/' + n; }
   function refreshPrefix() {
     var d = $('#dong').value, t = radioVal('type');
     var pre = d && t ? d + '동/' + t + '/' : '';
@@ -705,12 +709,19 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
   ['#dong', '#ho', '#name', '#nick'].forEach(function (s) { $(s).addEventListener('input', refreshPrefix); });
   $('#dong').addEventListener('change', refreshPrefix);
   $('#types').addEventListener('change', refreshPrefix);
-  function famToggle() {
-    var has = !!$('#fnaver').value.trim();
-    $('#primFam').disabled = !has;
-    if (!has && radioVal('primary') === '가족') setRadio('primary', '계약자');
+  // 정회원 계정은 네이버 아이디를 적은 분만 고를 수 있다(계약자·가족 중 한 분만 적어도 됨)
+  function primSync(meSel, famSel, meRadio, famRadio, name) {
+    var me = !!$(meSel).value.trim(), fam = !!$(famSel).value.trim();
+    $(meRadio).disabled = !me && fam;
+    $(famRadio).disabled = !fam;
+    var cur = radioVal(name);
+    if (cur === '가족' && !fam) setRadio(name, '계약자');
+    if ((cur === '계약자' || !cur) && !me && fam) setRadio(name, '가족');
+    return { me: me, fam: fam };
   }
+  function famToggle() { primSync('#naver', '#fnaver', '#primMe', '#primFam', 'primary'); }
   $('#fnaver').addEventListener('input', famToggle);
+  $('#naver').addEventListener('input', famToggle);
   function emailCheck() {
     var a = $('#email').value.trim().toLowerCase(), b = $('#email2').value.trim().toLowerCase();
     var bad = !!b && a !== b;
@@ -774,9 +785,10 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     if (!v.type) return ['주택형(타입)을 골라 주세요.', '#types'];
     if (!v.name) return ['계약자 이름을 적어 주세요.', '#name'];
     if (v.name.length > 30 || /[<>]/.test(v.name)) return ['계약자 이름을 확인해 주세요.', '#name'];
-    if (!NID_RE.test(v.naver)) return ['네이버 아이디를 확인해 주세요.', '#naver'];
+    if (!v.naver && !v.fnaver) return [NEED_NAVER, '#naver'];
+    if (v.naver && !NID_RE.test(v.naver)) return ['네이버 아이디를 확인해 주세요.', '#naver'];
     if (v.fnaver && !NID_RE.test(v.fnaver)) return ['가족 네이버 아이디를 확인해 주세요.', '#fnaver'];
-    if (!v.nick) return ['카카오톡 닉네임을 적어 주세요.', '#nick'];
+    if (!v.nick && !v.fnick) return [NEED_NICK, '#nick'];
     if (v.nick.length > 50 || v.fnick.length > 50) return ['카카오톡 닉네임이 너무 깁니다.', '#nick'];
     if (!chosenFile) return ['이체 확인증 캡처를 골라 주세요.', '#drop'];
     return null;
@@ -835,7 +847,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     if (r.error === 'CLOSED') return resultCard('warn', '!', '지금은 신청을 받지 않습니다', '<p>' + esc(MSG.CLOSED) + ' 임원 공지를 기다려 주세요.</p>');
     if (r.error === 'BUSY') return resultCard('warn', '…', '신청하시는 분이 많습니다', '<p>세 번 다시 보냈지만 서버가 바쁩니다. 1~2분 뒤 다시 눌러 주세요. 입력하신 내용은 그대로 있습니다.</p>',
       '<button class="btn" type="button" data-go="resubmit">다시 보내기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
-    var what = { EMAIL_MISMATCH: '두 이메일 주소가 다릅니다.', BAD_EMAIL: '이메일 주소를 확인해 주세요.', BAD_TYPE: '주택형(타입)을 골라 주세요.', BAD_NAME: '계약자 이름을 확인해 주세요.', BAD_NAVER: '네이버 아이디를 확인해 주세요.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요.', FAMILY_NEEDS_ID: '정회원 계정을 가족으로 하려면 가족 네이버 아이디를 적어 주세요.', NO_CONSENT: '개인정보 수집에 동의해 주세요.' }[r.error];
+    var what = { EMAIL_MISMATCH: '두 이메일 주소가 다릅니다.', BAD_EMAIL: '이메일 주소를 확인해 주세요.', BAD_TYPE: '주택형(타입)을 골라 주세요.', BAD_NAME: '계약자 이름을 확인해 주세요.', BAD_NAVER: '네이버 아이디를 확인해 주세요. 계약자·가족 중 한 분 이상의 아이디가 있어야 합니다.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요. 계약자·가족 중 한 분 이상의 닉네임이 있어야 합니다.', FAMILY_NEEDS_ID: '정회원 계정을 가족으로 하려면 가족 네이버 아이디를 적어 주세요.', NEED_NAVER: NEED_NAVER, NEED_NICK: NEED_NICK, BAD_PRIMARY: '정회원 계정은 네이버 아이디를 적은 분으로 골라 주세요.', NO_CONSENT: '개인정보 수집에 동의해 주세요.' }[r.error];
     return resultCard('bad', '!', '신청하지 못했습니다', '<p>' + esc(what || '입력하신 내용을 확인해 주세요.') + '</p>', '<button class="btn" type="button" data-go="form">입력 화면으로</button>');
   }
   function lostStart() {
@@ -1059,23 +1071,31 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         '※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.');
     }
     html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 한 칸씩 띄어 쓴 닉네임을 써 주세요.</p>' +
-      '<div class="nickrow"><div><small>카카오톡 (공지방·소통방)</small><b>' + esc(it.nickKakao) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.nickKakao) + '">복사</button></div>' +
-      '<div class="nickrow"><div><small>카페 (띄어 씀)</small><b>' + esc(cafeNick(it.dong, it.type, it.nick)) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(cafeNick(it.dong, it.type, it.nick)) + '">복사</button></div>' +
-      (it.fnick ? '<div class="nickrow"><div><small>가족 · 카카오톡 (공지방·소통방)</small><b>' + esc(it.dong + '동/' + it.type + '/' + it.fnick) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.dong + '동/' + it.type + '/' + it.fnick) + '">복사</button></div>' +
-        '<div class="nickrow"><div><small>가족 · 카페 (띄어 씀)</small><b>' + esc(cafeNick(it.dong, it.type, it.fnick)) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(cafeNick(it.dong, it.type, it.fnick)) + '">복사</button></div>' : '') +
+      nickRows('', it.nick) + nickRows('가족 · ', it.fnick) +
       '<p class="hint" style="color:var(--bad)">※ 닉네임 양식을 지키지 않으면 방에서 추방(카페는 강퇴)될 수 있습니다.</p></div>';
     var cafe = safeUrl(it.cafeLink) || safeUrl(CONFIG.cafe);
-    html += '<div class="card"><h2>카페 안내</h2><p class="lead">입주예정자협의회 카페에도 가입해 주세요. 제출하신 네이버 아이디(<b>' + esc(it.naver) + '</b>)로 가입해 주세요.' + (it.fnaver ? ' 가족은 제출하신 가족 네이버 아이디(<b>' + esc(it.fnaver) + '</b>)로 가입해 주세요.' : '') + '</p>' +
+    var ids = [];
+    if (it.naver) ids.push('계약자는 제출하신 네이버 아이디(<b>' + esc(it.naver) + '</b>)로');
+    if (it.fnaver) ids.push('가족은 제출하신 가족 네이버 아이디(<b>' + esc(it.fnaver) + '</b>)로');
+    html += '<div class="card"><h2>카페 안내</h2><p class="lead">입주예정자협의회 카페에도 가입해 주세요. ' + ids.join(', ') + ' 가입해 주세요.</p>' +
       (it.cafeMsg ? '<div class="msg bad on">카페에서 이 네이버 아이디를 찾지 못했습니다. ' + esc(it.cafeMsg) + '. 아래 [내 정보 수정]에서 고치실 수 있습니다.</div>' : '') +
       (cafe ? '<a class="btn ghost sm" href="' + esc(cafe) + '" rel="noopener" style="margin-top:12px">카페 열기</a>' : '') + '</div>';
     html += infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 수정</button>' + '<button class="btn ghost sm" type="button" data-go="lookup" style="margin-top:10px">다른 세대 조회</button>';
     $('#vLookupResult').innerHTML = html;
     show('#vLookupResult');
   }
+  // 닉네임 두 줄(카톡·카페). 그 사람 닉네임이 비면 줄을 만들지 않는다(계약자·가족 중 한 분만 적어도 됨)
+  function nickRows(who, n) {
+    var it = lastItem || {};
+    if (!n) return '';
+    var k = kakaoNick(it.dong, it.type, n), c = cafeNick(it.dong, it.type, n);
+    return '<div class="nickrow"><div><small>' + who + '카카오톡 (공지방·소통방)</small><b>' + esc(k) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(k) + '">복사</button></div>' +
+      '<div class="nickrow"><div><small>' + who + '카페 (띄어 씀)</small><b>' + esc(c) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(c) + '">복사</button></div>';
+  }
   function infoCard(it) {
     return '<div class="card"><h2>제출하신 정보</h2><dl class="kv">' +
-      '<dt>네이버 아이디</dt><dd>' + esc(it.naver) + '</dd>' +
-      '<dt>카톡 닉네임</dt><dd>' + esc(it.nick) + '</dd>' +
+      '<dt>네이버 아이디</dt><dd>' + (esc(it.naver) || '<span style="color:var(--ink-3)">없음</span>') + '</dd>' +
+      '<dt>카톡 닉네임</dt><dd>' + (esc(it.nick) || '<span style="color:var(--ink-3)">없음</span>') + '</dd>' +
       '<dt>가족 아이디</dt><dd>' + (esc(it.fnaver) || '<span style="color:var(--ink-3)">없음</span>') + '</dd>' +
       '<dt>가족 닉네임</dt><dd>' + (esc(it.fnick) || '<span style="color:var(--ink-3)">없음</span>') + '</dd>' +
       '<dt>정회원 계정</dt><dd>' + esc(it.primary) + '</dd></dl></div>';
@@ -1103,17 +1123,20 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var it = lastItem || {};
     var t = radioVal('etype') || it.type, pre = it.dong + '동/' + t + '/';
     setPre('#enickPre', pre); setPre('#efnickPre', pre);
-    var has = !!$('#efnaver').value.trim();
-    $('#ePrimFam').disabled = !has;
-    if (!has && radioVal('eprimary') === '가족') { setRadio('eprimary', '계약자'); setMsg($('#ePrimMsg'), '가족 아이디를 지워서 정회원 계정을 계약자로 바꿨습니다.', 'info'); }
+    var before = radioVal('eprimary');
+    primSync('#enaver', '#efnaver', '#ePrimMe', '#ePrimFam', 'eprimary');
+    var after = radioVal('eprimary');
+    if (before && after !== before) setMsg($('#ePrimMsg'), '네이버 아이디가 있는 분으로 정회원 계정을 ' + after + '(으)로 바꿨습니다.', 'info');
   }
   $('#etypes').addEventListener('change', editPrefix);
   $('#efnaver').addEventListener('input', editPrefix);
+  $('#enaver').addEventListener('input', editPrefix);
   $('#editBack').addEventListener('click', function () { show('#vLookupResult'); });
   var EDIT_ERR = {
     EDIT_LIMIT: MSG.EDIT_LIMIT, PENDING: MSG.PENDING, BUSY: '고치시는 분이 많습니다. 잠시 뒤 다시 눌러 주세요.',
-    BAD_NAVER: '네이버 아이디를 확인해 주세요.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요.',
+    BAD_NAVER: '네이버 아이디를 확인해 주세요. 계약자·가족 중 한 분 이상의 아이디가 있어야 합니다.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요. 계약자·가족 중 한 분 이상의 닉네임이 있어야 합니다.',
     BAD_TYPE: '주택형(타입)을 골라 주세요.', FAMILY_NEEDS_ID: '정회원 계정을 가족으로 하려면 가족 네이버 아이디를 적어 주세요.',
+    NEED_NAVER: NEED_NAVER, NEED_NICK: NEED_NICK, BAD_PRIMARY: '정회원 계정은 네이버 아이디를 적은 분으로 골라 주세요.',
     NOT_EDITABLE: '이 항목은 고칠 수 없습니다. 승인 뒤에는 타입을 고칠 수 없습니다.', NOT_FOUND: '조회 정보가 맞지 않습니다. 처음부터 다시 조회해 주세요.',
     DAY_LIMIT: MSG.DAY_LIMIT
   };
@@ -1124,9 +1147,10 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       fnaver: $('#efnaver').value.trim().toLowerCase(), fnick: stripPre($('#efnick').value).body.trim(), primary: radioVal('eprimary') || '계약자'
     };
     if (lastStatus === '대기') cur.type = radioVal('etype');
-    if (!NID_RE.test(cur.naver)) return setMsg($('#eMsg'), '네이버 아이디를 확인해 주세요.');
+    if (!cur.naver && !cur.fnaver) return setMsg($('#eMsg'), NEED_NAVER);
+    if (cur.naver && !NID_RE.test(cur.naver)) return setMsg($('#eMsg'), '네이버 아이디를 확인해 주세요.');
     if (cur.fnaver && !NID_RE.test(cur.fnaver)) return setMsg($('#eMsg'), '가족 네이버 아이디를 확인해 주세요.');
-    if (!cur.nick) return setMsg($('#eMsg'), '카카오톡 닉네임을 적어 주세요.');
+    if (!cur.nick && !cur.fnick) return setMsg($('#eMsg'), NEED_NICK);
     if (lastStatus === '대기' && !cur.type) return setMsg($('#eMsg'), '주택형(타입)을 골라 주세요.');
     // 바뀐 칸만 보낸다(승인 세대는 타입을 보내지 않음, 서버도 거절)
     var ch = {};
