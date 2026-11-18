@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1a3a5c">
+<title>회원 인증</title>
+<style>
+:root {
+  --navy: #1a3a5c;
+  --navy-deep: #0f263d;
+  --navy-soft: #e7eef6;
+  --orange: #e8622e;
+  --orange-deep: #c44e1e;
+  --orange-soft: #fdeee6;
+  --paper: #fdf8f5;
+  --card: #ffffff;
+  --ink: #23180f;
+  --ink-2: #5d5049;
+  --ink-3: #8a7d75;
+  --line: #e8ddd3;
+  --line-strong: #cdbfb2;
+  --ok: #1f7a4d;
+  --ok-soft: #e4f4ea;
+  --warn: #9a5b00;
+  --warn-soft: #fff4dc;
+  --bad: #b3261e;
+  --bad-soft: #fde8e6;
+  --r: 14px;
+  --font: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Nanum Gothic", sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font); font-size: 17px; line-height: 1.6;
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+.wrap { max-width: 460px; margin: 0 auto; padding: 0 16px 48px; }
+a { color: var(--navy); }
+button, input, select { font: inherit; color: inherit; }
+
+/* 시험 표시와 머리 */
+.trial {
+  margin: 12px 0 0; padding: 8px 12px; border-radius: 10px;
+  background: var(--warn-soft); color: var(--warn); font-weight: 700; font-size: 14.5px; text-align: center;
+  border: 1px solid #f0d9a6;
+}
+header.top { padding: 22px 2px 6px; }
+header.top .org { font-size: 13.5px; color: var(--ink-3); font-weight: 600; letter-spacing: .01em; }
+header.top h1 { margin: 2px 0 0; font-size: 27px; line-height: 1.3; color: var(--navy-deep); letter-spacing: -.02em; }
+
+/* 탭 */
+.tabs {
+  position: sticky; top: 0; z-index: 5; margin: 14px -16px 0; padding: 10px 16px;
+  background: rgba(253, 248, 245, .94); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+.tabs .seg { display: grid; grid-template-columns: 1fr 1fr; background: #efe5dc; border-radius: 12px; padding: 4px; }
+.tabs button {
+  border: 0; background: transparent; padding: 11px 6px; border-radius: 9px; font-weight: 700; font-size: 16.5px;
+  color: var(--ink-2); cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: #fff; color: var(--navy-deep); box-shadow: 0 1px 3px rgba(44, 24, 16, .12); }
+
+/* 카드와 칸 */
+.view { display: none; padding-top: 16px; }
+.view.on { display: block; animation: rise .28s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view.on { animation: none; } .spin { animation-duration: 3s !important; } }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 16px; margin: 0 0 14px; }
+.card h2 { margin: 0 0 4px; font-size: 19px; color: var(--navy-deep); display: flex; align-items: center; gap: 8px; }
+.card h2 .n {
+  display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--navy); color: #fff; font-size: 14px; flex: none;
+}
+.card .lead { margin: 0 0 12px; color: var(--ink-2); font-size: 15.5px; }
+.field { margin: 14px 0 0; }
+.field > label, .field > .lab { display: block; font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+.field .opt { font-weight: 500; color: var(--ink-3); font-size: 14px; }
+.field .req { color: var(--orange-deep); font-size: 14px; font-weight: 700; }
+.hint { margin: 6px 0 0; font-size: 14.5px; color: var(--ink-2); }
+.hint.key { color: var(--navy); font-weight: 600; }
+input[type=text], input[type=email], input[type=tel], select.big {
+  width: 100%; min-height: 54px; padding: 12px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px;
+  background: #fff; font-size: 18px; outline: none;
+}
+input:focus, select.big:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(26, 58, 92, .15); }
+.err-in { border-color: var(--bad) !important; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.affix { display: flex; align-items: stretch; border: 1.5px solid var(--line-strong); border-radius: 12px; background: #fff; overflow: hidden; }
+.affix:focus-within { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(26, 58, 92, .15); }
+.affix .pre { display: flex; align-items: center; padding: 0 4px 0 12px; color: var(--navy); font-weight: 700; font-size: 17px; background: var(--navy-soft); white-space: nowrap; }
+.affix input { border: 0 !important; box-shadow: none !important; min-width: 0; }
+.affix .pre.ph { color: #a99c92; font-weight: 600; background: #f4efea; }
+.affix .suf { display: flex; align-items: center; padding: 0 12px 0 4px; color: var(--ink-2); font-weight: 600; font-size: 16px; background: #f4efea; white-space: nowrap; user-select: none; }
+.affix input { flex: 1 1 auto; width: 100%; }
+
+/* 타입 고르기 */
+.types { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.types label { position: relative; }
+.types input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.types span {
+  display: grid; place-items: center; min-height: 52px; border: 1.5px solid var(--line-strong); border-radius: 12px;
+  font-weight: 800; font-size: 17px; background: #fff; letter-spacing: -.01em;
+}
+.types input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
+.types input:focus-visible + span { box-shadow: 0 0 0 3px rgba(26, 58, 92, .3); }
+
+.pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pills label { position: relative; }
+.pills input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.pills span { display: block; text-align: center; padding: 13px 8px; border: 1.5px solid var(--line-strong); border-radius: 12px; font-weight: 700; background: #fff; }
+.pills input:checked + span { border-color: var(--navy); background: var(--navy-soft); color: var(--navy-deep); }
+.pills input:disabled + span { opacity: .45; }
+
+/* 동의 */
+.consent { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border: 1.5px solid var(--line-strong); border-radius: 12px; background: #fff; cursor: pointer; }
+.consent input { width: 26px; height: 26px; margin: 1px 0 0; accent-color: var(--navy); flex: none; }
+.consent b { display: block; font-size: 16.5px; }
+details.full { margin-top: 10px; font-size: 14.5px; color: var(--ink-2); }
+details.full summary { cursor: pointer; color: var(--navy); font-weight: 700; padding: 4px 0; }
+details.full h4 { margin: 12px 0 2px; font-size: 14.5px; color: var(--ink); }
+details.full ul { margin: 4px 0; padding-left: 18px; }
+details.full p { margin: 4px 0; }
+
+/* 받는 사람 표시 미리보기 */
+.memo {
+  margin: 12px 0 0; padding: 14px; border-radius: 12px; background: var(--navy-deep); color: #fff;
+  display: grid; gap: 4px;
+}
+.memo small { color: #a9bdd3; font-size: 13.5px; }
+.memo .code { font-size: 25px; font-weight: 800; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.memo .code .ph { color: #6f88a3; }
+.rules { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 15.5px; }
+.rules li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; }
+.rules li::before { content: "✓"; color: var(--ok); font-weight: 900; }
+.rules li.no::before { content: "✕"; color: var(--bad); }
+
+/* 파일 고르기 */
+.drop {
+  margin-top: 14px; display: grid; place-items: center; gap: 6px; text-align: center; min-height: 150px;
+  border: 2px dashed var(--line-strong); border-radius: 14px; background: #fffdfb; padding: 18px; cursor: pointer;
+}
+.drop:focus-within { border-color: var(--navy); }
+.drop .big { font-size: 17px; font-weight: 800; color: var(--navy); }
+.drop .small { font-size: 14px; color: var(--ink-3); }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.preview { margin-top: 14px; display: none; gap: 10px; }
+.preview.on { display: grid; }
+.preview .frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #f3eee9; max-height: 420px; display: grid; place-items: center; }
+.preview img { display: block; width: 100%; height: auto; max-height: 420px; object-fit: contain; }
+.preview .noimg { padding: 30px 16px; text-align: center; color: var(--ink-2); font-size: 15px; }
+.preview .meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14.5px; color: var(--ink-2); }
+.preview .meta button { border: 1px solid var(--line-strong); background: #fff; border-radius: 10px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
+
+/* 단추 */
+.btn {
+  display: flex; width: 100%; justify-content: center; align-items: center; gap: 8px; min-height: 58px;
+  border: 0; border-radius: 14px; background: var(--orange); color: #fff; font-size: 18.5px; font-weight: 800;
+  cursor: pointer; text-decoration: none; letter-spacing: -.01em; box-shadow: 0 3px 0 var(--orange-deep);
+}
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--orange-deep); }
+.btn[disabled] { background: #d9cbbf; box-shadow: none; cursor: not-allowed; }
+.btn.navy { background: var(--navy); box-shadow: 0 3px 0 var(--navy-deep); }
+.btn.ghost { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); box-shadow: none; }
+.btn + .btn { margin-top: 10px; }
+.btn.sm { min-height: 46px; font-size: 16px; }
+
+/* 알림 상자 */
+.msg { margin: 12px 0 0; padding: 12px 14px; border-radius: 12px; font-size: 15.5px; display: none; }
+.msg.on { display: block; }
+.msg.bad { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+.msg.warn { background: var(--warn-soft); color: var(--warn); }
+.msg.info { background: var(--navy-soft); color: var(--navy-deep); }
+
+/* 결과 카드 */
+.status { text-align: center; padding: 26px 18px 20px; }
+.status .icon { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px; display: grid; place-items: center; font-size: 30px; font-weight: 900; }
+.status.ok .icon { background: var(--ok-soft); color: var(--ok); }
+.status.wait .icon { background: var(--navy-soft); color: var(--navy); }
+.status.bad .icon { background: var(--bad-soft); color: var(--bad); }
+.status.warn .icon { background: var(--warn-soft); color: var(--warn); }
+.status h2 { justify-content: center; font-size: 22px; margin-bottom: 6px; }
+.status p { margin: 6px 0; color: var(--ink-2); }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.wait { background: var(--navy-soft); color: var(--navy); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.house { font-size: 15px; color: var(--ink-2); margin-top: 6px; }
+.house b { color: var(--ink); font-size: 17px; }
+
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 15.5px; }
+.kv dt { color: var(--ink-3); }
+.kv dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+
+.entry { background: var(--navy-deep); color: #fff; border: 0; }
+.entry h2 { color: #fff; }
+.entry .lead { color: #c3d2e2; }
+.entry .codebox { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(255, 255, 255, .08); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
+.entry .codebox small { display: block; color: #a9bdd3; font-size: 13.5px; }
+.entry .codebox b { font-size: 34px; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
+.entry .warnline { font-size: 14px; color: #ffd2bd; margin: 10px 0 0; }
+.copy { border: 1px solid currentColor; background: transparent; color: inherit; border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; flex: none; }
+.nickrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.nickrow:first-of-type { border-top: 0; }
+.nickrow small { display: block; color: var(--ink-3); font-size: 13.5px; }
+.nickrow b { font-size: 18px; color: var(--navy-deep); }
+.grade { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.grade b { font-size: 26px; color: var(--navy-deep); letter-spacing: -.02em; }
+.grade .note { font-size: 14px; color: var(--warn); font-weight: 700; }
+
+/* 진행 */
+.spin { width: 54px; height: 54px; border-radius: 50%; border: 5px solid var(--navy-soft); border-top-color: var(--navy); margin: 6px auto 14px; animation: sp 0.9s linear infinite; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.progress-text { text-align: center; font-size: 19px; font-weight: 800; color: var(--navy-deep); }
+.progress-sub { text-align: center; color: var(--ink-2); font-size: 15px; margin-top: 4px; min-height: 24px; }
+
+.contact { display: flex; gap: 12px; align-items: center; padding: 12px 14px; background: var(--orange-soft); border-radius: 12px; margin-top: 12px; text-decoration: none; color: var(--ink); }
+.contact .ic { width: 38px; height: 38px; border-radius: 50%; background: var(--orange); color: #fff; display: grid; place-items: center; font-weight: 900; flex: none; }
+.contact small { display: block; color: var(--ink-2); font-size: 13.5px; }
+.contact b { font-size: 16px; }
+
+footer.help { margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14.5px; color: var(--ink-2); }
+footer.help h3 { margin: 0 0 6px; font-size: 16px; color: var(--ink); }
+footer.help ul { margin: 6px 0; padding-left: 18px; }
+
+.locked { background: #f6f1ec !important; color: var(--ink-2); }
+.sep { height: 1px; background: var(--line); margin: 16px 0; border: 0; }
+
+/* 모달 */
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--navy-deep); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 15px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 60; }
+.toast.on { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="trial" role="note">시험 운영 중입니다. 실제 접수가 아닙니다.</div>
+
+  <header class="top">
+    <div class="org">e편한세상 분당 퍼스트빌리지 입주예정자협의회</div>
+    <h1>회원 인증</h1>
+  </header>
+
+  <nav class="tabs" aria-label="화면 고르기">
+    <div class="seg" role="tablist">
+      <button type="button" role="tab" id="tabSubmit" aria-selected="true">인증 신청</button>
+      <button type="button" role="tab" id="tabLookup" aria-selected="false">인증 결과 조회</button>
+    </div>
+  </nav>
+
+  <!-- ===== 인증 신청 ===== -->
+  <section class="view on" id="vForm" aria-labelledby="tabSubmit">
+    <form id="form" novalidate>
+      <div class="card">
+        <h2><span class="n">1</span>개인정보 수집·이용 동의</h2>
+        <details class="full" open>
+          <summary>개인정보 수집·이용 안내 (필수, 펼쳐서 확인)</summary>
+          <p>입주예정자협의회(이하 "입예협")는 계약 세대 확인과 중복 신청 검토를 위해 아래와 같이 개인정보를 수집·이용합니다. 내용을 확인하신 후 동의 여부를 선택해 주세요.</p>
+          <h4>수집 목적</h4>
+          <ol style="margin:4px 0;padding-left:20px">
+            <li>계약을 마친 세대인지 확인</li>
+            <li>같은 세대의 중복 신청 여부 검토(동·호수 대조)</li>
+            <li>카카오톡 오픈채팅방 참여자 매칭</li>
+            <li>네이버 카페 회원 등급 부여</li>
+            <li>인증 결과와 정보 변경 안내 메일 발송</li>
+          </ol>
+          <h4>수집 항목</h4>
+          <ul>
+            <li>계약자 이름</li>
+            <li>동 / 호수 / 주택형(타입)</li>
+            <li>이메일 주소(결과 안내, 조회·수정 때 본인 확인용)</li>
+            <li>네이버 아이디(카페 등급용), 카카오톡 닉네임(오픈채팅방 매칭용)</li>
+            <li>가족 1명(선택): 네이버 아이디, 카카오톡 닉네임</li>
+            <li>LH 계약금 이체 확인증 캡처 1장(받는 사람 표시, 보낸 분 이름과 계좌 일부, 금액, 날짜가 함께 보입니다)</li>
+          </ul>
+          <p>휴대폰번호는 받지 않습니다. 위임장 서명 때 따로 받은 휴대폰번호와 생년월일은 위임장 확인에만 쓰고, 이 인증에는 쓰지 않습니다.</p>
+          <h4>보유 및 이용 기간</h4>
+          <p>수집한 정보(이체 확인증 포함)는 입주자대표회의가 발족할 때까지 보관하며, 발족하면 지체 없이 한꺼번에 파기합니다. 반려된 신청의 이체 확인증은 반려할 때 바로 파기합니다.</p>
+          <h4>제3자 제공</h4>
+          <p>수집된 정보는 입예협 운영 목적 외에는 사용하지 않으며, LH·시공사·시청 등 외부 기관을 포함한 제3자에게 제공하지 않습니다.</p>
+          <h4>인증 절차를 운영하는 이유</h4>
+          <p>카페나 카카오톡 오픈채팅방에 인증되지 않은 외부인이 들어올 경우, 분양·입주 관련 미공개 사항들이 외부로 유출될 수 있습니다. 그러한 상황이 발생하면 여러 이해관계자(LH, 시공사, 관할 시청 등)와의 관계에서 입예협이나 입주예정자들이 불이익을 받을 수 있어, 본 인증 절차는 이를 사전에 막기 위해 운영됩니다. 또한 외부 업체들의 진입을 예방하여 불필요한 광고 노출을 최소화하기 위함입니다.</p>
+          <h4>동의를 거부할 권리 및 거부 시 불이익</h4>
+          <p>본 동의는 거부하실 수 있습니다. 다만 동의하지 않으실 경우 인증을 신청하실 수 없으며, 네이버 카페<span id="consentCafe"></span> 회원 등급이 부여되지 않고, 카카오톡 공지방·소통방에서 추방될 수 있습니다.</p>
+          <h4>정보주체의 권리</h4>
+          <p>본인의 개인정보에 대해 열람, 정정, 삭제를 요청하실 수 있습니다. 네이버 아이디와 카카오톡 닉네임은 [인증 결과 조회]에서 직접 고치실 수 있습니다.<br>문의: 문의용 카카오톡 오픈채팅 <a href="#" id="consentContact" rel="noopener">문의용 오픈채팅</a></p>
+        </details>
+        <label class="consent" style="margin-top:12px">
+          <input type="checkbox" id="consent">
+          <span><b>위 개인정보 수집·이용 안내를 확인했으며 이에 동의합니다.</b><span class="req">필수</span></span>
+        </label>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">2</span>이메일 주소</h2>
+        <p class="lead">인증 결과를 이 주소로 보내 드립니다.</p>
+        <div class="field" style="margin-top:0">
+          <label for="email">이메일 주소 <span class="req">필수</span></label>
+          <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="example@email.com">
+          <p class="hint key">이 이메일 주소는 나중에 조회·수정할 때 비밀번호처럼 쓰입니다.</p>
+        </div>
+        <div class="field">
+          <label for="email2">이메일 주소 한 번 더 <span class="req">필수</span></label>
+          <input type="email" id="email2" autocomplete="off" inputmode="email" placeholder="같은 주소를 다시 적어 주세요">
+          <div class="msg bad" id="emailMsg">두 이메일 주소가 다릅니다.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">3</span>세대 정보</h2>
+        <div class="two">
+          <div class="field">
+            <label for="dong">동 <span class="req">필수</span></label>
+            <select class="big" id="dong"></select>
+          </div>
+          <div class="field">
+            <label for="ho">호수 <span class="req">필수</span></label>
+            <input type="text" id="ho" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="예: 1701" autocomplete="off">
+          </div>
+        </div>
+        <div class="msg bad" id="rangeMsg"></div>
+        <div class="field">
+          <div class="lab" id="typeLab">주택형(타입) <span class="req">필수</span></div>
+          <div class="types" role="radiogroup" aria-labelledby="typeLab" id="types"></div>
+          <p class="hint">계약서와 분양 안내에 적힌 타입을 골라 주세요.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">4</span>계약자</h2>
+        <div class="field">
+          <label for="name">계약자 이름 <span class="req">필수</span></label>
+          <input type="text" id="name" autocomplete="name" placeholder="계약서에 적힌 이름">
+        </div>
+        <div class="field">
+          <label for="naver">네이버 아이디 <span class="req">필수</span></label>
+          <div class="affix"><input type="text" id="naver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" placeholder="아이디"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="naverMsg"></div>
+        </div>
+        <div class="field">
+          <label for="nick">카카오톡 닉네임 <span class="req">필수</span></label>
+          <div class="affix"><span class="pre ph" id="nickPre" aria-hidden="true">동/타입/</span><input type="text" id="nick" autocomplete="off" placeholder="닉네임"></div><div class="msg warn" id="nickWarn"></div>
+          <p class="hint" id="nickEx">동과 타입을 고르면 닉네임 앞머리가 붙습니다.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">5</span>가족 1명 <span class="opt" style="font-size:14px;font-weight:500;color:var(--ink-3)">선택</span></h2>
+        <p class="lead">함께 오픈채팅방과 카페에 들어오실 가족이 있으면 적어 주세요. 한 세대에 두 분까지입니다.</p>
+        <div class="field">
+          <label for="fnaver">가족 네이버 아이디</label>
+          <div class="affix"><input type="text" id="fnaver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email" placeholder="아이디"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="fnaverMsg"></div>
+        </div>
+        <div class="field">
+          <label for="fnick">가족 카카오톡 닉네임</label>
+          <div class="affix"><span class="pre ph" id="fnickPre" aria-hidden="true">동/타입/</span><input type="text" id="fnick" autocomplete="off" placeholder="닉네임"></div><div class="msg warn" id="fnickWarn"></div>
+        </div>
+        <div class="field">
+          <div class="lab" id="primLab">정회원 카페 계정</div>
+          <div class="pills" role="radiogroup" aria-labelledby="primLab">
+            <label><input type="radio" name="primary" value="계약자" checked><span>계약자</span></label>
+            <label><input type="radio" name="primary" value="가족" id="primFam" disabled><span>가족</span></label>
+          </div>
+          <p class="hint">정회원 등급을 받을 카페 계정입니다. 가족을 고르려면 가족 네이버 아이디를 적어 주세요.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="n">6</span>LH 계약금 이체 확인증</h2>
+        <p class="lead">LH 계약금 이체 확인증 1장을 올려 주세요. 은행 앱의 이체 확인증 화면을 캡처한 이미지 파일을 올려 주세요(PDF는 받지 않습니다).</p>
+        <div class="memo" aria-live="polite">
+          <small>확인증의 받는 사람 표시가 이렇게 보여야 합니다</small>
+          <span class="code" id="memoCode"><span class="ph">동호수</span><span class="ph">이름</span></span>
+          <small>예: 101동 1701호 홍길동이면 1011701홍길동, 101동 301호면 1010301홍길동</small>
+        </div>
+        <ul class="rules">
+          <li>받는 사람 표시(동·호수·이름)가 보여야 합니다.</li>
+          <li class="no">화면의 어느 부분도 가리거나 지우지 마세요. 원본 캡처만 인증됩니다.</li>
+          <li>계약금을 나눠 보내셨으면 어느 한 장이면 됩니다.</li>
+        </ul>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept="image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif">
+          <span class="big">캡처 이미지 고르기</span>
+          <span class="small">사진 보관함에서 골라 주세요. JPEG·PNG·HEIC, 5MB까지</span>
+        </label>
+        <div class="preview" id="preview">
+          <div class="frame" id="frame"></div>
+          <div class="meta"><span id="fileMeta"></span><button type="button" id="fileClear">다시 고르기</button></div>
+        </div>
+        <div class="msg bad" id="fileMsg"></div>
+      </div>
+
+      <div class="msg bad" id="formMsg" role="alert"></div>
+      <button class="btn" type="submit" id="submitBtn" style="margin-top:14px">인증 신청하기</button>
+    </form>
+  </section>
+
+  <!-- 진행 -->
+  <section class="view" id="vProgress" aria-live="polite">
+    <div class="card" style="padding:30px 16px">
+      <div class="spin" aria-hidden="true"></div>
+      <div class="progress-text" id="progText">확인하는 중입니다</div>
+      <div class="progress-sub" id="progSub">화면을 닫지 말고 잠시 기다려 주세요.</div>
+    </div>
+  </section>
+
+  <!-- 결과(신청 쪽) -->
+  <section class="view" id="vResult" aria-live="polite"></section>
+
+  <!-- ===== 인증 결과 조회 ===== -->
+  <section class="view" id="vLookup" aria-labelledby="tabLookup">
+    <form id="lform" novalidate>
+      <div class="card">
+        <h2>인증 결과 조회</h2>
+        <p class="lead">신청하실 때 적은 이름, 동, 호수, 이메일 주소를 넣어 주세요.</p>
+        <div class="field">
+          <label for="lname">계약자 이름</label>
+          <input type="text" id="lname" autocomplete="name">
+        </div>
+        <div class="two">
+          <div class="field">
+            <label for="ldong">동</label>
+            <select class="big" id="ldong"></select>
+          </div>
+          <div class="field">
+            <label for="lho">호수</label>
+            <input type="text" id="lho" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label for="lemail">이메일 주소</label>
+          <input type="email" id="lemail" autocomplete="email" inputmode="email">
+        </div>
+        <div class="msg bad" id="lMsg" role="alert"></div>
+        <button class="btn navy" type="submit" id="lookupBtn" style="margin-top:16px">인증 결과 조회</button>
+      </div>
+    </form>
+  </section>
+  <section class="view" id="vLookupResult" aria-live="polite"></section>
+
+  <!-- 정보 수정 -->
+  <section class="view" id="vEdit">
+    <form id="eform" novalidate>
+      <div class="card">
+        <h2>내 정보 고치기</h2>
+        <p class="lead">고치시면 바로 반영되고, 등록하신 이메일로 변경 알림을 보내 드립니다. 하루 5번까지 고치실 수 있습니다.</p>
+        <dl class="kv" id="eFixed"></dl>
+        <p class="hint">이름, 동, 호수, 이메일, 이체 확인증은 여기서 고칠 수 없습니다. 이메일을 바꾸시려면 문의용 오픈채팅으로 알려 주세요.</p>
+        <hr class="sep">
+        <div class="field" id="eTypeField">
+          <div class="lab" id="eTypeLab">주택형(타입)</div>
+          <div class="types" role="radiogroup" aria-labelledby="eTypeLab" id="etypes"></div>
+          <p class="hint" id="eTypeHint"></p>
+        </div>
+        <div class="field">
+          <label for="enaver">계약자 네이버 아이디</label>
+          <div class="affix"><input type="text" id="enaver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="enaverMsg"></div>
+        </div>
+        <div class="field">
+          <label for="enick">계약자 카카오톡 닉네임</label>
+          <div class="affix"><span class="pre ph" id="enickPre" aria-hidden="true">동/타입/</span><input type="text" id="enick" autocomplete="off"></div><div class="msg warn" id="enickWarn"></div>
+        </div>
+        <div class="field">
+          <label for="efnaver">가족 네이버 아이디 <span class="opt">선택</span></label>
+          <div class="affix"><input type="text" id="efnaver" class="nid" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="email"><span class="suf" aria-hidden="true">@naver.com</span></div><div class="msg warn" id="efnaverMsg"></div>
+        </div>
+        <div class="field">
+          <label for="efnick">가족 카카오톡 닉네임 <span class="opt">선택</span></label>
+          <div class="affix"><span class="pre ph" id="efnickPre" aria-hidden="true">동/타입/</span><input type="text" id="efnick" autocomplete="off"></div><div class="msg warn" id="efnickWarn"></div>
+        </div>
+        <div class="field">
+          <div class="lab" id="ePrimLab">정회원 카페 계정</div>
+          <div class="pills" role="radiogroup" aria-labelledby="ePrimLab">
+            <label><input type="radio" name="eprimary" value="계약자"><span>계약자</span></label>
+            <label><input type="radio" name="eprimary" value="가족" id="ePrimFam"><span>가족</span></label>
+          </div>
+          <div class="msg info" id="ePrimMsg"></div>
+        </div>
+        <div class="msg bad" id="eMsg" role="alert"></div>
+        <button class="btn navy" type="submit" id="editBtn" style="margin-top:16px">고친 내용 저장</button>
+        <button class="btn ghost sm" type="button" id="editBack">돌아가기</button>
+      </div>
+    </form>
+  </section>
+
+  <footer class="help">
+    <h3>도움말</h3>
+    <ul>
+      <li>계약을 마친 세대만 신청하실 수 있습니다. 한 세대에 신청은 1건입니다.</li>
+      <li>결과는 신청하신 이메일로 알려 드립니다. [인증 결과 조회]에서도 보실 수 있습니다.</li>
+      <li>휴대폰번호는 받지 않습니다.</li>
+    </ul>
+    <a class="contact" href="#" id="helpContact">
+      <span class="ic">?</span>
+      <span><small>문의용 오픈채팅</small><b id="helpNick">문의용 오픈채팅</b></span>
+    </a>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===== 설정: 웹앱 주소는 이 한 곳에만 둔다(web/tools/set_urls.py 가 바꿈). 비밀값은 넣지 않는다. =====
+  // N2CONFIG-BEGIN
+  var CONFIG = {
+    ctrl: 'https://script.google.com/macros/s/AKfycby9vTNrinqu8z9Iuozw_029oIgZ3j2JnIjP5LWlznf6dtu3lPm9HS-KM_V_DdyvBJpU/exec',
+    work: { '02': 'https://script.google.com/macros/s/AKfycbxt8uejzvFQ81KKa1Mr5ag64opn5c2ScwNkt9-ANXpqaYEFN0AbQXkPC3H46inWcGdZ/exec', '03': 'https://script.google.com/macros/s/AKfycbwYIQRXmveuFScsfqnycBUNfSHn_gY1dx4liLt1Sox2RvxMpyxsP-iCZDrkQyqVC0M1/exec', '04': 'https://script.google.com/macros/s/AKfycbwNT6LuzsbhXWWeZPhdp9Hj-YQORP0g0XoekAPQOxThWy72aL47Pi88A7rIPbPe-08_/exec' },
+    cafe: '',
+    contact: { nick: '103동/55A/융융', link: 'https://open.kakao.com/o/s64OWFtf' }
+  };
+  // N2CONFIG-END
+
+  // ---------- 기본값과 도구 ----------
+  var $ = function (s) { return document.querySelector(s); };
+  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  var KEY_PENDING = 'nak2_pending'; // 사진 대기 중인 신청(입력값과 사진 대기 토큰, plan 2-4 제출 1)
+  var RANGE_MSG = '동·호수를 다시 확인해 주세요. 맞게 넣었는데도 안 되면 문의 오픈채팅으로 알려 주세요.';
+  var DONGS = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 201, 202, 203];
+  var TYPES = ['51A', '55A', '55B', '59A', '59T'];
+  var MAX_BYTES = 5000000; // 작업 계정 장당 상한 기본값(worker N2W_CAP_DEFAULT.maxb)
+  var BUSY_TRIES = 3, BUSY_WAIT = 5;
+  var MSG = {
+    ALREADY: '이미 제출된 세대입니다. 본인이 제출하지 않았다면 오픈채팅으로 문의해 주세요.',
+    DAY_LIMIT: '오늘은 더 시도할 수 없습니다. 급하시면 오픈채팅으로 문의해 주세요.',
+    EDIT_LIMIT: '오늘은 더 고칠 수 없습니다. 오픈채팅으로 문의해 주세요.',
+    NOT_FOUND: '일치하는 제출이 없습니다.',
+    PHOTO_WAIT: '사진 받기가 잠시 막혀 있습니다. 이 화면을 닫지 마시고 잠시 뒤 [사진 다시 올리기]를 눌러 주세요.',
+    DONE: '접수되었습니다. 결과는 메일로 알려 드립니다.',
+    PENDING: '앞 처리를 마무리하는 중입니다. 잠시 뒤 다시 해 주세요.',
+    CLOSED: '지금은 제출을 받지 않습니다.',
+    BUSY: '잠시 뒤 다시 해 주세요.',
+    ENTRY_WAIT: '입장 안내를 준비하고 있습니다. 임원 공지를 기다려 주세요.'
+  };
+  var contactNow = { nick: CONFIG.contact.nick, link: CONFIG.contact.link };
+
+  function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장소 없음 */ } }
+  function load(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+
+  function toast(t) { var el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('on'); }, 1600); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function safeUrl(u, prefix) { u = String(u || ''); return u.indexOf(prefix || 'https://') === 0 ? u : ''; }
+  function show(id) {
+    ['#vForm', '#vProgress', '#vResult', '#vLookup', '#vLookupResult', '#vEdit'].forEach(function (v) { $(v).classList.toggle('on', v === id); });
+    var lookupSide = id === '#vLookup' || id === '#vLookupResult' || id === '#vEdit';
+    $('#tabSubmit').setAttribute('aria-selected', String(!lookupSide));
+    $('#tabLookup').setAttribute('aria-selected', String(lookupSide));
+    window.scrollTo(0, 0);
+  }
+  function setMsg(el, text, kind) { el.textContent = text || ''; el.className = 'msg ' + (kind || 'bad') + (text ? ' on' : ''); }
+  // 서버가 준 문의 창구로 화면을 맞춘다(설정값이 정본, D43·D81)
+  function takeContact(c) {
+    if (c && c.nick && safeUrl(c.link, 'https://open.kakao.com/')) contactNow = { nick: String(c.nick), link: String(c.link) };
+    $('#helpContact').setAttribute('href', contactNow.link);
+    $('#helpNick').textContent = contactNow.nick;
+    $('#consentContact').setAttribute('href', contactNow.link);
+    $('#consentContact').textContent = contactNow.nick;
+  }
+  function contactHtml(c) {
+    takeContact(c);
+    return '<a class="contact" href="' + esc(contactNow.link) + '" rel="noopener"><span class="ic">?</span><span><small>문의용 오픈채팅</small><b>' + esc(contactNow.nick) + '</b></span></a>';
+  }
+
+  // ---------- 서버 요청(text/plain POST, 응답 { ok, error }) ----------
+  function netError(why) { var e = new Error(why || 'network'); e.net = true; return e; }
+  function post(url, body, ms) {
+    if (!url) return Promise.reject(netError('no-url'));
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, ms) : null;
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined, credentials: 'omit', redirect: 'follow' })
+      .then(function (res) {
+        if (!res.ok) throw netError('http-' + res.status);
+        return res.text();
+      }, function () { throw netError(); })
+      .then(function (text) {
+        try { var o = JSON.parse(text); if (o && typeof o === 'object') return o; } catch (e) { /* 아래 */ }
+        throw netError('not-json');
+      })
+      .finally(function () { if (timer) clearTimeout(timer); });
+  }
+  function api(body) { return post(CONFIG.ctrl, body, body.op === 'finish' ? 150000 : 60000); }
+  // 업로드 주소: 01 이 준 주소가 이 페이지의 작업 웹앱 목록에 있을 때만 쓴다(목록 밖 주소로는 보내지 않음)
+  function workUrl(t) {
+    var list = Object.keys(CONFIG.work).map(function (k) { return CONFIG.work[k]; });
+    if (t.upUrl && list.indexOf(t.upUrl) >= 0) return t.upUrl;
+    return CONFIG.work[t.acct] || '';
+  }
+  function fileB64(file) {
+    return new Promise(function (res, rej) {
+      var r = new FileReader();
+      r.onload = function () { var s = String(r.result); res(s.slice(s.indexOf(',') + 1)); };
+      r.onerror = function () { rej(new Error('read')); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ---------- 동·호·타입 ----------
+  function fillDong(sel, placeholder) {
+    sel.innerHTML = '<option value="">' + placeholder + '</option>' + DONGS.map(function (d) {
+      return '<option value="' + d + '">' + d + '동' + (d > 200 ? ' (T' + d + ')' : '') + '</option>';
+    }).join('');
+  }
+  fillDong($('#dong'), '동 고르기');
+  fillDong($('#ldong'), '동 고르기');
+  function fillTypes(box, name) {
+    box.innerHTML = TYPES.map(function (t) { return '<label><input type="radio" name="' + name + '" value="' + t + '"><span>' + t + '</span></label>'; }).join('');
+  }
+  fillTypes($('#types'), 'type');
+  fillTypes($('#etypes'), 'etype');
+  function radioVal(name) { var r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ''; }
+  function setRadio(name, v) { document.querySelectorAll('input[name="' + name + '"]').forEach(function (r) { r.checked = r.value === v; }); }
+  function memoNum(d, h) { return String(d) + ('0000' + h).slice(-4); }
+  function normHo(v) { var s = String(v || '').replace(/\D/g, '').replace(/^0+/, ''); return /^[1-9]\d?\d{2}$/.test(s) ? s : ''; }
+
+  // 타입대응표(D58)의 라인별 최고층과 세대 없는 호수. 범위 밖이면 화면은 바로 빨간 안내만 보이고 신청은 서버로 보낸다.
+  // 막는 판정은 서버(01, cfg:type_map) 하나다(D84): 오너가 대응표를 고치면 화면을 고치지 않아도 그대로 따른다.
+  var FLOORS = {
+    101: [17, 17, 24, 24], 102: [24, 24, 24, 22, 22], 103: [25, 25, 25, 24, 24], 104: [24, 24, 24, 24, 24, 24],
+    105: [25, 25, 25, 25, 25, 25], 106: [24, 24, 24, 22, 19], 107: [23, 23, 25, 25], 108: [20, 20, 25, 25],
+    109: [25, 25, 21, 21, 19, 19], 110: [25, 25, 25, 25, 22, 22], 111: [18, 25, 25, 25, 25, 18], 112: [25, 25, 25, 25]
+  };
+  var ONLY = { 201: [101, 102], 202: [101, 102, 103, 104], 203: [101, 102, 201, 202] };
+  function noUnit(d, h) {
+    var f = Math.floor(h / 100), l = h % 100;
+    if ((d === 101 || d === 102 || d === 104) && f === 1) return true;
+    var map = { 103: [203], 104: [206, 306], 105: [101, 102, 103], 106: [102, 103, 104, 105], 107: [104], 108: [104], 110: [104], 109: [101, 102, 103, 104], 111: [103, 106] };
+    return !!(map[d] && map[d].indexOf(h) >= 0) && l > 0;
+  }
+  function inRange(d, hoStr) {
+    d = Number(d); var h = Number(hoStr);
+    if (!d || !h) return true;
+    if (ONLY[d]) return ONLY[d].indexOf(h) >= 0;
+    var f = Math.floor(h / 100), l = h % 100, lines = FLOORS[d];
+    if (!lines || l < 1 || l > lines.length || f < 1 || f > lines[l - 1]) return false;
+    return !noUnit(d, h);
+  }
+
+  function setPre(sel, pre) { var el = $(sel); el.textContent = pre || '동/타입/'; el.classList.toggle('ph', !pre); }
+
+  // 앞머리는 화면이 고정으로 붙이므로(D88), 회원이 앞머리까지 붙여 넣으면 앞머리 꼴은 모두 떼고 본체만 서버로 보낸다.
+  // 뗀 앞머리가 고른 동·타입과 다르면 경고만 하고 막지 않는다(R5-36).
+  var PRE_RE = /^T?\s*\d{3}\s*동?\s*\/?\s*\d{2}\s*[A-Za-z]\s*\/\s*|^T?\s*\d{3}\s*동\s*\d{2}\s*[A-Za-z]\s*(?=\S)/;
+  function stripPre(v) { var s = String(v || ''), t, cut = ''; while ((t = s.replace(PRE_RE, '')) !== s) { cut += s.slice(0, s.length - t.length); s = t; } return { body: s, cut: cut }; }
+  function preOf(sel) { var el = $(sel); return el.classList.contains('ph') ? '' : el.textContent; }
+  function preKey(p) { var m = String(p).match(/(\d{3})\s*동?\s*\/?\s*(\d{2}\s*[A-Za-z])/); return m ? String(parseInt(m[1], 10)) + '/' + m[2].replace(/\s/g, '').toUpperCase() : ''; }
+  [['#nick', '#nickPre'], ['#fnick', '#fnickPre'], ['#enick', '#enickPre'], ['#efnick', '#efnickPre']].forEach(function (x) {
+    var el = $(x[0]), warn = $(x[0] + 'Warn');
+    el.addEventListener('input', function () {
+      var r = stripPre(el.value);
+      if (!r.cut) return;
+      el.value = r.body;
+      var pre = preOf(x[1]);
+      if (preKey(r.cut) && preKey(r.cut) !== preKey(pre)) {
+        setMsg(warn, '붙여 넣은 앞머리 "' + r.cut.trim() + '"는 고른 동·타입과 달라 떼었습니다. 앞머리는 위에서 고른 동·타입' + (pre ? '(' + pre + ')' : '') + '으로 자동으로 붙습니다.', 'warn');
+      } else {
+        setMsg(warn, '앞머리는 자동으로 붙으므로 떼었습니다. 뒤 닉네임만 적으시면 됩니다.', 'info');
+      }
+    });
+  });
+
+  // 네이버 아이디: '@' 뒤는 떼고 아이디만. 다른 도메인이면 안내하고 비움(D88).
+  document.querySelectorAll('input.nid').forEach(function (el) {
+    var msg = document.getElementById(el.id + 'Msg');
+    el.addEventListener('input', function () {
+      var v = el.value.replace(/\s/g, '');
+      var at = v.indexOf('@');
+      if (at >= 0) {
+        var dom = v.slice(at + 1).toLowerCase();
+        if (dom && 'naver.com'.indexOf(dom) !== 0) {
+          el.value = '';
+          setMsg(msg, '네이버 아이디만 넣어 주세요. ' + v.slice(at) + ' 주소는 쓸 수 없습니다.', 'warn');
+          el.dispatchEvent(new Event('input'));
+          return;
+        }
+        v = v.slice(0, at);
+      }
+      if (v !== el.value) el.value = v;
+      if (v) setMsg(msg, '');
+    });
+  });
+  var NID_RE = /^[a-z0-9][a-z0-9_.-]{1,39}$/;
+
+  // ---------- 신청 화면 ----------
+  var chosenFile = null;
+  function refreshPrefix() {
+    var d = $('#dong').value, t = radioVal('type');
+    var pre = d && t ? d + '동/' + t + '/' : '';
+    setPre('#nickPre', pre); setPre('#fnickPre', pre);
+    var body = $('#nick').value.trim() || '닉네임';
+    $('#nickEx').innerHTML = pre
+      ? '카톡 <b>' + esc(pre + body) + '</b>, 카페 <b>' + esc(d + '동' + t + body) + '</b> 꼴로 맞춰 주세요. 닉네임 칸에는 뒷부분만 적으시면 됩니다.'
+      : '동과 타입을 고르면 닉네임 앞머리가 자동으로 붙습니다. 뒤 닉네임만 적어 주세요.';
+    // 받는 사람 표시 미리보기(D82): 동 3자리 + 호 4자리(앞 0 채움) + 이름. 101동 301호 → 1010301
+    var h = normHo($('#ho').value), n = $('#name').value.trim();
+    $('#memoCode').innerHTML = (d && h ? esc(memoNum(d, h)) : '<span class="ph">동호수</span>') + (n ? esc(n) : '<span class="ph">이름</span>');
+    var out = d && h && !inRange(d, h);
+    setMsg($('#rangeMsg'), out ? d + '동 ' + h + '호는 단지에 없는 호수로 보입니다. ' + RANGE_MSG : '');
+    $('#ho').classList.toggle('err-in', !!out);
+  }
+  ['#dong', '#ho', '#name', '#nick'].forEach(function (s) { $(s).addEventListener('input', refreshPrefix); });
+  $('#dong').addEventListener('change', refreshPrefix);
+  $('#types').addEventListener('change', refreshPrefix);
+  function famToggle() {
+    var has = !!$('#fnaver').value.trim();
+    $('#primFam').disabled = !has;
+    if (!has && radioVal('primary') === '가족') setRadio('primary', '계약자');
+  }
+  $('#fnaver').addEventListener('input', famToggle);
+  function emailCheck() {
+    var a = $('#email').value.trim().toLowerCase(), b = $('#email2').value.trim().toLowerCase();
+    var bad = !!b && a !== b;
+    $('#emailMsg').classList.toggle('on', bad);
+    $('#email2').classList.toggle('err-in', bad);
+    return !bad;
+  }
+  $('#email2').addEventListener('input', emailCheck);
+  $('#email').addEventListener('input', function () { if ($('#email2').value) emailCheck(); });
+
+  // 파일: 매직 바이트로 JPEG·PNG·HEIC 만(작업 계정 n2wSniff_ 와 같은 기준, D65)
+  function sniff(file) {
+    return file.slice(0, 16).arrayBuffer().then(function (buf) {
+      var b = new Uint8Array(buf);
+      if (b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) return 'JPEG';
+      if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47 && b[4] === 0x0D && b[5] === 0x0A && b[6] === 0x1A && b[7] === 0x0A) return 'PNG';
+      var box = String.fromCharCode(b[4], b[5], b[6], b[7]), brand = String.fromCharCode(b[8], b[9], b[10], b[11]);
+      if (box === 'ftyp' && /^(heic|heix|hevc|hevx|heim|heis|mif1|msf1)$/.test(brand)) return 'HEIC';
+      return '';
+    });
+  }
+  function kb(n) { return n >= 1e6 ? (n / 1e6).toFixed(1) + 'MB' : Math.max(1, Math.round(n / 1e3)) + 'KB'; }
+  function clearFile() {
+    chosenFile = null; $('#file').value = ''; $('#preview').classList.remove('on'); $('#drop').style.display = '';
+    $('#frame').innerHTML = '';
+  }
+  function takeFile(file) {
+    setMsg($('#fileMsg'), '');
+    if (!file) return Promise.resolve();
+    return sniff(file).then(function (fmt) {
+      if (!fmt) { clearFile(); setMsg($('#fileMsg'), '이미지 파일만 올릴 수 있습니다. 은행 앱 이체 확인증 화면을 캡처한 JPEG·PNG·HEIC 파일을 골라 주세요(PDF는 받지 않습니다).'); return; }
+      if (file.size > MAX_BYTES) { clearFile(); setMsg($('#fileMsg'), '파일이 5MB를 넘습니다. 5MB까지 올릴 수 있습니다.'); return; }
+      chosenFile = { file: file, fmt: fmt };
+      var frame = $('#frame'); frame.innerHTML = '';
+      var img = new Image(); img.alt = '고른 이체 확인증 미리보기';
+      img.onerror = function () { frame.innerHTML = '<div class="noimg">이 휴대폰에서는 HEIC 미리보기가 안 됩니다.<br>파일은 그대로 보내집니다.</div>'; };
+      img.src = URL.createObjectURL(file);
+      frame.appendChild(img);
+      $('#fileMeta').textContent = fmt + ' · ' + kb(file.size);
+      $('#preview').classList.add('on'); $('#drop').style.display = 'none';
+    });
+  }
+  $('#file').addEventListener('change', function (e) { takeFile(e.target.files[0]); });
+  $('#fileClear').addEventListener('click', clearFile);
+
+  function formInput() {
+    return {
+      consent: $('#consent').checked, dong: $('#dong').value, ho: normHo($('#ho').value) || $('#ho').value.trim(), type: radioVal('type'),
+      name: $('#name').value.trim(), email: $('#email').value.trim(), email2: $('#email2').value.trim(),
+      naver: $('#naver').value.trim().toLowerCase(), fnaver: $('#fnaver').value.trim().toLowerCase(),
+      nick: stripPre($('#nick').value).body.trim(), fnick: stripPre($('#fnick').value).body.trim(),
+      primary: radioVal('primary') || '계약자'
+    };
+  }
+  function validate(v) {
+    if (!v.consent) return ['개인정보 수집에 동의해 주세요.', '#consent'];
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email)) return ['이메일 주소를 확인해 주세요.', '#email'];
+    if (v.email.toLowerCase() !== v.email2.toLowerCase()) return ['두 이메일 주소가 다릅니다.', '#email2'];
+    if (!v.dong) return ['동을 골라 주세요.', '#dong'];
+    if (!normHo(v.ho)) return ['호수를 숫자로 적어 주세요. 예: 1701', '#ho'];
+    if (!v.type) return ['주택형(타입)을 골라 주세요.', '#types'];
+    if (!v.name) return ['계약자 이름을 적어 주세요.', '#name'];
+    if (v.name.length > 30 || /[<>]/.test(v.name)) return ['계약자 이름을 확인해 주세요.', '#name'];
+    if (!NID_RE.test(v.naver)) return ['네이버 아이디를 확인해 주세요.', '#naver'];
+    if (v.fnaver && !NID_RE.test(v.fnaver)) return ['가족 네이버 아이디를 확인해 주세요.', '#fnaver'];
+    if (!v.nick) return ['카카오톡 닉네임을 적어 주세요.', '#nick'];
+    if (v.nick.length > 50 || v.fnick.length > 50) return ['카카오톡 닉네임이 너무 깁니다.', '#nick'];
+    if (!chosenFile) return ['이체 확인증 캡처를 골라 주세요.', '#drop'];
+    return null;
+  }
+
+  // ---------- 신청 흐름 ----------
+  function progress(t, sub) { $('#progText').textContent = t; $('#progSub').textContent = sub || '화면을 닫지 말고 잠시 기다려 주세요.'; }
+  function resultCard(kind, icon, title, bodyHtml, actionsHtml) {
+    $('#vResult').innerHTML = '<div class="card status ' + kind + '"><div class="icon" aria-hidden="true">' + icon + '</div><h2>' + esc(title) + '</h2>' + bodyHtml + '</div>' + (actionsHtml || '');
+    show('#vResult');
+  }
+  var current = null; // { input, token, receipt }
+  var busyRun = false;
+
+  // BUSY 면 기다렸다 자동으로 다시(최대 3번, D79). 세 번 다 바쁘면 손으로 다시.
+  function withBusyRetry(label, send) {
+    var tries = 0;
+    function once() {
+      tries++;
+      progress(label);
+      return send().then(function (r) {
+        if (r.ok || r.error !== 'BUSY' || tries >= BUSY_TRIES) return r;
+        var left = BUSY_WAIT;
+        return new Promise(function (res) {
+          (function tick() {
+            progress('잠시 기다려 주세요', '신청하시는 분이 많습니다. ' + left + '초 뒤 자동으로 다시 보냅니다 (' + tries + '/' + BUSY_TRIES + ')');
+            if (left-- <= 0) return res(once());
+            setTimeout(tick, 1000);
+          })();
+        });
+      });
+    }
+    return once();
+  }
+
+  function submitFlow(input) {
+    current = { input: input };
+    show('#vProgress');
+    return withBusyRetry('확인하는 중입니다', function () { return api({ op: 'start', input: input }); }).then(function (r) {
+      if (r.contact) takeContact(r.contact);
+      if (!r.ok) return startFail(r);
+      if (r.wait) return photoWait(r);
+      current.token = r.token;
+      return uploadAndFinish(r);
+    }, function () { lostStart(); });
+  }
+  function logErr(where, r) { try { console.warn('[nak2]', where, r && r.error); } catch (e) { /* 무시 */ } }
+  function startFail(r) {
+    store(KEY_PENDING, null);
+    logErr('start', r);
+    if (r.error === 'ALREADY') return resultCard('bad', '!', '이미 제출된 세대입니다', '<p>' + esc(input2house(current.input)) + '에는 이미 신청이 있습니다.</p><p>본인이 제출하지 않았다면 아래 오픈채팅으로 문의해 주세요.</p>' + contactHtml(r.contact),
+      '<button class="btn navy" type="button" data-go="lookupFill">인증 결과 조회</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
+    if (r.error === 'DAY_LIMIT') return resultCard('warn', '!', '오늘은 더 시도할 수 없습니다', '<p>급하시면 아래 오픈채팅으로 문의해 주세요.</p>' + contactHtml(r.contact));
+    if (r.error === 'OUT_OF_RANGE' || r.error === 'BAD_DONG' || r.error === 'BAD_HO') return resultCard('bad', '!', '없는 동·호수입니다', '<p>' + esc(input2house(current.input)) + '는 이 단지에 없는 호수로 확인됩니다.</p><p>' + esc(RANGE_MSG) + '</p>' + contactHtml(r.contact),
+      '<button class="btn" type="button" data-go="form">동·호수 고치기</button>');
+    if (r.error === 'CLOSED') return resultCard('warn', '!', '지금은 신청을 받지 않습니다', '<p>' + esc(MSG.CLOSED) + ' 임원 공지를 기다려 주세요.</p>');
+    if (r.error === 'BUSY') return resultCard('warn', '…', '신청하시는 분이 많습니다', '<p>세 번 다시 보냈지만 서버가 바쁩니다. 1~2분 뒤 다시 눌러 주세요. 입력하신 내용은 그대로 있습니다.</p>',
+      '<button class="btn" type="button" data-go="resubmit">다시 보내기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
+    var what = { EMAIL_MISMATCH: '두 이메일 주소가 다릅니다.', BAD_EMAIL: '이메일 주소를 확인해 주세요.', BAD_TYPE: '주택형(타입)을 골라 주세요.', BAD_NAME: '계약자 이름을 확인해 주세요.', BAD_NAVER: '네이버 아이디를 확인해 주세요.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요.', FAMILY_NEEDS_ID: '정회원 계정을 가족으로 하려면 가족 네이버 아이디를 적어 주세요.', NO_CONSENT: '개인정보 수집에 동의해 주세요.' }[r.error];
+    return resultCard('bad', '!', '신청하지 못했습니다', '<p>' + esc(what || '입력하신 내용을 확인해 주세요.') + '</p>', '<button class="btn" type="button" data-go="form">입력 화면으로</button>');
+  }
+  function lostStart() {
+    resultCard('warn', '…', '연결이 끊겼습니다', '<p>잠시 뒤 다시 보내 주세요. 입력하신 내용은 그대로 있습니다.</p>', '<button class="btn" type="button" data-go="resubmit">다시 보내기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
+  }
+  function photoWait(r) {
+    current.token = r.token;
+    store(KEY_PENDING, { input: current.input, token: r.token, exp: r.exp });
+    resultCard('warn', '⏸', '사진 받기가 잠시 막혀 있습니다', '<p>입력하신 내용은 받았습니다. <b>이 화면을 닫지 마시고</b> 잠시 뒤 [사진 다시 올리기]를 눌러 주세요.</p>' + contactHtml(r.contact),
+      '<button class="btn" type="button" data-go="photoRetry">사진 다시 올리기</button>');
+  }
+  function expiredCard() {
+    store(KEY_PENDING, null);
+    resultCard('warn', '…', '시간이 지났습니다', '<p>신청 시간이 지나 처음부터 다시 보내야 합니다. 입력하신 내용은 그대로 있습니다.</p>', '<button class="btn" type="button" data-go="resubmit">다시 보내기</button>');
+  }
+
+  // 사진 올리기: 실패하거나 응답이 없으면 01 에 자기 토큰만 다시 배정(토큰당 2회, 서버가 셈)
+  function uploadAndFinish(tok) {
+    if (!chosenFile) { show('#vForm'); setMsg($('#fileMsg'), '이체 확인증 캡처를 다시 골라 주세요.'); $('#drop').scrollIntoView({ block: 'center' }); return Promise.resolve(); }
+    function up(t) {
+      progress('올리는 중입니다', '이체 확인증을 보내고 있습니다.');
+      return fileB64(chosenFile.file).then(function (b64) {
+        return post(workUrl(t), { op: 'upload', token: t.token, part: 1, b64: b64 }, 180000);
+      }).then(function (u) { return { u: u, t: t }; }, function () { return { u: null, t: t }; }).then(function (x) {
+        var u = x.u;
+        if (u && u.ok) return x;
+        if (u && (u.error === 'BAD_FORMAT' || u.error === 'TOO_BIG' || u.error === 'BAD_TOKEN' || u.error === 'EXPIRED')) return x;
+        // 응답 없음, 하루 상한·용량 거절(서명된 거절 영수증), 그 밖의 실패 → 다시 배정
+        progress('다른 길로 다시 올리는 중입니다', '연결이 고르지 않아 다른 길로 보냅니다.');
+        var body = { op: 'reassign', token: t.token };
+        if (u && u.reject) body.reject = u.reject;
+        return api(body).then(function (n) {
+          if (n.contact) takeContact(n.contact);
+          if (n.ok && n.wait) return { wait: n };
+          if (n.ok) { current.token = n.token; return up(n); }
+          return { u: u, t: t, re: n };
+        }, function () { return { u: null, t: t, lost: true }; });
+      });
+    }
+    return up(tok).then(function (x) {
+      if (x.wait) return photoWait(x.wait);
+      if (x.re) {
+        if (x.re.error === 'BAD_TOKEN') return expiredCard();
+        return resultCard('warn', '…', '사진을 올리지 못했습니다', '<p>사진 받는 곳이 모두 바쁩니다. 잠시 뒤 [다시 보내기]를 눌러 주세요.</p>' + contactHtml(x.re.contact), '<button class="btn" type="button" data-go="resubmit">다시 보내기</button>');
+      }
+      if (!x.u) return resultCard('warn', '…', '사진을 올리지 못했습니다', '<p>연결이 고르지 않습니다. 잠시 뒤 다시 보내 주세요.</p>' + contactHtml(), '<button class="btn" type="button" data-go="resubmit">다시 보내기</button>');
+      if (!x.u.ok) {
+        if (x.u.error === 'BAD_FORMAT') {
+          clearFile();
+          return resultCard('bad', '!', '이미지 파일을 열 수 없습니다', '<p>이미지 파일만 받습니다. 은행 앱의 이체 확인증 화면을 캡처한 JPEG·PNG·HEIC 파일을 다시 골라 주세요(PDF는 받지 않습니다).</p>',
+            '<button class="btn" type="button" data-go="form">파일 다시 고르기</button>');
+        }
+        if (x.u.error === 'TOO_BIG') { clearFile(); return resultCard('bad', '!', '파일이 너무 큽니다', '<p>5MB까지 올릴 수 있습니다.</p>', '<button class="btn" type="button" data-go="form">파일 다시 고르기</button>'); }
+        return expiredCard();
+      }
+      current.receipt = x.u.receipt;
+      return finish();
+    }, function () {
+      resultCard('warn', '…', '사진을 올리지 못했습니다', '<p>연결이 고르지 않습니다. 잠시 뒤 다시 보내 주세요.</p>' + contactHtml(), '<button class="btn" type="button" data-go="resubmit">다시 보내기</button>');
+    });
+  }
+  function finish() {
+    show('#vProgress');
+    return withBusyRetry('마무리하는 중입니다', function () {
+      return api({ op: 'finish', token: current.token, input: current.input, receipt: current.receipt });
+    }).then(function (r) {
+      if (r.contact) takeContact(r.contact);
+      if (r.ok) return done();
+      // 응답을 잃은 뒤 다시 마무리했는데 토큰이 없으면 이미 접수되었을 수 있다(1단계 4-3에서 넘긴 안내)
+      if (r.error === 'BAD_TOKEN') {
+        store(KEY_PENDING, null);
+        return resultCard('warn', '?', '접수가 이미 되었을 수 있습니다', '<p>앞서 보낸 신청이 이미 접수되었을 수 있습니다. 아래 <b>[인증 결과 조회]</b>로 먼저 확인해 주세요.</p><p>조회에 "일치하는 제출이 없습니다"가 나오면 처음부터 다시 신청해 주세요.</p>',
+          '<button class="btn navy" type="button" data-go="lookupFill">인증 결과 조회</button><button class="btn ghost sm" type="button" data-go="form">처음부터 다시 신청</button>');
+      }
+      if (r.error === 'EXPIRED') return expiredCard();
+      if (r.error === 'ALREADY' || r.error === 'OUT_OF_RANGE') return startFail(r);
+      logErr('finish', r);
+      if (r.error === 'BUSY') return resultCard('warn', '…', '접수가 밀려 있습니다', '<p>세 번 다시 보냈지만 서버가 바쁩니다. 1~2분 뒤 [다시 보내기]를 눌러 주세요. 같은 신청이 두 번 들어가지는 않습니다.</p>', '<button class="btn" type="button" data-go="refinish">다시 보내기</button>');
+      return resultCard('bad', '!', '마무리하지 못했습니다', '<p>잠시 뒤 다시 보내 주세요.</p>' + contactHtml(r.contact), '<button class="btn" type="button" data-go="resubmit">다시 보내기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
+    }, function () {
+      resultCard('warn', '…', '응답을 받지 못했습니다', '<p>연결이 끊겨 접수 결과를 받지 못했습니다. 아래 [다시 보내기]를 눌러 주세요. 같은 신청이 두 번 들어가지는 않습니다.</p>',
+        '<button class="btn" type="button" data-go="refinish">다시 보내기</button>');
+    });
+  }
+  function input2house(v) { return v.dong + '동 ' + normHo(v.ho) + '호'; }
+  function done() {
+    store(KEY_PENDING, null);
+    var v = current.input;
+    resultCard('ok', '✓', '접수되었습니다', '<p>결과는 메일로 알려 드립니다.</p><div class="house"><b>' + esc(input2house(v)) + '</b> · ' + esc(v.type) + ' · ' + esc(v.name) + '</div><p style="font-size:14.5px;margin-top:12px">임원이 이체 확인증을 확인한 뒤 승인합니다. 메일이 오지 않으면 [인증 결과 조회]에서 확인해 주세요.</p>',
+      '<button class="btn navy" type="button" data-go="lookupFill">인증 결과 조회</button>');
+  }
+  function guard(fn) {
+    if (busyRun) return;
+    busyRun = true;
+    Promise.resolve().then(fn).catch(function () { lostStart(); }).then(function () { busyRun = false; });
+  }
+
+  $('#form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = formInput();
+    var bad = validate(v);
+    if (bad) {
+      setMsg($('#formMsg'), bad[0]);
+      var el = $(bad[1]); if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); if (el.focus) el.focus({ preventScroll: true }); }
+      return;
+    }
+    setMsg($('#formMsg'), '');
+    // 사진 대기 중이던 같은 신청이면 사진만 다시 올린다(입력이 바뀌었으면 새로 시작)
+    var pend = load(KEY_PENDING);
+    if (pend && pend.exp > Date.now() && JSON.stringify(pend.input) === JSON.stringify(v)) {
+      current = { input: v, token: pend.token };
+      return guard(photoRetry);
+    }
+    store(KEY_PENDING, null);
+    guard(function () { return submitFlow(v); });
+  });
+
+  function photoRetry() {
+    if (!chosenFile) { show('#vForm'); setMsg($('#fileMsg'), '이체 확인증 캡처를 다시 골라 주신 뒤 [인증 신청하기]를 눌러 주세요.'); $('#drop').scrollIntoView({ block: 'center' }); return; }
+    show('#vProgress'); progress('다시 확인하는 중입니다');
+    return api({ op: 'retry', token: current.token }).then(function (r) {
+      if (r.contact) takeContact(r.contact);
+      if (r.ok && r.wait) return photoWait(r);
+      if (r.ok) { store(KEY_PENDING, null); current.token = r.token; return uploadAndFinish(r); }
+      if (r.error === 'BAD_TOKEN') return expiredCard();
+      return resultCard('warn', '…', '아직 사진을 받을 수 없습니다', '<p>잠시 뒤 다시 눌러 주세요.</p>' + contactHtml(r.contact), '<button class="btn" type="button" data-go="photoRetry">사진 다시 올리기</button>');
+    }, function () {
+      resultCard('warn', '…', '연결이 끊겼습니다', '<p>잠시 뒤 다시 눌러 주세요.</p>', '<button class="btn" type="button" data-go="photoRetry">사진 다시 올리기</button>');
+    });
+  }
+
+  // 결과 화면 단추
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-go]'); if (!b) return;
+    var go = b.getAttribute('data-go');
+    if (go === 'form') show('#vForm');
+    else if (go === 'resubmit') { if (current && current.input) guard(function () { return submitFlow(current.input); }); else show('#vForm'); }
+    else if (go === 'refinish') guard(finish);
+    else if (go === 'photoRetry') guard(photoRetry);
+    else if (go === 'lookup') show('#vLookup');
+    else if (go === 'lookupFill') {
+      var v = current && current.input;
+      if (v) { $('#lname').value = v.name; $('#ldong').value = v.dong; $('#lho').value = normHo(v.ho); $('#lemail').value = v.email; }
+      show('#vLookup');
+    }
+    else if (go === 'edit') openEdit();
+    else if (go === 'again') { show('#vForm'); }
+    else if (go === 'copy') { copy(b.getAttribute('data-v')); }
+  });
+  function copy(t) {
+    var ok = function () { toast('복사했습니다'); };
+    var no = function () { toast('길게 눌러 복사해 주세요'); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, no); else no();
+  }
+
+  // ---------- 조회 ----------
+  var lastKey = null, lastStatus = '', lastItem = null;
+  $('#lform').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var k = { name: $('#lname').value.trim(), dong: $('#ldong').value, ho: normHo($('#lho').value), email: $('#lemail').value.trim() };
+    if (!k.name || !k.dong || !k.ho || !k.email) { setMsg($('#lMsg'), '이름, 동, 호수, 이메일 주소를 모두 넣어 주세요.'); return; }
+    setMsg($('#lMsg'), '');
+    lastKey = k; doLookup();
+  });
+  function doLookup() {
+    var btn = $('#lookupBtn'); btn.disabled = true; btn.textContent = '조회하는 중';
+    var reset = function () { btn.disabled = false; btn.textContent = '인증 결과 조회'; };
+    return api({ op: 'lookup', name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email }).then(function (r) {
+      reset(); renderLookup(r);
+    }, function () {
+      reset(); setMsg($('#lMsg'), '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.', 'warn'); show('#vLookup');
+    });
+  }
+  function lookupCard(kind, icon, title, body, actions) {
+    $('#vLookupResult').innerHTML = '<div class="card status ' + kind + '"><div class="icon" aria-hidden="true">' + icon + '</div><h2>' + esc(title) + '</h2>' + body + '</div>' + (actions || '') +
+      '<button class="btn ghost sm" type="button" data-go="lookup" style="margin-top:10px">다른 세대 조회</button>';
+    show('#vLookupResult');
+  }
+  function renderLookup(r) {
+    if (r.contact) takeContact(r.contact);
+    if (!r.ok) {
+      if (r.error === 'NOT_FOUND') { setMsg($('#lMsg'), MSG.NOT_FOUND + ' 이름, 동, 호수, 이메일 주소를 다시 확인해 주세요.'); show('#vLookup'); return; }
+      if (r.error === 'DAY_LIMIT') return lookupCard('warn', '!', '오늘은 더 시도할 수 없습니다', '<p>틀린 시도가 많아 오늘은 조회가 막혔습니다. 내일 다시 해 주세요. 급하시면 오픈채팅으로 문의해 주세요.</p>' + contactHtml(r.contact));
+      if (r.error === 'BUSY') { setMsg($('#lMsg'), '조회하시는 분이 많습니다. 잠시 뒤 다시 눌러 주세요.', 'warn'); show('#vLookup'); return; }
+      logErr('lookup', r); setMsg($('#lMsg'), '조회하지 못했습니다. 잠시 뒤 다시 눌러 주세요.'); show('#vLookup'); return;
+    }
+    lastStatus = r.status; lastItem = r.item || null;
+    if (r.status === '반려됨') {
+      return lookupCard('bad', '✕', '반려되었습니다', '<p>보내 주신 신청이 반려되었습니다. 까닭은 등록하신 이메일로 보내 드렸습니다.</p><p>내용을 고쳐 다시 신청하실 수 있습니다.</p>' + contactHtml(),
+        '<button class="btn" type="button" data-go="again">다시 신청하기</button>');
+    }
+    var it = r.item || {}, house = '<div class="house"><b>' + esc(it.dong + '동 ' + it.ho + '호') + '</b> · ' + esc(it.type) + ' · ' + esc(it.name) + '</div>';
+    if (r.status !== '승인') {
+      return lookupCard('wait', '…', '검수 중입니다', '<p><span class="badge wait">대기</span></p>' + house + '<p style="margin-top:12px">임원이 이체 확인증을 확인하고 있습니다. 결과는 메일로 알려 드립니다.</p>',
+        infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 고치기</button>');
+    }
+    // 승인
+    var html = '<div class="card status ok"><div class="icon" aria-hidden="true">✓</div><h2>인증이 완료되었습니다</h2><p><span class="badge ok">승인</span></p>' + house + '</div>';
+    html += '<div class="card"><h2>회원 등급</h2><div class="grade"><b>' + esc(it.grade) + '</b>' + (it.gradeNote ? '<span class="note">' + esc(it.gradeNote) + '</span>' : '') + '</div>' +
+      (it.grade === '정회원' ? '' : '<p class="hint">' + (it.grade === '확인 중' ? '등급을 확인하고 있습니다. 하루 안에 보입니다. ' : '') + '위임장 제출과 정회원비 납부가 확인되면 등급이 올라갑니다.</p>') + '</div>';
+    // 방 순서(오너 결정 2026-11-18): 공지방 먼저, 그다음 소통방(인증코드 입력방). 닉네임 안내는 두 방 공통으로 한 번.
+    var notice = safeUrl(it.noticeLink, 'https://open.kakao.com/');
+    if (notice) {
+      html += '<div class="card"><h2>공지방 입장</h2><p class="lead">입주예정자협의회 공지는 공지방에서 확인해 주세요. 소통방, 문의용 오픈채팅과는 다른 방입니다.</p>' +
+        (it.noticeCode ? '<div class="nickrow" id="noticeCodeRow"><div><small>공지방 입장코드</small><b>' + esc(it.noticeCode) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.noticeCode) + '">복사</button></div>' : '') +
+        '<a class="btn ghost sm" href="' + esc(notice) + '" rel="noopener">공지방 입장하기</a>' +
+        (it.noticeCode ? '<p class="hint" style="color:var(--bad)">※ 공지방 입장코드도 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요.</p>' : '') + '</div>';
+    }
+    var kLink = safeUrl(it.kakaoLink, 'https://open.kakao.com/');
+    if (it.entryNote || !it.kakaoCode || !kLink) {
+      html += '<div class="card"><h2>소통방 입장</h2><div class="msg warn on">' + esc(it.entryNote || MSG.ENTRY_WAIT) + '</div></div>';
+    } else {
+      html += '<div class="card entry"><h2>소통방 입장</h2><p class="lead">아래 소통방(오픈채팅)에 입장하신 뒤 인증코드를 입력해 주세요.</p>' +
+        '<div class="codebox"><div><small>소통방 인증코드</small><b>' + esc(it.kakaoCode) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.kakaoCode) + '">복사</button></div>' +
+        '<a class="btn" href="' + esc(kLink) + '" rel="noopener">소통방 입장하기</a>' +
+        '<p class="warnline">※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.</p></div>';
+    }
+    html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 붙여 쓴 닉네임을 써 주세요.</p>' +
+      '<div class="nickrow"><div><small>카카오톡 (공지방·소통방)</small><b>' + esc(it.nickKakao) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.nickKakao) + '">복사</button></div>' +
+      '<div class="nickrow"><div><small>카페 (붙여 씀)</small><b>' + esc(it.nickCafe) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.nickCafe) + '">복사</button></div>' +
+      (it.fnick ? '<div class="nickrow"><div><small>가족 · 카카오톡 (공지방·소통방)</small><b>' + esc(it.dong + '동/' + it.type + '/' + it.fnick) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.dong + '동/' + it.type + '/' + it.fnick) + '">복사</button></div>' +
+        '<div class="nickrow"><div><small>가족 · 카페 (붙여 씀)</small><b>' + esc(it.dong + '동' + it.type + it.fnick) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.dong + '동' + it.type + it.fnick) + '">복사</button></div>' : '') +
+      '<p class="hint" style="color:var(--bad)">※ 닉네임 양식을 지키지 않으면 방에서 추방(카페는 강퇴)될 수 있습니다.</p></div>';
+    var cafe = safeUrl(it.cafeLink) || safeUrl(CONFIG.cafe);
+    html += '<div class="card"><h2>카페 안내</h2><p class="lead">입주예정자협의회 카페에도 가입해 주세요. 제출하신 네이버 아이디(<b>' + esc(it.naver) + '</b>)로 가입해 주세요.' + (it.fnaver ? ' 가족은 제출하신 가족 네이버 아이디(<b>' + esc(it.fnaver) + '</b>)로 가입해 주세요.' : '') + '</p>' +
+      (it.cafeMsg ? '<div class="msg bad on">카페에서 이 네이버 아이디를 찾지 못했습니다. ' + esc(it.cafeMsg) + '. 아래 [내 정보 고치기]에서 고치실 수 있습니다.</div>' : '') +
+      (cafe ? '<a class="btn ghost sm" href="' + esc(cafe) + '" rel="noopener" style="margin-top:12px">카페 열기</a>' : '') + '</div>';
+    html += infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 고치기</button>' + '<button class="btn ghost sm" type="button" data-go="lookup" style="margin-top:10px">다른 세대 조회</button>';
+    $('#vLookupResult').innerHTML = html;
+    show('#vLookupResult');
+  }
+  function infoCard(it) {
+    return '<div class="card"><h2>제출하신 정보</h2><dl class="kv">' +
+      '<dt>네이버 아이디</dt><dd>' + esc(it.naver) + '</dd>' +
+      '<dt>카톡 닉네임</dt><dd>' + esc(it.nick) + '</dd>' +
+      '<dt>가족 아이디</dt><dd>' + (esc(it.fnaver) || '<span style="color:var(--ink-3)">없음</span>') + '</dd>' +
+      '<dt>가족 닉네임</dt><dd>' + (esc(it.fnick) || '<span style="color:var(--ink-3)">없음</span>') + '</dd>' +
+      '<dt>정회원 계정</dt><dd>' + esc(it.primary) + '</dd></dl></div>';
+  }
+
+  // ---------- 수정 ----------
+  var editBase = null;
+  function openEdit() {
+    var it = lastItem; if (!it || !lastKey) { show('#vLookup'); return; }
+    var waitState = lastStatus === '대기';
+    $('#eFixed').innerHTML = '<dt>이름</dt><dd>' + esc(it.name) + '</dd><dt>동·호수</dt><dd>' + esc(it.dong + '동 ' + it.ho + '호') + '</dd><dt>이메일</dt><dd>' + esc(lastKey.email) + '</dd>' +
+      (waitState ? '' : '<dt>타입</dt><dd>' + esc(it.type) + '</dd>');
+    $('#eTypeField').style.display = waitState ? '' : 'none';
+    $('#eTypeHint').textContent = waitState ? '검수 중에는 타입을 고치실 수 있습니다. 승인 뒤에는 고칠 수 없습니다.' : '';
+    setRadio('etype', it.type);
+    $('#enaver').value = it.naver || ''; $('#enick').value = it.nick || ''; $('#efnaver').value = it.fnaver || ''; $('#efnick').value = it.fnick || '';
+    setRadio('eprimary', it.primary || '계약자');
+    ['#enickWarn', '#efnickWarn', '#enaverMsg', '#efnaverMsg', '#eMsg'].forEach(function (s) { setMsg($(s), ''); });
+    setMsg($('#ePrimMsg'), '', 'info');
+    editBase = { naver: it.naver || '', nick: it.nick || '', fnaver: it.fnaver || '', fnick: it.fnick || '', primary: it.primary || '계약자', type: it.type };
+    editPrefix();
+    show('#vEdit');
+  }
+  function editPrefix() {
+    var it = lastItem || {};
+    var t = radioVal('etype') || it.type, pre = it.dong + '동/' + t + '/';
+    setPre('#enickPre', pre); setPre('#efnickPre', pre);
+    var has = !!$('#efnaver').value.trim();
+    $('#ePrimFam').disabled = !has;
+    if (!has && radioVal('eprimary') === '가족') { setRadio('eprimary', '계약자'); setMsg($('#ePrimMsg'), '가족 아이디를 지워서 정회원 계정을 계약자로 바꿨습니다.', 'info'); }
+  }
+  $('#etypes').addEventListener('change', editPrefix);
+  $('#efnaver').addEventListener('input', editPrefix);
+  $('#editBack').addEventListener('click', function () { show('#vLookupResult'); });
+  var EDIT_ERR = {
+    EDIT_LIMIT: MSG.EDIT_LIMIT, PENDING: MSG.PENDING, BUSY: '고치시는 분이 많습니다. 잠시 뒤 다시 눌러 주세요.',
+    BAD_NAVER: '네이버 아이디를 확인해 주세요.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요.',
+    BAD_TYPE: '주택형(타입)을 골라 주세요.', FAMILY_NEEDS_ID: '정회원 계정을 가족으로 하려면 가족 네이버 아이디를 적어 주세요.',
+    NOT_EDITABLE: '이 항목은 고칠 수 없습니다. 승인 뒤에는 타입을 고칠 수 없습니다.', NOT_FOUND: '조회 정보가 맞지 않습니다. 처음부터 다시 조회해 주세요.',
+    DAY_LIMIT: MSG.DAY_LIMIT
+  };
+  $('#eform').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var cur = {
+      naver: $('#enaver').value.trim().toLowerCase(), nick: stripPre($('#enick').value).body.trim(),
+      fnaver: $('#efnaver').value.trim().toLowerCase(), fnick: stripPre($('#efnick').value).body.trim(), primary: radioVal('eprimary') || '계약자'
+    };
+    if (lastStatus === '대기') cur.type = radioVal('etype');
+    if (!NID_RE.test(cur.naver)) return setMsg($('#eMsg'), '네이버 아이디를 확인해 주세요.');
+    if (cur.fnaver && !NID_RE.test(cur.fnaver)) return setMsg($('#eMsg'), '가족 네이버 아이디를 확인해 주세요.');
+    if (!cur.nick) return setMsg($('#eMsg'), '카카오톡 닉네임을 적어 주세요.');
+    if (lastStatus === '대기' && !cur.type) return setMsg($('#eMsg'), '주택형(타입)을 골라 주세요.');
+    // 바뀐 칸만 보낸다(승인 세대는 타입을 보내지 않음, 서버도 거절)
+    var ch = {};
+    Object.keys(cur).forEach(function (k) { if (String(cur[k]) !== String(editBase[k])) ch[k] = cur[k]; });
+    if (!Object.keys(ch).length) { toast('바뀐 내용이 없습니다'); return; }
+    var btn = $('#editBtn'); btn.disabled = true; btn.textContent = '저장하는 중';
+    var reset = function () { btn.disabled = false; btn.textContent = '고친 내용 저장'; };
+    api({ op: 'edit', name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email, changes: ch }).then(function (r) {
+      reset();
+      if (r.contact) takeContact(r.contact);
+      if (!r.ok) { logErr('edit', r); return setMsg($('#eMsg'), EDIT_ERR[r.error] || r.msg || '저장하지 못했습니다. 잠시 뒤 다시 눌러 주세요.'); }
+      if (!r.changed || !r.changed.length) { toast('바뀐 내용이 없습니다'); return; }
+      toast('저장했습니다');
+      doLookup().then(function () {
+        var note = document.createElement('div');
+        note.className = 'msg info on'; note.style.marginBottom = '14px'; note.id = 'editDone';
+        note.innerHTML = '<b>고쳤습니다.</b> 바뀐 항목: ' + esc(r.changed.join(', ')) + '. 등록하신 이메일로 변경 알림을 보내 드립니다.';
+        $('#vLookupResult').insertBefore(note, $('#vLookupResult').firstChild);
+      });
+    }, function () { reset(); setMsg($('#eMsg'), '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.'); });
+  });
+
+  // ---------- 탭 ----------
+  $('#tabSubmit').addEventListener('click', function () { show('#vForm'); });
+  $('#tabLookup').addEventListener('click', function () { show('#vLookup'); });
+
+  // ---------- 처음 ----------
+  var cafe0 = safeUrl(CONFIG.cafe);
+  if (cafe0) $('#consentCafe').innerHTML = '(<a href="' + esc(cafe0) + '" rel="noopener">' + esc(cafe0.replace(/^https:\/\//, '')) + '</a>)';
+  takeContact(null);
+  refreshPrefix();
+  // 사진 대기 중이던 신청이 있으면 입력값을 되살리고 [사진 다시 올리기] 안내(사진 파일은 다시 골라야 함)
+  (function resume() {
+    var p = load(KEY_PENDING);
+    if (!p) return;
+    if (!p.exp || p.exp <= Date.now() || !p.input) { store(KEY_PENDING, null); return; }
+    var v = p.input;
+    $('#consent').checked = !!v.consent; $('#dong').value = v.dong; $('#ho').value = v.ho; setRadio('type', v.type);
+    $('#name').value = v.name; $('#email').value = v.email; $('#email2').value = v.email2;
+    $('#naver').value = v.naver; $('#fnaver').value = v.fnaver; $('#nick').value = v.nick; $('#fnick').value = v.fnick;
+    famToggle(); setRadio('primary', v.primary);
+    refreshPrefix();
+    current = { input: v, token: p.token };
+    resultCard('warn', '⏸', '사진 받기를 기다리는 신청이 있습니다', '<p>앞서 입력하신 내용은 받아 두었습니다. [사진 다시 올리기]를 누르고 이체 확인증 캡처를 다시 골라 주세요.</p>' + contactHtml(),
+      '<button class="btn" type="button" data-go="photoRetry">사진 다시 올리기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
+  })();
+})();
+</script>
+</body>
+</html>
