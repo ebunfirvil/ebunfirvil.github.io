@@ -191,13 +191,17 @@ details.full p { margin: 4px 0; }
 .kv dt { color: var(--ink-3); }
 .kv dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 
-.entry { background: var(--navy-deep); color: #fff; border: 0; }
-.entry h2 { color: #fff; }
-.entry .lead { color: #c3d2e2; }
-.entry .codebox { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(255, 255, 255, .08); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
-.entry .codebox small { display: block; color: #a9bdd3; font-size: 13.5px; }
-.entry .codebox b { font-size: 34px; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
-.entry .warnline { font-size: 14px; color: #ffd2bd; margin: 10px 0 0; }
+/* 방 입장 상자: 공지방(주황)·소통방(남색)은 같은 구조, 색만 다름. 흰 글자 대비 7:1 안팎 */
+.room { --room-bg: var(--navy-deep); --room-sub: #c3d2e2; --room-btn: var(--navy-deep); color: #fff; background: var(--room-bg); border: 0; }
+.room.notice { --room-bg: #8f3a14; --room-sub: #ffdcc9; --room-btn: #8f3a14; }
+.room.talk { --room-bg: var(--navy-deep); --room-sub: #c3d2e2; --room-btn: var(--navy-deep); }
+.room h2 { color: #fff; }
+.room .lead { color: var(--room-sub); }
+.room .codebox { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(255, 255, 255, .1); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
+.room .codebox small { display: block; color: var(--room-sub); font-size: 13.5px; }
+.room .codebox b { font-size: 30px; letter-spacing: .1em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.room .btn.enter { background: #fff; color: var(--room-btn); box-shadow: 0 3px 0 rgba(0, 0, 0, .25); }
+.room .warnline { font-size: 14px; color: var(--room-sub); margin: 10px 0 0; }
 .copy { border: 1px solid currentColor; background: transparent; color: inherit; border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; flex: none; }
 .nickrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
 .nickrow:first-of-type { border-top: 0; }
@@ -439,7 +443,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
   <section class="view" id="vEdit">
     <form id="eform" novalidate>
       <div class="card">
-        <h2>내 정보 고치기</h2>
+        <h2>내 정보 수정</h2>
         <p class="lead">고치시면 바로 반영되고, 등록하신 이메일로 변경 알림을 보내 드립니다. 하루 5번까지 고치실 수 있습니다.</p>
         <dl class="kv" id="eFixed"></dl>
         <p class="hint">이름, 동, 호수, 이메일, 이체 확인증은 여기서 고칠 수 없습니다. 이메일을 바꾸시려면 문의용 오픈채팅으로 알려 주세요.</p>
@@ -1024,7 +1028,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var it = r.item || {}, house = '<div class="house"><b>' + esc(it.dong + '동 ' + it.ho + '호') + '</b> · ' + esc(it.type) + ' · ' + esc(it.name) + '</div>';
     if (r.status !== '승인') {
       return lookupCard('wait', '…', '검수 중입니다', '<p><span class="badge wait">대기</span></p>' + house + '<p style="margin-top:12px">임원이 이체 확인증을 확인하고 있습니다. 결과는 메일로 알려 드립니다.</p>',
-        infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 고치기</button>');
+        infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 수정</button>');
     }
     // 승인
     var html = '<div class="card status ok"><div class="icon" aria-hidden="true">✓</div><h2>인증이 완료되었습니다</h2><p><span class="badge ok">승인</span></p>' + house + '</div>';
@@ -1032,20 +1036,25 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       (it.grade === '정회원' ? '' : '<p class="hint">' + (it.grade === '확인 중' ? '등급을 확인하고 있습니다. 하루 안에 보입니다. ' : '') + '위임장 제출과 정회원비 납부가 확인되면 등급이 올라갑니다.</p>') + '</div>';
     // 방 순서(오너 결정 2026-11-18): 공지방 먼저, 그다음 소통방(인증코드 입력방). 닉네임 안내는 두 방 공통으로 한 번.
     var notice = safeUrl(it.noticeLink, 'https://open.kakao.com/');
+    // 두 방 상자는 같은 꼴(제목, 안내, 코드 상자, 입장 버튼, 전달 금지 줄), 색만 다름
+    function roomBox(kind, title, lead, codeLabel, code, codeId, link, btnText, warn) {
+      return '<div class="card room ' + kind + '"><h2>' + title + '</h2><p class="lead">' + lead + '</p>' +
+        (code ? '<div class="codebox"' + (codeId ? ' id="' + codeId + '"' : '') + '><div><small>' + codeLabel + '</small><b>' + esc(code) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(code) + '">복사</button></div>' : '') +
+        '<a class="btn enter" href="' + esc(link) + '" rel="noopener">' + btnText + '</a>' +
+        '<p class="warnline">' + warn + '</p></div>';
+    }
     if (notice) {
-      html += '<div class="card"><h2>공지방 입장</h2><p class="lead">입주예정자협의회 공지는 공지방에서 확인해 주세요. 소통방, 문의용 오픈채팅과는 다른 방입니다.</p>' +
-        (it.noticeCode ? '<div class="nickrow" id="noticeCodeRow"><div><small>공지방 입장코드</small><b>' + esc(it.noticeCode) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.noticeCode) + '">복사</button></div>' : '') +
-        '<a class="btn ghost sm" href="' + esc(notice) + '" rel="noopener">공지방 입장하기</a>' +
-        (it.noticeCode ? '<p class="hint" style="color:var(--bad)">※ 공지방 입장코드도 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요.</p>' : '') + '</div>';
+      html += roomBox('notice', '공지방 입장', '입주예정자협의회 공지는 공지방에서 확인해 주세요. 소통방, 문의용 오픈채팅과는 다른 방입니다.',
+        '공지방 입장코드', it.noticeCode, 'noticeCodeRow', notice, '공지방 입장하기',
+        '※ 공지방 입장 링크와 입장코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요.');
     }
     var kLink = safeUrl(it.kakaoLink, 'https://open.kakao.com/');
     if (it.entryNote || !it.kakaoCode || !kLink) {
       html += '<div class="card"><h2>소통방 입장</h2><div class="msg warn on">' + esc(it.entryNote || MSG.ENTRY_WAIT) + '</div></div>';
     } else {
-      html += '<div class="card entry"><h2>소통방 입장</h2><p class="lead">아래 소통방(오픈채팅)에 입장하신 뒤 인증코드를 입력해 주세요.</p>' +
-        '<div class="codebox"><div><small>소통방 인증코드</small><b>' + esc(it.kakaoCode) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.kakaoCode) + '">복사</button></div>' +
-        '<a class="btn" href="' + esc(kLink) + '" rel="noopener">소통방 입장하기</a>' +
-        '<p class="warnline">※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.</p></div>';
+      html += roomBox('talk', '소통방 입장', '아래 소통방(오픈채팅)에 입장하신 뒤 인증코드를 입력해 주세요.',
+        '소통방 인증코드', it.kakaoCode, 'talkCodeRow', kLink, '소통방 입장하기',
+        '※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.');
     }
     html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 붙여 쓴 닉네임을 써 주세요.</p>' +
       '<div class="nickrow"><div><small>카카오톡 (공지방·소통방)</small><b>' + esc(it.nickKakao) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(it.nickKakao) + '">복사</button></div>' +
@@ -1055,9 +1064,9 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       '<p class="hint" style="color:var(--bad)">※ 닉네임 양식을 지키지 않으면 방에서 추방(카페는 강퇴)될 수 있습니다.</p></div>';
     var cafe = safeUrl(it.cafeLink) || safeUrl(CONFIG.cafe);
     html += '<div class="card"><h2>카페 안내</h2><p class="lead">입주예정자협의회 카페에도 가입해 주세요. 제출하신 네이버 아이디(<b>' + esc(it.naver) + '</b>)로 가입해 주세요.' + (it.fnaver ? ' 가족은 제출하신 가족 네이버 아이디(<b>' + esc(it.fnaver) + '</b>)로 가입해 주세요.' : '') + '</p>' +
-      (it.cafeMsg ? '<div class="msg bad on">카페에서 이 네이버 아이디를 찾지 못했습니다. ' + esc(it.cafeMsg) + '. 아래 [내 정보 고치기]에서 고치실 수 있습니다.</div>' : '') +
+      (it.cafeMsg ? '<div class="msg bad on">카페에서 이 네이버 아이디를 찾지 못했습니다. ' + esc(it.cafeMsg) + '. 아래 [내 정보 수정]에서 고치실 수 있습니다.</div>' : '') +
       (cafe ? '<a class="btn ghost sm" href="' + esc(cafe) + '" rel="noopener" style="margin-top:12px">카페 열기</a>' : '') + '</div>';
-    html += infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 고치기</button>' + '<button class="btn ghost sm" type="button" data-go="lookup" style="margin-top:10px">다른 세대 조회</button>';
+    html += infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 수정</button>' + '<button class="btn ghost sm" type="button" data-go="lookup" style="margin-top:10px">다른 세대 조회</button>';
     $('#vLookupResult').innerHTML = html;
     show('#vLookupResult');
   }
