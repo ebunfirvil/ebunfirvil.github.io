@@ -844,6 +844,9 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     if (r.error === 'DAY_LIMIT') return resultCard('warn', '!', '오늘은 더 시도할 수 없습니다', '<p>급하시면 아래 오픈채팅으로 문의해 주세요.</p>' + contactHtml(r.contact));
     if (r.error === 'OUT_OF_RANGE' || r.error === 'BAD_DONG' || r.error === 'BAD_HO') return resultCard('bad', '!', '없는 동·호수입니다', '<p>' + esc(input2house(current.input)) + '는 이 단지에 없는 호수로 확인됩니다.</p><p>' + esc(RANGE_MSG) + '</p>' + contactHtml(r.contact),
       '<button class="btn" type="button" data-go="form">동·호수 고치기</button>');
+    // 접수 안 받는 세대(01 이 정함). 까닭을 드러내지 않고 일반 오류처럼 보인다
+    if (r.error === 'NOT_ACCEPTED') return resultCard('bad', '!', '신청하지 못했습니다', '<p>접수할 수 없습니다. 문의 오픈채팅으로 알려 주세요.</p>' + contactHtml(r.contact),
+      '<button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
     if (r.error === 'CLOSED') return resultCard('warn', '!', '지금은 신청을 받지 않습니다', '<p>' + esc(MSG.CLOSED) + ' 임원 공지를 기다려 주세요.</p>');
     if (r.error === 'BUSY') return resultCard('warn', '…', '신청하시는 분이 많습니다', '<p>세 번 다시 보냈지만 서버가 바쁩니다. 1~2분 뒤 다시 눌러 주세요. 입력하신 내용은 그대로 있습니다.</p>',
       '<button class="btn" type="button" data-go="resubmit">다시 보내기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
@@ -923,7 +926,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
           '<button class="btn navy" type="button" data-go="lookupFill">인증 결과 조회</button><button class="btn ghost sm" type="button" data-go="form">처음부터 다시 신청</button>');
       }
       if (r.error === 'EXPIRED') return expiredCard();
-      if (r.error === 'ALREADY' || r.error === 'OUT_OF_RANGE') return startFail(r);
+      if (r.error === 'ALREADY' || r.error === 'OUT_OF_RANGE' || r.error === 'NOT_ACCEPTED') return startFail(r);
       logErr('finish', r);
       if (r.error === 'BUSY') return resultCard('warn', '…', '접수가 밀려 있습니다', '<p>세 번 다시 보냈지만 서버가 바쁩니다. 1~2분 뒤 [다시 보내기]를 눌러 주세요. 같은 신청이 두 번 들어가지는 않습니다.</p>', '<button class="btn" type="button" data-go="refinish">다시 보내기</button>');
       return resultCard('bad', '!', '마무리하지 못했습니다', '<p>잠시 뒤 다시 보내 주세요.</p>' + contactHtml(r.contact), '<button class="btn" type="button" data-go="resubmit">다시 보내기</button><button class="btn ghost sm" type="button" data-go="form">입력 화면으로</button>');
