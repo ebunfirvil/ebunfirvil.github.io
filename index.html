@@ -384,6 +384,12 @@
       justify-content: center;
       flex-wrap: wrap;
     }
+    .hero-services { flex-wrap: nowrap; max-width: 560px; margin-left: auto; margin-right: auto; }
+    .hero-services .btn { flex: 1 1 0; min-width: 0; justify-content: center; white-space: nowrap; padding: 14px 10px; }
+    @media (max-width: 480px) {
+      .hero-services { gap: 8px; }
+      .hero-services .btn { padding: 12px 4px; font-size: 0.88rem; gap: 5px; }
+    }
 
     .btn {
       display: inline-flex;
@@ -2290,9 +2296,11 @@
       <!-- 2026-10-12: 청약 접수·당첨자 제출 단계가 끝나 메인 버튼에서 뺌(페이지 apply-precautions.html·apply-documents.html은 그대로 둠) -->
       <!-- 2026-11-15: 정당계약이 끝나 계약 구비 서류·계약 자주 묻는 질문 버튼도 뺌(페이지 contract-documents.html·contract-faq.html은 그대로 둠) -->
       <!-- 2026-11-18: 새로 연 서비스 바로가기 자리. 오픈 안내 기간이 끝나면 빼거나 다음 새 서비스로 바꿔 끼운다 -->
-      <div class="hero-buttons">
-        <a href="3d-walkthrough.html" class="btn btn-primary"><i class="fas fa-cube"></i> 3D 워크스루 걸어 보기</a>
-        <a href="3d-flyover.html" class="btn btn-outline"><i class="fas fa-paper-plane"></i> 플라이오버</a>
+      <!-- 2026-11-19: 입주민 서비스 세 가지를 한 줄로(휴대폰에서도 줄바꿈 없이) -->
+      <div class="hero-buttons hero-services">
+        <a href="3d-walkthrough.html" class="btn btn-primary"><i class="fas fa-walking"></i> 걸어 보기</a>
+        <a href="3d-flyover.html" class="btn btn-primary"><i class="fas fa-paper-plane"></i> 날아 보기</a>
+        <a href="playground.html" class="btn btn-primary"><i class="fas fa-couch"></i> 꾸며 보기</a>
       </div>
     </div>
     <div class="scroll-indicator">
