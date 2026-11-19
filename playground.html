@@ -40,15 +40,15 @@
     .bar a.back { color: var(--white); text-decoration: none; font-size: 0.85rem; white-space: nowrap; padding: 5px 8px; border-radius: 6px; background: rgba(255,255,255,.16); }
     .bar a.ext { color: var(--white); text-decoration: none; font-size: 0.8rem; white-space: nowrap; padding: 5px 8px; border-radius: 6px; background: rgba(255,255,255,.16); }
     .bar .who { flex: 1; min-width: 0; font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .stage { position: relative; flex: 1; min-height: 0; background: var(--navy-dark); }
-    .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--navy-dark); }
+    .stage { position: relative; flex: 1; min-height: 0; background: #071018; }
+    .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #071018; }
     .stage-note { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
       padding: 24px; text-align: center; color: #fff; background: rgba(13,27,42,.94); font-size: 0.95rem; line-height: 1.6; word-break: keep-all; }
     .stage-note .ic { font-size: 1.8rem; opacity: .85; }
     .spinner { width: 34px; height: 34px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--orange-light); border-radius: 50%; animation: spin .9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* ---- 표지(2026-11-18): 들어오면 3초 동안 보이고 옅어지며 넘어간다. 3D 워크스루 표지와 같은 꼴, 바탕은 흰색 ---- */
-    .splash { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: #fff; color: #051C2C;
+    /* ---- 표지(2026-11-19): 불러오는 동안 제작자(돌범님)를 크게 보여 준다. 바탕은 안쪽 페이지와 같은 어두운 색 ---- */
+    .splash { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: #071018; color: #fff;
       text-align: center; transition: opacity .8s ease; }
     .splash.out { opacity: 0; pointer-events: none; }
     .splash-bar { display: block; width: 44px; height: 5px; margin: 0 auto; border-radius: 3px; background: #FF671D; }
@@ -56,6 +56,11 @@
     .splash-title span { display: block; font-size: clamp(21px, 5.6vw, 34px); letter-spacing: -0.03em; }
     .splash-title strong { display: block; margin-top: 2px; font-size: clamp(34px, 9.2vw, 60px); font-weight: 800; letter-spacing: -0.04em; }
     .splash-org { margin: clamp(36px, 7vh, 64px) 0 0; font-size: clamp(15px, 3.8vw, 18px); font-weight: 700; letter-spacing: 0.04em; color: #556474; }
+    .splash-site { margin: 0 0 18px; font-size: clamp(15px, 4.2vw, 22px); font-weight: 700; letter-spacing: -0.02em; color: rgba(255,255,255,.82); }
+    .splash-name { margin: 22px 0 0; font-size: clamp(32px, 9.4vw, 60px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.25; }
+    .splash-maker { margin: 14px 0 0; display: flex; align-items: baseline; justify-content: center; gap: 10px; }
+    .splash-maker span { font-size: clamp(14px, 3.8vw, 19px); font-weight: 500; color: rgba(255,255,255,.7); }
+    .splash-maker strong { font-size: clamp(34px, 10vw, 64px); font-weight: 800; letter-spacing: -0.03em; color: #FF8A4C; }
     @media (prefers-reduced-motion: reduce) { .splash { transition: none; } }
     @media (max-width: 480px) { .bar .who { font-size: 0.85rem; } .bar a.back .lbl, .bar a.ext .lbl { display: none; } }
     @media print { body > * { display: none !important; } body::after { content: '이 자료는 인쇄할 수 없습니다.'; display: block; padding: 40px; font-size: 18px; color: #000; } }
@@ -66,9 +71,10 @@
 
 <div class="splash" id="splash">
   <div>
+    <p class="splash-site">e편한세상 분당 퍼스트빌리지</p>
     <span class="splash-bar" aria-hidden="true"></span>
-    <p class="splash-title"><span>e편한세상 분당 퍼스트빌리지</span><strong>분퍼빌놀이터</strong></p>
-    <p class="splash-org">입주예정자협의회</p>
+    <p class="splash-name">분퍼빌 놀이터</p>
+    <p class="splash-maker"><span>제작</span><strong>돌범</strong></p>
   </div>
 </div>
 
@@ -90,20 +96,11 @@
 <script>
 (function () {
   'use strict';
-  // 표지: 처음 그려진 때부터 3초는 보이고, 안쪽 페이지가 올라오면 옅어지며 걷힌다. 끝내 안 올라와도 8초 뒤에는 걷는다.
-  var SPLASH_MS = 3000, t0 = 0, gone = false, loaded = false;
-  function out() {
-    if (gone) return; gone = true;
+  // 표지: 제작자 표기를 2.5초 보여 주고 옅어지며 걷힌다(안쪽 페이지의 load 는 늦게 오거나 안 올 수 있어 기다리지 않는다).
+  setTimeout(function () {
     var el = document.getElementById('splash');
     el.classList.add('out'); setTimeout(function () { el.hidden = true; }, 900);
-  }
-  function ready() {
-    if (!t0) { requestAnimationFrame(ready); return; }
-    setTimeout(out, Math.max(0, SPLASH_MS - (performance.now() - t0)));
-  }
-  var frame = document.getElementById('playFrame');
-  frame.addEventListener('load', function () { if (!loaded) { loaded = true; ready(); } });
-  requestAnimationFrame(function () { t0 = performance.now(); setTimeout(out, 8000); });
+  }, 2500);
 })();
 </script>
 </body>
