@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XBMCQDJSZD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XBMCQDJSZD');
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noai, noimageai">
+  <title>분퍼빌놀이터 — e편한세상 분당 퍼스트빌리지</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #e8622e; --orange-dark: #c44e1e; --orange-light: #f0864e;
+      --navy: #1a3a5c; --navy-dark: #0d1b2a; --beige: #fdf8f5; --white: #ffffff;
+      --shadow-lg: 0 8px 28px rgba(26,58,92,0.18);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--navy-dark); color: var(--white); }
+    .btn { padding: 11px 20px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.92rem; font-family: inherit;
+      color: var(--white); background: linear-gradient(135deg, var(--orange), var(--orange-light)); cursor: pointer; white-space: nowrap; }
+    .btn:hover { box-shadow: var(--shadow-lg); }
+
+    /* ---- 뷰어: 얇은 주황 막대 + 나머지 전체가 격리 iframe ---- */
+    .viewer { position: fixed; left: 0; right: 0; top: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+    .bar { background: linear-gradient(90deg, var(--orange), var(--orange-dark)); color: var(--white); height: 40px; padding: 0 10px;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .bar a.back { color: var(--white); text-decoration: none; font-size: 0.85rem; white-space: nowrap; padding: 5px 8px; border-radius: 6px; background: rgba(255,255,255,.16); }
+    .bar a.ext { color: var(--white); text-decoration: none; font-size: 0.8rem; white-space: nowrap; padding: 5px 8px; border-radius: 6px; background: rgba(255,255,255,.16); }
+    .bar .who { flex: 1; min-width: 0; font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stage { position: relative; flex: 1; min-height: 0; background: var(--navy-dark); }
+    .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--navy-dark); }
+    .stage-note { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+      padding: 24px; text-align: center; color: #fff; background: rgba(13,27,42,.94); font-size: 0.95rem; line-height: 1.6; word-break: keep-all; }
+    .stage-note .ic { font-size: 1.8rem; opacity: .85; }
+    .spinner { width: 34px; height: 34px; border: 4px solid rgba(255,255,255,.25); border-top-color: var(--orange-light); border-radius: 50%; animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* ---- 표지(2026-11-18): 들어오면 3초 동안 보이고 옅어지며 넘어간다. 3D 워크스루 표지와 같은 꼴, 바탕은 흰색 ---- */
+    .splash { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: #fff; color: #051C2C;
+      text-align: center; transition: opacity .8s ease; }
+    .splash.out { opacity: 0; pointer-events: none; }
+    .splash-bar { display: block; width: 44px; height: 5px; margin: 0 auto; border-radius: 3px; background: #FF671D; }
+    .splash-title { margin: 22px 0 0; font-weight: 800; line-height: 1.28; }
+    .splash-title span { display: block; font-size: clamp(21px, 5.6vw, 34px); letter-spacing: -0.03em; }
+    .splash-title strong { display: block; margin-top: 2px; font-size: clamp(34px, 9.2vw, 60px); font-weight: 800; letter-spacing: -0.04em; }
+    .splash-org { margin: clamp(36px, 7vh, 64px) 0 0; font-size: clamp(15px, 3.8vw, 18px); font-weight: 700; letter-spacing: 0.04em; color: #556474; }
+    @media (prefers-reduced-motion: reduce) { .splash { transition: none; } }
+    @media (max-width: 480px) { .bar .who { font-size: 0.85rem; } .bar a.back .lbl, .bar a.ext .lbl { display: none; } }
+    @media print { body > * { display: none !important; } body::after { content: '이 자료는 인쇄할 수 없습니다.'; display: block; padding: 40px; font-size: 18px; color: #000; } }
+  </style>
+  <meta name="tdm-reservation" content="1">
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div>
+    <span class="splash-bar" aria-hidden="true"></span>
+    <p class="splash-title"><span>e편한세상 분당 퍼스트빌리지</span><strong>분퍼빌놀이터</strong></p>
+    <p class="splash-org">입주예정자협의회</p>
+  </div>
+</div>
+
+<div class="viewer" id="viewer">
+  <div class="bar">
+    <a class="back" href="index.html#services"><i class="fas fa-arrow-left"></i> <span class="lbl">홈페이지</span></a>
+    <div class="who">분퍼빌놀이터 <span style="font-weight:400;font-size:0.78rem;opacity:.9;">제작: 물범님</span></div>
+    <a class="ext" href="https://is2js.github.io/naksaeng/bunfirvil/" target="_blank" rel="noopener" title="새 창에서 열기"><i class="fas fa-up-right-from-square"></i> <span class="lbl">새 창</span></a>
+  </div>
+  <div class="stage" id="stage">
+    <!-- 본문은 제작자(물범님)의 공개 페이지를 그대로 띄운다. 제작자가 고치면 바로 반영된다.
+         allow-top-navigation 을 주지 않아 안쪽 페이지가 이 창의 주소를 바꾸지는 못한다. 저장(브라우저 보관)을 쓰므로 allow-same-origin 은 필요하다(출처가 달라 우리 페이지에는 닿지 못함). -->
+    <iframe id="playFrame" title="분퍼빌놀이터" src="https://is2js.github.io/naksaeng/bunfirvil/"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals allow-pointer-lock"
+      allow="fullscreen" referrerpolicy="no-referrer"></iframe>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // 표지: 처음 그려진 때부터 3초는 보이고, 안쪽 페이지가 올라오면 옅어지며 걷힌다. 끝내 안 올라와도 8초 뒤에는 걷는다.
+  var SPLASH_MS = 3000, t0 = 0, gone = false, loaded = false;
+  function out() {
+    if (gone) return; gone = true;
+    var el = document.getElementById('splash');
+    el.classList.add('out'); setTimeout(function () { el.hidden = true; }, 900);
+  }
+  function ready() {
+    if (!t0) { requestAnimationFrame(ready); return; }
+    setTimeout(out, Math.max(0, SPLASH_MS - (performance.now() - t0)));
+  }
+  var frame = document.getElementById('playFrame');
+  frame.addEventListener('load', function () { if (!loaded) { loaded = true; ready(); } });
+  requestAnimationFrame(function () { t0 = performance.now(); setTimeout(out, 8000); });
+})();
+</script>
+</body>
+</html>
