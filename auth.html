@@ -241,6 +241,13 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 /* 모달 */
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--navy-deep); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 15px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 60; }
 .toast.on { opacity: 1; }
+
+/* 확인 창 */
+.ask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 38, 61, .55); }
+.ask.on { display: flex; }
+.ask .box { width: 100%; max-width: 420px; background: #fff; border-radius: 16px; padding: 20px 18px 18px; box-shadow: 0 12px 32px rgba(15, 38, 61, .3); }
+.ask h3 { margin: 0 0 8px; font-size: 19px; color: var(--navy-deep); }
+.ask p { margin: 0 0 16px; font-size: 16px; color: var(--ink); }
 </style>
 </head>
 <body>
@@ -371,7 +378,8 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
             <label><input type="radio" name="primary" value="계약자" id="primMe" checked><span>계약자</span></label>
             <label><input type="radio" name="primary" value="가족" id="primFam" disabled><span>가족</span></label>
           </div>
-          <p class="hint prim-hint">세대가 정회원이 되면, 여기서 고른 분의 카페 아이디가 정회원으로, 다른 한 분은 (정)가족회원으로 올라갑니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다. 한 분만 적으셨다면 그분으로 정해집니다.</p>
+          <p class="hint prim-hint">세대가 정회원이 되면 여기서 고른 분의 카페 계정이 정회원이 되고, 다른 한 분은 (정)가족회원이 됩니다.<br>처음에는 계약자로 정해져 있습니다. 네이버 아이디를 적은 분만 고를 수 있고, 나중에 [인증 결과 조회]의 [내 정보 수정]에서 바꾸실 수 있습니다.</p>
+          <div class="msg info" id="primMsg" role="status"></div>
         </div>
       </div>
 
@@ -484,8 +492,8 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
             <label><input type="radio" name="eprimary" value="계약자" id="ePrimMe"><span>계약자</span></label>
             <label><input type="radio" name="eprimary" value="가족" id="ePrimFam"><span>가족</span></label>
           </div>
-          <p class="hint prim-hint">세대가 정회원이 되면, 여기서 고른 분의 카페 아이디가 정회원으로, 다른 한 분은 (정)가족회원으로 올라갑니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다. 한 분만 적으셨다면 그분으로 정해집니다.</p>
-          <div class="msg info" id="ePrimMsg"></div>
+          <p class="hint prim-hint">세대가 정회원이 되면 여기서 고른 분의 카페 계정이 정회원이 되고, 다른 한 분은 (정)가족회원이 됩니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다.</p>
+          <div class="msg info" id="ePrimMsg" role="status"></div>
         </div>
         <div class="msg bad" id="eMsg" role="alert"></div>
         <button class="btn navy" type="submit" id="editBtn" style="margin-top:16px">고친 내용 저장</button>
@@ -535,6 +543,15 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 </div>
 
 <div class="toast" id="toast" role="status"></div>
+
+<div class="ask" id="ask" role="dialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
+  <div class="box">
+    <h3 id="askTitle">정회원 카페 계정 확인</h3>
+    <p id="askText"></p>
+    <button class="btn" type="button" id="askYes">예, 가족으로 할게요</button>
+    <button class="btn ghost sm" type="button" id="askNo">아니오, 다시 고를게요</button>
+  </div>
+</div>
 
 <script>
 (function () {
@@ -746,19 +763,71 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
   ['#dong', '#ho', '#name', '#nick'].forEach(function (s) { $(s).addEventListener('input', refreshPrefix); });
   $('#dong').addEventListener('change', refreshPrefix);
   $('#types').addEventListener('change', refreshPrefix);
-  // 정회원 계정은 네이버 아이디를 적은 분만 고를 수 있다(계약자·가족 중 한 분만 적어도 됨)
-  function primSync(meSel, famSel, meRadio, famRadio, name) {
-    var me = !!$(meSel).value.trim(), fam = !!$(famSel).value.trim();
-    $(meRadio).disabled = !me && fam;
-    $(famRadio).disabled = !fam;
-    var cur = radioVal(name);
-    if (cur === '가족' && !fam) setRadio(name, '계약자');
-    if ((cur === '계약자' || !cur) && !me && fam) setRadio(name, '가족');
-    return { me: me, fam: fam };
+  // 정회원 카페 계정(D123, 2026-11-19): 네이버 아이디를 적은 분만 고를 수 있다.
+  // 계약자 아이디가 있으면 기본은 늘 '계약자'이고, '가족'은 회원이 직접 눌렀을 때만 남는다.
+  // 가족 아이디만 있으면 그분뿐이라 '가족'으로 정하고 안내를 보인다. 그 뒤 계약자 아이디를 적으면 직접 고른 적이 없는 한 '계약자'로 돌린다.
+  var PRIM = {
+    primary: { me: '#naver', fam: '#fnaver', meR: '#primMe', famR: '#primFam', msg: '#primMsg' },
+    eprimary: { me: '#enaver', fam: '#efnaver', meR: '#ePrimMe', famR: '#ePrimFam', msg: '#ePrimMsg' }
+  };
+  var primPicked = { primary: false, eprimary: false }; // 회원이 직접 누른 적이 있는지(그 값을 지킨다)
+  var PRIM_ONLY_FAM = '계약자 네이버 아이디가 없어 가족 계정이 정회원 카페 계정으로 정해졌습니다. 계약자 아이디를 적으시면 계약자로 바뀝니다.';
+  function primSync(name) {
+    var c = PRIM[name], me = !!$(c.me).value.trim(), fam = !!$(c.fam).value.trim();
+    $(c.meR).disabled = !me && fam;
+    $(c.famR).disabled = !fam;
+    var cur = radioVal(name), next;
+    if (!fam) next = '계약자';
+    else if (!me) next = '가족';
+    else next = primPicked[name] && cur ? cur : '계약자';
+    if (next !== cur) {
+      setRadio(name, next);
+      if (!(me && fam)) primPicked[name] = false; // 아이디가 빠져 바꿀 수밖에 없었으면 직접 고른 값은 잊는다
+    }
+    var el = $(c.msg);
+    if (fam && !me) setMsg(el, PRIM_ONLY_FAM, 'info');
+    else if (cur === '가족' && next === '계약자') setMsg(el, fam ? '계약자 네이버 아이디를 적으셔서 정회원 카페 계정을 계약자로 바꿨습니다. 가족으로 하시려면 [가족]을 눌러 주세요.' : '가족 네이버 아이디가 없어 정회원 카페 계정을 계약자로 바꿨습니다.', 'info');
+    else if (el.textContent === PRIM_ONLY_FAM) setMsg(el, '', 'info');
   }
-  function famToggle() { primSync('#naver', '#fnaver', '#primMe', '#primFam', 'primary'); }
+  Object.keys(PRIM).forEach(function (name) {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function (r) {
+      r.addEventListener('change', function () { primPicked[name] = true; setMsg($(PRIM[name].msg), '', 'info'); });
+    });
+  });
+  function famToggle() { primSync('primary'); }
   $('#fnaver').addEventListener('input', famToggle);
   $('#naver').addEventListener('input', famToggle);
+
+  // 두 분 아이디를 다 적고 '가족'을 고른 채 보내려 하면 한 번 묻는다. 아니오면 고르는 칸으로 돌아간다
+  // 창을 띄운 직후 ASK_HOLD_MS 동안은 [예]·[아니오]·바깥 누름을 버린다(빠른 두 번 누름·Enter 연타가 창 단추로 떨어져
+  // 읽지 않고 보내지는 것을 막음, 검증 지적 2026-11-19). 처음 초점은 [아니오]라 그 뒤 Enter 를 눌러도 보내지지 않는다
+  var ASK_HOLD_MS = 500;
+  function askFamily(name) {
+    var c = PRIM[name], box = $('#ask');
+    if (box.classList.contains('on')) return new Promise(function () {}); // 이미 떠 있으면 새로 묻지 않음
+    $('#askText').textContent = '정회원 카페 계정을 가족으로 고르셨습니다. 세대가 정회원이 되면 계약자 계정은 (정)가족회원이 됩니다. 이대로 할까요?';
+    return new Promise(function (res) {
+      var back = document.activeElement, opened = Date.now();
+      function done(ok) {
+        box.classList.remove('on');
+        $('#askYes').onclick = $('#askNo').onclick = box.onclick = null; document.removeEventListener('keydown', onKey);
+        if (!ok) {
+          $(c.famR).closest('.field').scrollIntoView({ block: 'center' });
+          $(c.famR).focus({ preventScroll: true });
+        } else if (back && back.focus) back.focus({ preventScroll: true });
+        res(ok);
+      }
+      function held(e) { if (Date.now() - opened < ASK_HOLD_MS) { if (e) { e.preventDefault(); e.stopPropagation(); } return true; } return false; }
+      function onKey(e) { if (e.key === 'Escape') done(false); }
+      $('#askYes').onclick = function (e) { if (!held(e)) done(true); };
+      $('#askNo').onclick = function (e) { if (!held(e)) done(false); };
+      box.onclick = function (e) { if (e.target === box && !held(e)) done(false); };
+      document.addEventListener('keydown', onKey);
+      box.classList.add('on');
+      $('#askNo').focus();
+    });
+  }
+  function needAsk(v) { return !!(v.naver && v.fnaver && v.primary === '가족'); }
   function emailCheck() {
     var a = $('#email').value.trim().toLowerCase(), b = $('#email2').value.trim().toLowerCase();
     var bad = !!b && a !== b;
@@ -995,6 +1064,11 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       return;
     }
     setMsg($('#formMsg'), '');
+    if (busyRun) return;
+    if (needAsk(v)) { askFamily('primary').then(function (ok) { if (ok) sendForm(v); }); return; }
+    sendForm(v);
+  });
+  function sendForm(v) {
     // 사진 대기 중이던 같은 신청이면 사진만 다시 올린다(입력이 바뀌었으면 새로 시작)
     var pend = load(KEY_PENDING);
     if (pend && pend.exp > Date.now() && JSON.stringify(pend.input) === JSON.stringify(v)) {
@@ -1003,7 +1077,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     }
     store(KEY_PENDING, null);
     guard(function () { return submitFlow(v); });
-  });
+  }
 
   function photoRetry() {
     if (!chosenFile) { show('#vForm'); setMsg($('#fileMsg'), '이체 확인증 캡처를 다시 골라 주신 뒤 [인증 신청하기]를 눌러 주세요.'); $('#drop').scrollIntoView({ block: 'center' }); return; }
@@ -1153,6 +1227,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     setRadio('etype', it.type);
     $('#enaver').value = it.naver || ''; $('#enick').value = it.nick || ''; $('#efnaver').value = it.fnaver || ''; $('#efnick').value = it.fnick || '';
     setRadio('eprimary', it.primary || '계약자');
+    primPicked.eprimary = it.primary === '가족' && !!it.naver && !!it.fnaver; // 두 분 아이디가 다 있을 때 저장된 '가족'만 회원이 고른 값
     ['#enickWarn', '#efnickWarn', '#enaverMsg', '#efnaverMsg', '#eMsg'].forEach(function (s) { setMsg($(s), ''); });
     setMsg($('#ePrimMsg'), '', 'info');
     editBase = { naver: it.naver || '', nick: it.nick || '', fnaver: it.fnaver || '', fnick: it.fnick || '', primary: it.primary || '계약자', type: it.type };
@@ -1170,10 +1245,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var t = radioVal('etype') || it.type, pre = it.dong + '동/' + t + '/';
     setPre('#enickPre', pre); setPre('#efnickPre', pre);
     editNickEx();
-    var before = radioVal('eprimary');
-    primSync('#enaver', '#efnaver', '#ePrimMe', '#ePrimFam', 'eprimary');
-    var after = radioVal('eprimary');
-    if (before && after !== before) setMsg($('#ePrimMsg'), '네이버 아이디가 있는 분으로 정회원 계정을 ' + after + '(으)로 바꿨습니다.', 'info');
+    primSync('eprimary');
   }
   // 수정 화면의 카톡·카페 닉네임 미리보기(계약자·가족)
   function editNickEx() {
@@ -1212,6 +1284,11 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var ch = {};
     Object.keys(cur).forEach(function (k) { if (String(cur[k]) !== String(editBase[k])) ch[k] = cur[k]; });
     if (!Object.keys(ch).length) { toast('바뀐 내용이 없습니다'); return; }
+    if ($('#editBtn').disabled) return;
+    if (needAsk(cur)) { askFamily('eprimary').then(function (ok) { if (ok) saveEdit(ch); }); return; }
+    saveEdit(ch);
+  });
+  function saveEdit(ch) {
     var btn = $('#editBtn'); btn.disabled = true; btn.textContent = '저장하는 중';
     var reset = function () { btn.disabled = false; btn.textContent = '고친 내용 저장'; };
     api({ op: 'edit', name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email, changes: ch }).then(function (r) {
@@ -1227,7 +1304,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         $('#vLookupResult').insertBefore(note, $('#vLookupResult').firstChild);
       });
     }, function () { reset(); setMsg($('#eMsg'), '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.'); });
-  });
+  }
 
   // ---------- 이체 확인증 다시 올리기(검수 중 세대) ----------
   // 01: rephoto(열쇠 확인, 업로드 토큰) → 작업 웹앱 upload → 01: rephoto_finish(새 파일로 바꿈)
@@ -1320,7 +1397,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     $('#consent').checked = !!v.consent; $('#dong').value = v.dong; $('#ho').value = v.ho; setRadio('type', v.type);
     $('#name').value = v.name; $('#email').value = v.email; $('#email2').value = v.email2;
     $('#naver').value = v.naver; $('#fnaver').value = v.fnaver; $('#nick').value = v.nick; $('#fnick').value = v.fnick;
-    famToggle(); setRadio('primary', v.primary);
+    primPicked.primary = v.primary === '가족' && !!v.naver && !!v.fnaver; setRadio('primary', v.primary); famToggle();
     refreshPrefix();
     current = { input: v, token: p.token };
     resultCard('warn', '⏸', '사진 받기를 기다리는 신청이 있습니다', '<p>앞서 입력하신 내용은 받아 두었습니다. [사진 다시 올리기]를 누르고 이체 확인증 캡처를 다시 골라 주세요.</p>' + contactHtml(),
