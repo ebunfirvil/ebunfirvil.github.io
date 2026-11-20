@@ -259,6 +259,19 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 .cafewhy .at, .ask .at { margin: 0; font-size: 14px; color: var(--ink-3); }
 .ask .hideline { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 15px; color: var(--ink); }
 .ask .hideline input { width: 20px; height: 20px; }
+/* 확인 요청(위임장·회비) 카드(계획 2절, 3단계 2026-11-20) */
+.rq + .rq { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.rq h3 { margin: 0 0 4px; font-size: 17px; color: var(--navy-deep); }
+.rq .rqst { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--navy-soft); color: var(--navy-deep); font-size: 15px; }
+.rq .rqst:empty { display: none; }
+.rq .rqform { margin-top: 8px; }
+.rq .rqform[hidden] { display: none; }
+.rq .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.rq .row .btn { flex: 1 1 140px; margin: 0; }
+.rq input[type=date] { width: 100%; min-height: 54px; padding: 12px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px; background: #fff; font-size: 18px; }
+.rq .rqmsg { margin: 8px 0 0; font-size: 15px; }
+.rq .rqmsg.bad { color: var(--bad); font-weight: 600; }
+.rq .rqmsg.warn { color: var(--warn); }
 </style>
 </head>
 <body>
@@ -1183,6 +1196,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var html = '<div class="card status ok"><div class="icon" aria-hidden="true">✓</div><h2>인증이 완료되었습니다</h2><p><span class="badge ok">승인</span></p>' + house + '</div>';
     html += '<div class="card"><h2>회원 등급</h2><div class="grade"><b>' + esc(it.grade) + '</b>' + (it.gradeNote ? '<span class="note">' + esc(it.gradeNote) + '</span>' : '') + '</div>' +
       (it.grade === '정회원' ? '' : '<p class="hint">' + (it.grade === '확인 중' ? '등급을 확인하고 있습니다. 하루 안에 보입니다. ' : '') + '위임장 제출과 정회원비 납부가 확인되면 등급이 올라갑니다.</p>') + '</div>';
+    html += reqCardHtml(it);
     // 방 순서(오너 결정 2026-11-18): 공지방 먼저, 그다음 소통방(인증코드 입력방). 닉네임 안내는 두 방 공통으로 한 번.
     var notice = safeUrl(it.noticeLink, 'https://open.kakao.com/');
     // 두 방 상자는 같은 꼴(제목, 안내, 코드 상자, 입장 버튼, 전달 금지 줄), 색만 다름
@@ -1249,7 +1263,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       if ((x.who !== '계약자' && x.who !== '가족' && x.who !== '계약자·가족') || seen[x.who]) return null;
       seen[x.who] = 1;
       if (x.code === 'OK') continue;
-      if (!CAFE_WHY[x.code]) return null;
+      if (!own(CAFE_WHY, x.code)) return null;
       rows.push({ who: x.who, code: x.code });
     }
     if (!rows.length) return null;
@@ -1313,6 +1327,176 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
   // 닉네임 양식 카드 줄 이름(카페 사유 안내 글도 이 상수로 그 줄을 가리킴)
   var NICK_FAM = '가족 · ', NICK_KAKAO = '카카오톡 (공지방·소통방)', NICK_CAFE = '카페 (띄어 씀)';
   function nickLabel(who, kind) { return who + kind; }
+  // ---------- 확인 요청(위임장·회비, 계획 docs/plan_확인요청_신고처리.md 2·3절, 01 계약 staging/req3b/계약.md) ----------
+  // 01 이 주는 hasDeleg·hasFee·reqOn·reqDeleg·reqFee({st, can, code}) 로만 그림. reqOn 이 true 가 아니면(01 옛 판·스위치 꺼짐) 아무것도 그리지 않음.
+  // 단추 켜짐은 01 의 can 을 그대로 따름. 회원에게 보이는 글은 01 응답 글과 정해진 상태 글뿐(입금·이름 일치를 드러내지 않음).
+  var RQ_KIND = { deleg: { name: '위임장', op: 'req_deleg', btn: '위임장 확인 요청', has: 'hasDeleg', last: 'reqDeleg' },
+    fee: { name: '회비', op: 'req_fee', btn: '회비 확인 요청', has: 'hasFee', last: 'reqFee' } };
+  var RQ_ST = {
+    '접수': '접수했습니다. 임원이 확인합니다.',
+    '처리됨': '확인되어 반영했습니다. 등급은 다음 계산 때 바뀝니다.',
+    '해당 없음': '확인하지 못했습니다. 입금자명·입금일(또는 위임장 제출)을 다시 확인하신 뒤 다음 날 다시 요청하시거나 오픈채팅으로 문의해 주세요.',
+    '다시 요청': '오늘 한 번 더 요청하실 수 있습니다.',
+    '거둠': '요청을 거두었습니다.',
+    '기한 지남': '확인이 늦어지고 있습니다. 다시 요청하시거나 오픈채팅으로 문의해 주세요.'
+  };
+  var RQ_CODE = { name: '통장에 찍힌 보낸 분 이름 그대로 다시 적어 주세요.', date: '입금일을 다시 확인해 주세요.', deleg: '위임장을 아직 내지 않으셨으면 위임장을 먼저 제출해 주세요.' };
+  var RQ_DAY_DONE = '오늘은 이미 요청하셨습니다. 내일 다시 하실 수 있습니다.';
+  var RQ_DELEG_NOTE = '위임장을 내셨는데 등급에 반영되지 않았으면 요청해 주세요. 위임장은 매일 밤 한 번 들어옵니다. 오늘 내셨으면 내일 조회해 보신 뒤 요청해 주세요.';
+  var RQ_DATE_TODAY = '은행 입금 내역은 하루 한 번 밤에 들어옵니다. 오늘 입금하셨으면 내일 이후에 요청해 주세요.';
+  var RQ_DATE_YDAY = '어제 입금은 오늘 밤 이후에 확인됩니다.';
+  var RQ_DATE_BAD = '입금일을 다시 확인해 주세요.';
+  var RQ_NAME_BAD = '이름은 한글·영문 2~20자로 적어 주세요.';
+  var RQ_RELOOK = '지금 상태를 보려면 [인증 결과 조회]를 다시 해 주세요.';
+  var RQ_MIN_DATE = '2026-08-01'; // 01 req_min_date 기본값. 화면은 먼저 막기만, 마지막 판단은 01
+  var rqBusy = false;
+  function own(o, k) { return typeof k === 'string' && Object.prototype.hasOwnProperty.call(o, k); } // 'constructor' 같은 이름을 막음(검증 하-4)
+  function kstDay(offset) { var d = new Date(Date.now() + 9 * 3600000 + (offset || 0) * 86400000); return d.toISOString().slice(0, 10); }
+  function rqLastText(last) {
+    if (!last || !own(RQ_ST, last.st)) return '';
+    if (last.st === '다시 요청') {
+      var code = own(RQ_CODE, last.code) ? RQ_CODE[last.code] : '';
+      // 그날 두 번째도 돌려보내져 can 이 false 면 '한 번 더'를 말하지 않음(검증 하-1). 뒤에 '오늘은 이미…'가 붙음
+      return last.can === true ? (code ? code + ' ' : '') + RQ_ST['다시 요청'] : code;
+    }
+    if (last.st === '접수' && last.can === false) return RQ_ST['접수'];
+    return RQ_ST[last.st];
+  }
+  function reqCardHtml(it) {
+    if (!it || it.reqOn !== true) return '';
+    var kinds = ['deleg', 'fee'].filter(function (k) { return it[RQ_KIND[k].has] === false; });
+    if (!kinds.length) return '';
+    return '<div class="card" id="reqCard"><h2>확인 요청</h2><p class="hint">위임장을 내셨거나 회비를 입금하셨는데 등급에 반영되지 않았으면 요청해 주세요. 임원이 확인합니다.</p>' +
+      kinds.map(function (k) { return rqSectionHtml(k, it[RQ_KIND[k].last]); }).join('') + '</div>';
+  }
+  function rqSectionHtml(k, last) {
+    var K = RQ_KIND[k], has = last && typeof last === 'object';
+    var can = has ? last.can === true : true; // 한 번도 안 냈으면 칸이 없음 = 켤 수 있음
+    var open = has && last.st === '접수' && last.can === false;
+    var dayDone = has && !can && !open;
+    var btn = '<button class="btn" type="button" data-rq="open" data-k="' + k + '" aria-expanded="false" aria-controls="rqForm_' + k + '"' + (can ? '' : ' disabled') + '>' +
+      (open ? '확인 중' : K.btn) + '</button>';
+    var cancel = open ? '<button class="btn ghost sm" type="button" data-rq="cancel" data-k="' + k + '">요청 거두기</button>' : '';
+    var form = can ? (k === 'deleg'
+      ? '<div class="rqform" id="rqForm_deleg" hidden><p class="hint">' + esc(RQ_DELEG_NOTE) + '</p><div class="row"><button class="btn navy" type="button" data-rq="send" data-k="deleg">요청 보내기</button>' +
+        '<button class="btn ghost sm" type="button" data-rq="close" data-k="deleg">그만두기</button></div></div>'
+      : '<div class="rqform" id="rqForm_fee" hidden>' +
+        '<div class="field"><label for="rqPayer">입금자명</label><input type="text" id="rqPayer" autocomplete="off" maxlength="20" aria-describedby="rqPayerHint rqFeeMsg"><p class="hint" id="rqPayerHint">통장에 찍힌 보낸 분 이름을 적어 주세요.</p></div>' +
+        '<div class="field"><label for="rqPaid">입금일</label><input type="date" id="rqPaid" autocomplete="off" min="' + RQ_MIN_DATE + '" max="' + kstDay(0) + '" aria-describedby="rqFeeMsg"></div>' +
+        '<p class="rqmsg" id="rqFeeMsg" role="status" aria-live="polite"></p>' +
+        '<div class="row"><button class="btn navy" type="button" data-rq="send" data-k="fee" disabled>요청 보내기</button>' +
+        '<button class="btn ghost sm" type="button" data-rq="close" data-k="fee">그만두기</button></div></div>') : '';
+    return '<div class="rq" id="rq_' + k + '"><h3>' + esc(K.name) + ' 확인 요청</h3>' +
+      '<div class="row">' + btn + cancel + '</div>' + form +
+      '<p class="rqst" id="rqSt_' + k + '" role="status" aria-live="polite">' + esc([rqLastText(last), dayDone ? RQ_DAY_DONE : ''].filter(Boolean).join(' ')) + '</p></div>';
+  }
+  // 회비 입력 검사(한국 날짜). 돌려주는 값 { ok, msg, kind }
+  function rqFeeCheck() {
+    var payer = ($('#rqPayer') || {}).value || '', day = ($('#rqPaid') || {}).value || '';
+    payer = payer.trim();
+    if (!payer || !day) return { ok: false, msg: '', kind: '' };
+    if (!/^[가-힣A-Za-z][가-힣A-Za-z ]{0,18}[가-힣A-Za-z]$/.test(payer)) return { ok: false, msg: RQ_NAME_BAD, kind: 'bad' };
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { ok: false, msg: RQ_DATE_BAD, kind: 'bad' };
+    var today = kstDay(0);
+    if (day === today) return { ok: false, msg: RQ_DATE_TODAY, kind: 'warn' };
+    if (day > today || day < RQ_MIN_DATE) return { ok: false, msg: RQ_DATE_BAD, kind: 'bad' };
+    if (day === kstDay(-1)) return { ok: true, msg: RQ_DATE_YDAY, kind: 'warn' };
+    return { ok: true, msg: '', kind: '' };
+  }
+  function rqFeeSync() {
+    var c = rqFeeCheck(), m = $('#rqFeeMsg'), send = $('#rq_fee [data-rq="send"]');
+    if (!m || !send) return;
+    m.textContent = c.msg; m.className = 'rqmsg' + (c.kind ? ' ' + c.kind : '');
+    send.disabled = !c.ok || rqBusy;
+  }
+  function rqSay(k, text, bad) { var el = $('#rqSt_' + k); if (el) { el.textContent = text || ''; el.style.color = bad ? 'var(--bad)' : ''; } }
+  function rqErrText(r) {
+    if (r && r.msg) return String(r.msg);
+    if (r && r.error === 'NOT_FOUND') return MSG.NOT_FOUND;
+    if (r && r.error === 'DAY_LIMIT') return '오늘은 더 시도할 수 없습니다. 내일 다시 해 주세요.';
+    return '요청하지 못했습니다. 잠시 뒤 다시 해 주세요.';
+  }
+  // 보낸 때의 열쇠. 응답이 올 때 조회 결과 화면이 그대로이고 같은 세대일 때만 화면을 고친다(검증 중-1: 그새 수정·신청 탭·다른 세대로 갔으면 아무것도 안 함)
+  function rqKeyNow() { return lastKey ? [lastKey.name, lastKey.dong, lastKey.ho, lastKey.email].join('|') : ''; }
+  function rqSame(sentKey) { return !!sentKey && rqKeyNow() === sentKey && $('#vLookupResult').classList.contains('on'); }
+  // 요청·거두기 뒤 다시 조회해 카드 상태를 새로 그림(화면 맨 위로 튀지 않게 자리 지킴)
+  //   ok 면 다시 그린 상태 글을 그대로 두고(비었을 때만 01 응답 글), 오류면 01 글을 앞에 붙임(이미 그 글이 들어 있으면 그대로)
+  //   다시 조회가 실패하면 상태를 모르므로 그 구역 단추를 끄고 '다시 조회' 안내(검증 하-2). 구역이 사라졌으면 알림 한 줄(하-5)
+  function rqRefresh(k, sentKey, text, bad) {
+    var y = window.scrollY;
+    function fail() {
+      if (!rqSame(sentKey)) return;
+      var sec = $('#rq_' + k);
+      if (sec) {
+        sec.querySelectorAll('button').forEach(function (b) { b.disabled = true; if (b.getAttribute('data-rq') === 'send') b.textContent = '요청 보내기'; });
+        var f = $('#rqForm_' + k); if (f) f.hidden = true;
+      }
+      rqSay(k, (text ? text + ' ' : '') + RQ_RELOOK, bad);
+    }
+    return api({ op: 'lookup', name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email }).then(function (r) {
+      if (!rqSame(sentKey)) return;
+      if (!r || !r.ok) return fail();
+      renderLookup(r); window.scrollTo(0, y);
+      var st = $('#rqSt_' + k);
+      if (!st) { if (text) toast(text); return; }
+      var now = st.textContent;
+      if (bad) rqSay(k, now.indexOf(text) >= 0 ? now : text + (now ? ' ' + now : ''), true);
+      else if (!now && text) rqSay(k, text);
+      st.setAttribute('tabindex', '-1'); st.focus({ preventScroll: true });
+    }, fail);
+  }
+  function rqSend(k) {
+    if (rqBusy || !lastKey || !own(RQ_KIND, k)) return;
+    var K = RQ_KIND[k], sentKey = rqKeyNow(), body = { op: K.op, name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email };
+    if (k === 'fee') {
+      var c = rqFeeCheck(); if (!c.ok) { rqFeeSync(); return; }
+      body.payer = $('#rqPayer').value.trim(); body.paidOn = $('#rqPaid').value;
+    }
+    rqBusy = true;
+    var sendBtn = $('#rq_' + k + ' [data-rq="send"]'); if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '보내는 중'; }
+    function unstick() { if (sendBtn && document.contains(sendBtn)) { sendBtn.disabled = false; sendBtn.textContent = '요청 보내기'; } if (k === 'fee') rqFeeSync(); }
+    api(body).then(function (r) {
+      rqBusy = false;
+      if (!rqSame(sentKey)) return;
+      if (r && r.ok) return rqRefresh(k, sentKey, r.msg || RQ_ST['접수']);
+      unstick();
+      // 상태가 바뀌었을 수 있는 거절은 다시 조회해 카드를 맞춤(REQ_DAY·REQ_OPEN, 스위치 꺼짐·승인 풀림 NOT_EDITABLE: 검증 하-5)
+      if (r && (r.error === 'REQ_DAY' || r.error === 'REQ_OPEN' || r.error === 'NOT_EDITABLE')) return rqRefresh(k, sentKey, rqErrText(r), true);
+      rqSay(k, rqErrText(r), true);
+    }, function () {
+      rqBusy = false;
+      if (!rqSame(sentKey)) return;
+      unstick();
+      rqSay(k, '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.', true);
+    });
+  }
+  function rqCancel(k) {
+    if (rqBusy || !lastKey || !own(RQ_KIND, k)) return;
+    rqBusy = true;
+    var sentKey = rqKeyNow();
+    var b = $('#rq_' + k + ' [data-rq="cancel"]'); if (b) b.disabled = true;
+    api({ op: 'req_cancel', kind: RQ_KIND[k].name, name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email }).then(function (r) {
+      rqBusy = false;
+      if (!rqSame(sentKey)) return;
+      if (r && r.ok) return rqRefresh(k, sentKey, r.msg || RQ_ST['거둠']);
+      if (b) b.disabled = false;
+      if (r && (r.error === 'REQ_NONE' || r.error === 'NOT_EDITABLE')) return rqRefresh(k, sentKey, rqErrText(r), true);
+      rqSay(k, rqErrText(r), true);
+    }, function () { rqBusy = false; if (!rqSame(sentKey)) return; if (b) b.disabled = false; rqSay(k, '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.', true); });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-rq]'); if (!b || b.disabled) return;
+    var k = b.getAttribute('data-k'), act = b.getAttribute('data-rq');
+    if (!own(RQ_KIND, k)) return;
+    var form = $('#rqForm_' + k), opener = $('#rq_' + k + ' [data-rq="open"]');
+    if (act === 'open' && form) { form.hidden = false; opener.setAttribute('aria-expanded', 'true'); var f = form.querySelector('input, [data-rq="send"]'); if (f) f.focus(); if (k === 'fee') rqFeeSync(); }
+    else if (act === 'close' && form) { form.hidden = true; opener.setAttribute('aria-expanded', 'false'); opener.focus(); }
+    else if (act === 'send') rqSend(k);
+    else if (act === 'cancel') rqCancel(k);
+  });
+  document.addEventListener('input', function (e) { if (e.target && (e.target.id === 'rqPayer' || e.target.id === 'rqPaid')) rqFeeSync(); });
+  document.addEventListener('change', function (e) { if (e.target && e.target.id === 'rqPaid') rqFeeSync(); });
+
   function nickRows(who, n) {
     var it = lastItem || {};
     if (!n) return '';
