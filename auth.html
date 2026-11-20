@@ -248,6 +248,17 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 .ask .box { width: 100%; max-width: 420px; background: #fff; border-radius: 16px; padding: 20px 18px 18px; box-shadow: 0 12px 32px rgba(15, 38, 61, .3); }
 .ask h3 { margin: 0 0 8px; font-size: 19px; color: var(--navy-deep); }
 .ask p { margin: 0 0 16px; font-size: 16px; color: var(--ink); }
+/* 카페 사유 팝업·안내(계획 1절, 2026-11-20). 창은 확인 창과 같은 꼴, 색은 페이지 변수 */
+.ask .box.wide { max-width: 480px; max-height: calc(100vh - 32px); overflow-y: auto; background: var(--card); }
+.cafewhy { margin: 12px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--warn-soft); color: var(--ink); font-size: 15px; }
+.cafewhy h3 { margin: 0 0 6px; font-size: 16px; color: var(--warn); }
+.cafewhy ul, .ask ul.cw { margin: 0 0 8px; padding-left: 18px; }
+.cafewhy li, .ask ul.cw li { margin: 0 0 8px; }
+.cafewhy li b, .ask ul.cw li b { color: var(--navy-deep); }
+.cafewhy .todo, .ask ul.cw .todo { display: block; margin-top: 2px; }
+.cafewhy .at, .ask .at { margin: 0; font-size: 14px; color: var(--ink-3); }
+.ask .hideline { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: 15px; color: var(--ink); }
+.ask .hideline input { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
@@ -543,6 +554,16 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 </div>
 
 <div class="toast" id="toast" role="status"></div>
+
+<div class="ask" id="cafePop" role="dialog" aria-modal="true" aria-labelledby="cafePopTitle" aria-describedby="cafePopBody">
+  <div class="box wide">
+    <h3 id="cafePopTitle">카페 등급이 아직 올라가지 않았습니다</h3>
+    <div id="cafePopBody"></div>
+    <label class="hideline"><input type="checkbox" id="cafePopHide" autocomplete="off"> 다시 보지 않기</label>
+    <button class="btn ghost sm" type="button" id="cafePopNick">닉네임 양식 보기</button>
+    <button class="btn" type="button" id="cafePopClose" style="margin-top:10px">닫기</button>
+  </div>
+</div>
 
 <div class="ask" id="ask" role="dialog" aria-modal="true" aria-labelledby="askTitle" aria-describedby="askText">
   <div class="box">
@@ -1185,26 +1206,119 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
         '※ 소통방 입장 링크와 인증코드는 인증된 세대만을 위한 것이니 다른 분께 전달하지 말아 주세요. 코드는 바뀔 수 있으니 이 화면에서 최신 코드를 확인해 주세요.');
     }
     html += '<div class="card" id="nickCard"><h2>닉네임 양식</h2><p class="lead">공지방과 소통방 두 방 모두 아래 닉네임으로 입장해 주세요. 카페에 가입하실 때는 한 칸씩 띄어 쓴 닉네임을 써 주세요. ' + esc(CAFE_NOTE) + '</p>' +
-      nickRows('', it.nick) + nickRows('가족 · ', it.fnick) +
+      nickRows('', it.nick) + nickRows(NICK_FAM, it.fnick) +
       '<p class="hint" style="color:var(--bad)">※ 닉네임 양식을 지키지 않으면 방에서 추방(카페는 강퇴)될 수 있습니다.</p></div>';
     var cafe = safeUrl(it.cafeLink) || safeUrl(CONFIG.cafe);
+    var ci = cafeInfo(it);
     var ids = [];
     if (it.naver) ids.push('계약자는 제출하신 네이버 아이디(<b>' + esc(it.naver) + '</b>)로');
     if (it.fnaver) ids.push('가족은 제출하신 가족 네이버 아이디(<b>' + esc(it.fnaver) + '</b>)로');
     html += '<div class="card"><h2>카페 안내</h2><p class="lead">입주예정자협의회 카페에도 가입해 주세요. ' + ids.join(', ') + ' 가입해 주세요.</p>' +
       (it.cafeMsg ? '<div class="msg bad on">카페에서 이 네이버 아이디를 찾지 못했습니다. ' + esc(it.cafeMsg) + '. 아래 [내 정보 수정]에서 고치실 수 있습니다.</div>' : '') +
+      (ci ? cafeBoxHtml(ci) : '') +
       (cafe ? '<a class="btn ghost sm" href="' + esc(cafe) + '" rel="noopener" style="margin-top:12px">카페 열기</a>' : '') + '</div>';
     html += infoCard(it) + '<button class="btn navy" type="button" data-go="edit">내 정보 수정</button>' + '<button class="btn ghost sm" type="button" data-go="lookup" style="margin-top:10px">다른 세대 조회</button>';
     $('#vLookupResult').innerHTML = html;
     show('#vLookupResult');
+    // 같은 화면에서 다시 그릴 때(수정 뒤 등)는 한 번 띄운 팝업을 또 띄우지 않음. 카페 안내 카드 안 글은 늘 보임
+    if (ci && ci.g === 'P' && !cafeHidden(ci.key) && !cafePopped[ci.key]) { cafePopped[ci.key] = 1; openCafePop(ci); }
   }
   // 닉네임 두 줄(카톡·카페). 그 사람 닉네임이 비면 줄을 만들지 않는다(계약자·가족 중 한 분만 적어도 됨)
+  // ---------- 카페 사유(계획 docs/plan_확인요청_신고처리.md 1절, 01 계약 staging/req2/계약.md) ----------
+  // 01 은 코드만 준다: cafeWhy = { g: 'P'(팝업)|'L'(한 줄), p: [{ who: '계약자'|'가족', code: 'C1'~'C4'|'OK' }] }, cafeAt = 'YYYY-MM-DD HH:MM'.
+  // 둘 중 하나라도 없거나 꼴이 다르면 안내하지 않는다(01 옛 판이면 지금 화면 그대로). 'OK' 인 사람 줄은 안내하지 않는다.
+  // 할 일 글의 {줄} 은 그 사람의 닉네임 양식 카드 줄 이름(NICK_LABEL, nickRows 와 같은 상수). 팀장 11-20 지시로 계획서 초안에서 고침
+  var CAFE_WHY = {
+    C1: ['카페에서 안내드린 닉네임으로 가입한 회원을 찾지 못했습니다.',
+      '카페에 아직 가입하지 않으셨으면 가입해 주세요. 가입하셨으면 카페 닉네임을 닉네임 양식의 \'{줄}\' 줄과 똑같이 바꿔 주세요. 카톡 닉네임을 잘못 적으셨으면 [내 정보 수정]에서 고쳐 주세요.'],
+    C2: ['카페 닉네임의 띄어쓰기가 안내와 다릅니다.', '카페 닉네임을 닉네임 양식의 \'{줄}\' 줄처럼 한 칸씩 띄어 쓴 꼴로 바꿔 주세요.'],
+    C3: ['같은 닉네임을 쓰는 카페 회원이 여럿이라 누구인지 가리지 못했습니다.', '오픈채팅으로 문의해 주세요.'],
+    C4: ['한 카페 계정이 여러 세대 정보에 걸려 있어 자동으로 올리지 못했습니다.', '오픈채팅으로 문의해 주세요.']
+  };
+  var CAFE_HIDE_KEY = 'n2_cafe_hide';
+  var cafePopped = {};
+  function cafeInfo(it) {
+    var w = it && it.cafeWhy, at = it && it.cafeAt;
+    if (!w || typeof w !== 'object' || (w.g !== 'P' && w.g !== 'L') || !Array.isArray(w.p)) return null;
+    var m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(String(at || ''));
+    if (!m) return null;
+    var rows = [], seen = {};
+    for (var i = 0; i < w.p.length; i++) {
+      var x = w.p[i] || {};
+      // '계약자·가족'(D120): 계약자와 가족이 한 카페 계정(staging/req1/계약.md). 그 사람 하나뿐
+      if ((x.who !== '계약자' && x.who !== '가족' && x.who !== '계약자·가족') || seen[x.who]) return null;
+      seen[x.who] = 1;
+      if (x.code === 'OK') continue;
+      if (!CAFE_WHY[x.code]) return null;
+      rows.push({ who: x.who, code: x.code });
+    }
+    if (!rows.length) return null;
+    return { g: w.g, rows: rows, at: +m[2] + '월 ' + +m[3] + '일 ' + m[4] + ':' + m[5],
+      key: cafeHash([it.dong, it.ho, w.g, rows.map(function (r) { return r.who + r.code; }).join(','), at].join('|')) };
+  }
+  // 다시 보지 않기 열쇠: 세대·사유·기준 시각을 섞은 해시만 저장(동·호·이름 글자는 저장하지 않음)
+  function cafeHash(s) {
+    var h1 = 0x811c9dc5, h2 = 0x01000193;
+    for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0; h2 = Math.imul(h2 ^ c, 0x5bd1e995) >>> 0; }
+    return ('0000000' + h1.toString(16)).slice(-8) + ('0000000' + h2.toString(16)).slice(-8);
+  }
+  function cafeHidden(key) { var a = load(CAFE_HIDE_KEY); return Array.isArray(a) && a.indexOf(key) >= 0; }
+  function cafeHide(key) {
+    var a = load(CAFE_HIDE_KEY); a = Array.isArray(a) ? a.filter(function (x) { return x !== key; }) : [];
+    a.push(key); store(CAFE_HIDE_KEY, a.slice(-20));
+  }
+  function cafeListHtml(ci, cls) {
+    return '<ul' + (cls ? ' class="' + cls + '"' : '') + '>' + ci.rows.map(function (r) {
+      var line = nickLabel(r.who === '가족' ? NICK_FAM : '', NICK_CAFE); // 계약자·가족은 계약자 쪽 줄
+      return '<li><b>' + esc(r.who) + '</b> ' + esc(CAFE_WHY[r.code][0]) + '<span class="todo">' + esc(CAFE_WHY[r.code][1].replace('{줄}', line)) + '</span></li>';
+    }).join('') + '</ul><p class="at">' + esc(ci.at) + ' 확인 기준입니다.</p><p class="at">이미 바꾸셨다면 다음 확인 때 사라집니다.</p>';
+  }
+  function cafeBoxHtml(ci) {
+    return '<div class="cafewhy" id="cafeWhyBox" role="note"><h3>카페 등급이 아직 올라가지 않았습니다</h3>' + cafeListHtml(ci) + '</div>';
+  }
+  // 팝업: 처음 초점은 [닫기], Tab 은 창 안에서만, Esc·바깥 누름·[닫기]로 닫고 앞 초점으로 돌아감
+  function openCafePop(ci) {
+    var box = $('#cafePop');
+    if (box.classList.contains('on') || $('#ask').classList.contains('on')) return;
+    $('#cafePopBody').innerHTML = cafeListHtml(ci, 'cw');
+    $('#cafePopHide').checked = false;
+    var back = document.activeElement;
+    function done(toNick) {
+      if ($('#cafePopHide').checked) cafeHide(ci.key);
+      box.classList.remove('on');
+      $('#cafePopClose').onclick = $('#cafePopNick').onclick = box.onclick = null;
+      document.removeEventListener('keydown', onKey);
+      var nick = $('#nickCard');
+      if (toNick && nick) { nick.scrollIntoView({ block: 'start' }); nick.setAttribute('tabindex', '-1'); nick.focus({ preventScroll: true }); }
+      else {
+        // 띄우기 전 초점(조회 단추)은 결과 화면에서 숨겨지므로, 카드 안 같은 글로 돌아감(화면 읽기 프로그램이 이어 읽음)
+        var to = $('#cafeWhyBox') || (back && back.offsetParent !== null ? back : null);
+        if (to) { if (to.id === 'cafeWhyBox') to.setAttribute('tabindex', '-1'); to.focus({ preventScroll: true }); }
+      }
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); done(false); return; }
+      if (e.key !== 'Tab') return;
+      var f = [$('#cafePopHide'), $('#cafePopNick'), $('#cafePopClose')];
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && (i === f.length - 1 || i < 0)) { e.preventDefault(); f[0].focus(); }
+    }
+    $('#cafePopClose').onclick = function () { done(false); };
+    $('#cafePopNick').onclick = function () { done(true); };
+    box.onclick = function (e) { if (e.target === box) done(false); };
+    document.addEventListener('keydown', onKey);
+    box.classList.add('on');
+    $('#cafePopClose').focus();
+  }
+  // 닉네임 양식 카드 줄 이름(카페 사유 안내 글도 이 상수로 그 줄을 가리킴)
+  var NICK_FAM = '가족 · ', NICK_KAKAO = '카카오톡 (공지방·소통방)', NICK_CAFE = '카페 (띄어 씀)';
+  function nickLabel(who, kind) { return who + kind; }
   function nickRows(who, n) {
     var it = lastItem || {};
     if (!n) return '';
     var k = kakaoNick(it.dong, it.type, n), c = cafeNick(it.dong, it.type, n);
-    return '<div class="nickrow"><div><small>' + who + '카카오톡 (공지방·소통방)</small><b>' + esc(k) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(k) + '">복사</button></div>' +
-      '<div class="nickrow"><div><small>' + who + '카페 (띄어 씀)</small><b>' + esc(c) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(c) + '">복사</button></div>';
+    return '<div class="nickrow"><div><small>' + nickLabel(who, NICK_KAKAO) + '</small><b>' + esc(k) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(k) + '">복사</button></div>' +
+      '<div class="nickrow"><div><small>' + nickLabel(who, NICK_CAFE) + '</small><b>' + esc(c) + '</b></div><button class="copy" type="button" data-go="copy" data-v="' + esc(c) + '">복사</button></div>';
   }
   function infoCard(it) {
     return '<div class="card"><h2>제출하신 정보</h2><dl class="kv">' +
