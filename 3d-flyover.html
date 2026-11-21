@@ -14,6 +14,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow, noai, noimageai">
   <title>플라이오버 — e편한세상 분당 퍼스트빌리지</title>
+  <!-- 본문 iframe 이 받을 three.js 를 웹앱 응답을 기다리는 동안 미리 받는다 -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="modulepreload" crossorigin href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js">
+  <link rel="modulepreload" crossorigin href="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js">
   <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -98,7 +102,7 @@
   }
 
   // 표지: 처음 그려진 때부터 3초는 보이고, 본문이 준비되면 옅어지며 걷힌다. 오류면 바로 걷어 안내가 보이게 한다.
-  var SPLASH_MS = 3000, splashT0 = 0, splashGone = false;
+  var SPLASH_MS = 3000, SPLASH_CACHED_MS = 1200, splashT0 = 0, splashGone = false;
   function splashOut(now) {
     if (splashGone) return; splashGone = true;
     var el = $('splash');
@@ -127,6 +131,41 @@
     note.hidden = false;
   }
 
+  // ---- 본문 캐시(localStorage): 두 번째 방문부터 웹앱 응답을 기다리지 않고 바로 띄운다 ----
+  var CACHE_KEY = 'fvFlyBody.v1';
+  function validBody(h) { return typeof h === 'string' && h.length > 1000 && h.slice(0, 14).toLowerCase() === '<!doctype html'; }
+  function readCache() {
+    try {
+      var raw = localStorage.getItem(CACHE_KEY); if (!raw) return null;
+      var c = JSON.parse(raw);
+      if (c && typeof c === 'object' && typeof c.updated_at === 'string' && validBody(c.html)) return c;
+      localStorage.removeItem(CACHE_KEY);
+    } catch (e) { try { localStorage.removeItem(CACHE_KEY); } catch (e2) {} }
+    return null;
+  }
+  function writeCache(updatedAt, html) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ updated_at: String(updatedAt || ''), html: html })); }
+    catch (e) { try { localStorage.removeItem(CACHE_KEY); } catch (e2) {} } // 용량 초과 등: 옛 캐시를 지운다
+  }
+  function showBody(html) {
+    $('flyFrame').addEventListener('load', splashReady, { once: true }); // 본문 문서가 올라오면 표지를 걷을 준비
+    $('flyFrame').srcdoc = html;      // 본문은 격리 iframe 의 srcdoc 에만 넣는다(캐시에서 꺼낸 것도 같은 경로)
+    $('stageNote').hidden = true;
+  }
+
+  // 캐시가 있으면 바로 띄우고, 뒤에서 한 번만 불러 updated_at 이 다르면 캐시만 새것으로 바꾼다(보는 화면은 그대로, 오류도 안 띄움).
+  function loadFromCache(c) {
+    var seq = ++seqNo;
+    SPLASH_MS = SPLASH_CACHED_MS;
+    showBody(c.html);
+    api({ action: 'docFlyOpen' })
+      .then(function (r) {
+        if (seq !== seqNo) return;
+        if (r && r.ok && validBody(r.html) && String(r.updated_at || '') !== c.updated_at) writeCache(r.updated_at, r.html);
+      })
+      .catch(function () {});
+  }
+
   // 읽기 한 번. 실패하면 자동으로 다시 부르지 않고 '다시 시도' 버튼만 보여 준다.
   function loadFly() {
     var seq = ++seqNo;
@@ -136,9 +175,8 @@
       .then(function (r) {
         if (seq !== seqNo) return;
         if (r && r.ok && typeof r.html === 'string') {
-          $('flyFrame').addEventListener('load', splashReady, { once: true }); // 본문 문서가 올라오면 표지를 걷을 준비
-          $('flyFrame').srcdoc = r.html;      // 서버가 준 본문은 격리 iframe 의 srcdoc 에만 넣는다
-          $('stageNote').hidden = true;
+          showBody(r.html);
+          if (validBody(r.html)) writeCache(r.updated_at, r.html);
         } else if (r && (r.error === 'UNKNOWN_ACTION' || r.error === 'NOT_READY')) {
           splashOut(true);
           showNote('fa-hourglass-half', '아직 준비 중입니다. 준비가 끝나면 이 페이지에서 볼 수 있습니다.');
@@ -163,7 +201,8 @@
     window.location.href = NAV_ALLOWED[d.to];
   });
 
-  loadFly();
+  var cached = readCache();
+  if (cached) loadFromCache(cached); else loadFly();
 })();
 </script>
 </body>
