@@ -241,6 +241,11 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
 /* 모달 */
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--navy-deep); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 15px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 60; }
 .toast.on { opacity: 1; }
+/* 처리 중 덮개: 화면 전체를 덮고 스크롤·누름을 막음 */
+.busycover { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 80; display: none; align-items: flex-end; justify-content: center; padding: 0 16px calc(40px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.62); touch-action: none; overscroll-behavior: none; }
+.busycover.on { display: flex; }
+.busycover .bc { background: var(--navy-deep); color: #fff; border-radius: 16px; padding: 14px 18px; font-size: 16px; font-weight: 700; line-height: 1.4; text-align: center; max-width: 340px; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+html.busy-lock, html.busy-lock body { overflow: hidden; }
 
 /* 확인 창 */
 .ask { position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 38, 61, .55); }
@@ -587,6 +592,8 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
   </div>
 </div>
 
+<div class="busycover" id="busyCover" role="alert" aria-live="assertive"><div class="bc">처리 중입니다.<br>창을 닫지 마세요.</div></div>
+
 <script>
 (function () {
   'use strict';
@@ -669,6 +676,34 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       .finally(function () { if (timer) clearTimeout(timer); });
   }
   function api(body) { return post(CONFIG.ctrl, body, body.op === 'finish' ? 150000 : 60000); }
+
+  // ---------- 처리 중 표시 공용 도우미 ----------
+  // busyBtn(btn, text): 단추를 잠그고 문구를 바꾼 뒤, 원래대로 돌리는 함수를 돌려준다(두 번 불러도 한 번만 복원).
+  function busyBtn(btn, text) {
+    if (!btn) return function () {};
+    var old = btn.textContent, was = btn.disabled, undone = false;
+    btn.disabled = true; btn.textContent = text || '처리 중…';
+    return function () { if (undone) return; undone = true; if (document.contains(btn)) { btn.disabled = was; btn.textContent = old; } };
+  }
+  // busyOn()/busyOff(): 반투명 덮개. 겹쳐 불러도 짝이 맞을 때만 걷힌다.
+  var coverN = 0, coverEl = null;
+  function coverBlock(e) { if (coverN > 0) { e.preventDefault(); e.stopPropagation(); } }
+  function busyOn() {
+    coverEl = coverEl || $('#busyCover');
+    if (coverN++ > 0) return;
+    coverEl.classList.add('on'); document.documentElement.classList.add('busy-lock');
+    try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { /* 무시 */ }
+  }
+  function busyOff() {
+    if (coverN <= 0) return;
+    if (--coverN > 0) return;
+    coverEl.classList.remove('on'); document.documentElement.classList.remove('busy-lock');
+  }
+  document.addEventListener('keydown', function (e) { if (coverN > 0 && (e.key === 'Enter' || e.key === ' ')) coverBlock(e); }, true);
+  document.addEventListener('submit', coverBlock, true);
+  document.addEventListener('click', coverBlock, true);
+  document.addEventListener('touchmove', coverBlock, { capture: true, passive: false });
+  document.addEventListener('wheel', coverBlock, { capture: true, passive: false });
   // 업로드 주소: 01 이 준 주소가 이 페이지의 작업 웹앱 목록에 있을 때만 쓴다(목록 밖 주소로는 보내지 않음)
   function workUrl(t) {
     var list = Object.keys(CONFIG.work).map(function (k) { return CONFIG.work[k]; });
@@ -1082,10 +1117,12 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     resultCard('ok', '✓', '접수되었습니다', '<p>결과는 메일로 알려 드립니다.</p><div class="house"><b>' + esc(input2house(v)) + '</b> · ' + esc(v.type) + ' · ' + esc(v.name) + '</div><p style="font-size:14.5px;margin-top:12px">임원이 이체 확인증을 확인한 뒤 승인합니다. 메일이 오지 않으면 [인증 결과 조회]에서 확인해 주세요.</p>',
       '<button class="btn navy" type="button" data-go="lookupFill">인증 결과 조회</button>');
   }
-  function guard(fn) {
+  function guard(fn, btn) {
     if (busyRun) return;
     busyRun = true;
-    Promise.resolve().then(fn).catch(function () { lostStart(); }).then(function () { busyRun = false; });
+    var rel1 = busyBtn(btn), rel2 = busyBtn($('#submitBtn'));
+    busyOn();
+    Promise.resolve().then(fn).catch(function () { lostStart(); }).then(function () { busyRun = false; busyOff(); rel1(); rel2(); });
   }
 
   $('#form').addEventListener('submit', function (e) {
@@ -1132,9 +1169,9 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var b = e.target.closest('[data-go]'); if (!b) return;
     var go = b.getAttribute('data-go');
     if (go === 'form') show('#vForm');
-    else if (go === 'resubmit') { if (current && current.input) guard(function () { return submitFlow(current.input); }); else show('#vForm'); }
-    else if (go === 'refinish') guard(finish);
-    else if (go === 'photoRetry') guard(photoRetry);
+    else if (go === 'resubmit') { if (current && current.input) guard(function () { return submitFlow(current.input); }, b); else show('#vForm'); }
+    else if (go === 'refinish') guard(finish, b);
+    else if (go === 'photoRetry') guard(photoRetry, b);
     else if (go === 'lookup') show('#vLookup');
     else if (go === 'lookupFill') {
       var v = current && current.input;
@@ -1152,7 +1189,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
   }
 
   // ---------- 조회 ----------
-  var lastKey = null, lastStatus = '', lastItem = null;
+  var lastKey = null, lastStatus = '', lastItem = null, lookupRun = false;
   $('#lform').addEventListener('submit', function (e) {
     e.preventDefault();
     var k = { name: $('#lname').value.trim(), dong: $('#ldong').value, ho: normHo($('#lho').value), email: $('#lemail').value.trim() };
@@ -1161,8 +1198,10 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     lastKey = k; doLookup();
   });
   function doLookup() {
-    var btn = $('#lookupBtn'); btn.disabled = true; btn.textContent = '조회하는 중';
-    var reset = function () { btn.disabled = false; btn.textContent = '인증 결과 조회'; };
+    if (lookupRun) return Promise.resolve();
+    lookupRun = true; busyOn();
+    var rel = busyBtn($('#lookupBtn'));
+    var reset = function () { lookupRun = false; busyOff(); rel(); };
     return api({ op: 'lookup', name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email }).then(function (r) {
       reset(); renderLookup(r);
     }, function () {
@@ -1453,7 +1492,7 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
       body.payer = $('#rqPayer').value.trim(); body.paidOn = $('#rqPaid').value;
     }
     rqBusy = true;
-    var sendBtn = $('#rq_' + k + ' [data-rq="send"]'); if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '보내는 중'; }
+    var sendBtn = $('#rq_' + k + ' [data-rq="send"]'); if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '처리 중…'; }
     function unstick() { if (sendBtn && document.contains(sendBtn)) { sendBtn.disabled = false; sendBtn.textContent = '요청 보내기'; } if (k === 'fee') rqFeeSync(); }
     api(body).then(function (r) {
       rqBusy = false;
@@ -1474,15 +1513,15 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     if (rqBusy || !lastKey || !own(RQ_KIND, k)) return;
     rqBusy = true;
     var sentKey = rqKeyNow();
-    var b = $('#rq_' + k + ' [data-rq="cancel"]'); if (b) b.disabled = true;
+    var b = $('#rq_' + k + ' [data-rq="cancel"]'), relC = busyBtn(b);
     api({ op: 'req_cancel', kind: RQ_KIND[k].name, name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email }).then(function (r) {
       rqBusy = false;
       if (!rqSame(sentKey)) return;
       if (r && r.ok) return rqRefresh(k, sentKey, r.msg || RQ_ST['거둠']);
-      if (b) b.disabled = false;
+      relC();
       if (r && (r.error === 'REQ_NONE' || r.error === 'NOT_EDITABLE')) return rqRefresh(k, sentKey, rqErrText(r), true);
       rqSay(k, rqErrText(r), true);
-    }, function () { rqBusy = false; if (!rqSame(sentKey)) return; if (b) b.disabled = false; rqSay(k, '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.', true); });
+    }, function () { rqBusy = false; if (!rqSame(sentKey)) return; relC(); rqSay(k, '연결이 끊겼습니다. 잠시 뒤 다시 눌러 주세요.', true); });
   }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-rq]'); if (!b || b.disabled) return;
@@ -1582,13 +1621,16 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     var ch = {};
     Object.keys(cur).forEach(function (k) { if (String(cur[k]) !== String(editBase[k])) ch[k] = cur[k]; });
     if (!Object.keys(ch).length) { toast('바뀐 내용이 없습니다'); return; }
-    if ($('#editBtn').disabled) return;
+    if ($('#editBtn').disabled || editRun) return;
     if (needAsk(cur)) { askFamily('eprimary').then(function (ok) { if (ok) saveEdit(ch); }); return; }
     saveEdit(ch);
   });
+  var editRun = false;
   function saveEdit(ch) {
-    var btn = $('#editBtn'); btn.disabled = true; btn.textContent = '저장하는 중';
-    var reset = function () { btn.disabled = false; btn.textContent = '고친 내용 저장'; };
+    if (editRun) return;
+    editRun = true; busyOn();
+    var rel = busyBtn($('#editBtn'));
+    var reset = function () { editRun = false; busyOff(); rel(); };
     api({ op: 'edit', name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email, changes: ch }).then(function (r) {
       reset();
       if (r.contact) takeContact(r.contact);
@@ -1631,10 +1673,13 @@ footer.help ul { margin: 6px 0; padding-left: 18px; }
     BAD_TOKEN: '시간이 지났습니다. 다시 눌러 주세요.', EXPIRED: '시간이 지났습니다. 다시 눌러 주세요.', BAD_RECEIPT: '사진을 받지 못했습니다. 다시 눌러 주세요.'
   };
   function rFail(where, r) { logErr(where, r); setMsg($('#rMsg'), (r && R_ERR[r.error]) || (r && r.msg) || '사진을 올리지 못했습니다. 잠시 뒤 다시 눌러 주세요.'); }
+  var rephotoRun = false;
   $('#rephotoBtn').addEventListener('click', function () {
+    if (rephotoRun) return;
     if (!rFile) { setMsg($('#rMsg'), '이체 확인증 캡처를 골라 주세요.'); return; }
-    var btn = $('#rephotoBtn'); btn.disabled = true;
-    var done = function () { btn.disabled = false; btn.textContent = '새 사진 올리기'; };
+    rephotoRun = true; busyOn();
+    var btn = $('#rephotoBtn'), rel = busyBtn(btn);
+    var done = function () { rephotoRun = false; busyOff(); rel(); };
     var key = { name: lastKey.name, dong: lastKey.dong, ho: lastKey.ho, email: lastKey.email };
     btn.textContent = '확인하는 중입니다'; setMsg($('#rMsg'), '');
     var tries = 0;
