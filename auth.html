@@ -167,9 +167,9 @@ details.full p { margin: 4px 0; }
   cursor: pointer; text-decoration: none; letter-spacing: -.01em; box-shadow: 0 3px 0 var(--orange-deep);
 }
 .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--orange-deep); }
-.btn[disabled] { background: #d9cbbf; box-shadow: none; cursor: not-allowed; }
 .btn.navy { background: var(--navy); box-shadow: 0 3px 0 var(--navy-deep); }
 .btn.ghost { background: #fff; color: var(--navy); border: 1.5px solid var(--navy); box-shadow: none; }
+.btn[disabled], .btn.navy[disabled], .btn.ghost[disabled] { background: #d9cbbf; color: #fff; border-color: #d9cbbf; box-shadow: none; cursor: not-allowed; transform: none; }
 .btn + .btn { margin-top: 10px; }
 .btn.sm { min-height: 46px; font-size: 16px; }
 
