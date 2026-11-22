@@ -521,7 +521,7 @@ html.busy-lock, html.busy-lock body { overflow: hidden; }
             <label><input type="radio" name="eprimary" value="계약자" id="ePrimMe"><span>계약자</span></label>
             <label><input type="radio" name="eprimary" value="가족" id="ePrimFam"><span>가족</span></label>
           </div>
-          <p class="hint prim-hint">세대가 정회원이 되면 여기서 고른 분의 카페 계정이 정회원이 되고, 다른 한 분은 (정)가족회원이 됩니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다.</p>
+          <p class="hint prim-hint">세대가 정회원이 되면 여기서 고른 분의 카페 계정이 정회원이 되고, 다른 한 분은 (정)가족회원이 됩니다.<br>네이버 아이디를 적은 분만 고를 수 있습니다.<br><b>바꾸면 24시간 안에는 다시 바꿀 수 없습니다.</b></p>
           <div class="msg info" id="ePrimMsg" role="status"></div>
         </div>
         <div class="msg bad" id="eMsg" role="alert"></div>
@@ -1274,11 +1274,11 @@ html.busy-lock, html.busy-lock body { overflow: hidden; }
     $('#vLookupResult').innerHTML = html;
     show('#vLookupResult');
     // 같은 화면에서 다시 그릴 때(수정 뒤 등)는 한 번 띄운 팝업을 또 띄우지 않음. 카페 안내 카드 안 글은 늘 보임
-    if (ci && ci.g === 'P' && !cafeHidden(ci.key) && !cafePopped[ci.key]) { cafePopped[ci.key] = 1; openCafePop(ci); }
+    if (ci && (ci.g === 'P' || ci.g === 'F') && !cafeHidden(ci.key) && !cafePopped[ci.key]) { cafePopped[ci.key] = 1; openCafePop(ci); }
   }
   // 닉네임 두 줄(카톡·카페). 그 사람 닉네임이 비면 줄을 만들지 않는다(계약자·가족 중 한 분만 적어도 됨)
   // ---------- 카페 사유(계획 docs/plan_확인요청_신고처리.md 1절, 01 계약 staging/req2/계약.md) ----------
-  // 01 은 코드만 준다: cafeWhy = { g: 'P'(팝업)|'L'(한 줄), p: [{ who: '계약자'|'가족', code: 'C1'~'C4'|'OK' }] }, cafeAt = 'YYYY-MM-DD HH:MM'.
+  // 01 은 코드만 준다: cafeWhy = { g: 'P'(팝업)|'L'(한 줄)|'F'(D169 정상 세대의 미가입 참고 팝업), p: [{ who: '계약자'|'가족', code: 'C1'~'C4'|'OK' }] }, cafeAt = 'YYYY-MM-DD HH:MM'.
   // 둘 중 하나라도 없거나 꼴이 다르면 안내하지 않는다(01 옛 판이면 지금 화면 그대로). 'OK' 인 사람 줄은 안내하지 않는다.
   // 할 일 글의 {줄} 은 그 사람의 닉네임 양식 카드 줄 이름(NICK_LABEL, nickRows 와 같은 상수). 팀장 11-20 지시로 계획서 초안에서 고침
   var CAFE_WHY = {
@@ -1292,7 +1292,7 @@ html.busy-lock, html.busy-lock body { overflow: hidden; }
   var cafePopped = {};
   function cafeInfo(it) {
     var w = it && it.cafeWhy, at = it && it.cafeAt;
-    if (!w || typeof w !== 'object' || (w.g !== 'P' && w.g !== 'L') || !Array.isArray(w.p)) return null;
+    if (!w || typeof w !== 'object' || (w.g !== 'P' && w.g !== 'L' && w.g !== 'F') || !Array.isArray(w.p)) return null;
     var m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/.exec(String(at || ''));
     if (!m) return null;
     var rows = [], seen = {};
@@ -1307,7 +1307,8 @@ html.busy-lock, html.busy-lock body { overflow: hidden; }
     }
     if (!rows.length) return null;
     return { g: w.g, rows: rows, at: +m[2] + '월 ' + +m[3] + '일 ' + m[4] + ':' + m[5],
-      key: cafeHash([it.dong, it.ho, w.g, rows.map(function (r) { return r.who + r.code; }).join(','), at].join('|')) };
+      // D169: F 는 오래 이어지는 상태라 기준 시각(밤 회차마다 바뀜)을 열쇠에서 뺀다. 그래야 [다시 보지 않기]가 이어진다.
+      key: cafeHash([it.dong, it.ho, w.g, rows.map(function (r) { return r.who + r.code; }).join(','), w.g === 'F' ? '' : at].join('|')) };
   }
   // 다시 보지 않기 열쇠: 세대·사유·기준 시각을 섞은 해시만 저장(동·호·이름 글자는 저장하지 않음)
   function cafeHash(s) {
@@ -1324,15 +1325,19 @@ html.busy-lock, html.busy-lock body { overflow: hidden; }
     return '<ul' + (cls ? ' class="' + cls + '"' : '') + '>' + ci.rows.map(function (r) {
       var line = nickLabel(r.who === '가족' ? NICK_FAM : '', NICK_CAFE); // 계약자·가족은 계약자 쪽 줄
       return '<li><b>' + esc(r.who) + '</b> ' + esc(CAFE_WHY[r.code][0]) + '<span class="todo">' + esc(CAFE_WHY[r.code][1].replace('{줄}', line)) + '</span></li>';
-    }).join('') + '</ul><p class="at">' + esc(ci.at) + ' 확인 기준입니다.</p><p class="at">이미 바꾸셨다면 다음 확인 때 사라집니다.</p>';
+    }).join('') + '</ul>' + (ci.g === 'F' ? '<p class="at">세대 카페 등급에는 지장이 없습니다. 함께 가입하시도록 안내드립니다.</p>' : '') +
+      '<p class="at">' + esc(ci.at) + ' 확인 기준입니다.</p><p class="at">이미 바꾸셨다면 다음 확인 때 사라집니다.</p>';
   }
+  // D169: 정상 세대(한 분은 가입)의 미가입 참고 안내는 제목이 다름
+  function cafeTitle(ci) { return ci.g === 'F' ? '카페에 아직 가입하지 않은 분이 있습니다' : '카페 등급이 아직 올라가지 않았습니다'; }
   function cafeBoxHtml(ci) {
-    return '<div class="cafewhy" id="cafeWhyBox" role="note"><h3>카페 등급이 아직 올라가지 않았습니다</h3>' + cafeListHtml(ci) + '</div>';
+    return '<div class="cafewhy" id="cafeWhyBox" role="note"><h3>' + esc(cafeTitle(ci)) + '</h3>' + cafeListHtml(ci) + '</div>';
   }
   // 팝업: 처음 초점은 [닫기], Tab 은 창 안에서만, Esc·바깥 누름·[닫기]로 닫고 앞 초점으로 돌아감
   function openCafePop(ci) {
     var box = $('#cafePop');
     if (box.classList.contains('on') || $('#ask').classList.contains('on')) return;
+    $('#cafePopTitle').textContent = cafeTitle(ci);
     $('#cafePopBody').innerHTML = cafeListHtml(ci, 'cw');
     $('#cafePopHide').checked = false;
     var back = document.activeElement;
@@ -1600,6 +1605,7 @@ html.busy-lock, html.busy-lock body { overflow: hidden; }
   var EDIT_ERR = {
     EDIT_LIMIT: MSG.EDIT_LIMIT, PENDING: MSG.PENDING, BUSY: '고치시는 분이 많습니다. 잠시 뒤 다시 눌러 주세요.',
     BAD_NAVER: '네이버 아이디를 확인해 주세요. 계약자·가족 중 한 분 이상의 아이디가 있어야 합니다.', BAD_FAMILY: '가족 네이버 아이디를 확인해 주세요.', BAD_NICK: '카카오톡 닉네임을 확인해 주세요. 계약자·가족 중 한 분 이상의 닉네임이 있어야 합니다.',
+    PRIMARY_24H: '정회원 카페 계정은 바꾼 뒤 24시간 안에는 다시 바꿀 수 없습니다. 내일 다시 해 주세요.',
     BAD_TYPE: '주택형(타입)을 골라 주세요.', FAMILY_NEEDS_ID: '정회원 계정을 가족으로 하려면 가족 네이버 아이디를 적어 주세요.',
     NEED_NAVER: NEED_NAVER, NEED_NICK: NEED_NICK, BAD_PRIMARY: '정회원 계정은 네이버 아이디를 적은 분으로 골라 주세요.',
     NOT_EDITABLE: '이 항목은 고칠 수 없습니다. 승인 뒤에는 타입을 고칠 수 없습니다.', NOT_FOUND: '조회 정보가 맞지 않습니다. 처음부터 다시 조회해 주세요.',
