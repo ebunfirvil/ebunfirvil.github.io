@@ -259,6 +259,10 @@
       if (typeof d.ms !== 'number' || d.ms % 1 !== 0 || d.ms < RANK_MS_MIN || d.ms > RANK_MS_MAX) return;
       if (rankOpen()) return;                                            // 떠 있는 창은 그대로
       rankAsk(d.ms);
+    } else if (d.type === 'fvKartRank') {                               // 시작·완주 화면의 랭킹 보기
+      if (rankOpen()) return;
+      $('rankBox').hidden = false;
+      rankSkip();
     }
   });
 
