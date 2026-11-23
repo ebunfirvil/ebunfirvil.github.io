@@ -124,7 +124,7 @@
       <h2>랭킹 상위 10</h2>
       <div class="rank-tabs" role="tablist" aria-label="코스">
         <button type="button" class="rank-tab" role="tab" id="rankTabEight" data-track="eight">쉬움</button>
-        <button type="button" class="rank-tab" role="tab" id="rankTabMain" data-track="main">중간</button>
+        <button type="button" class="rank-tab" role="tab" id="rankTabMain" data-track="main">보통</button>
       </div>
       <p class="rank-msg ok" id="rankDone"></p>
       <ol class="rank-list" id="rankList"></ol>
@@ -144,7 +144,7 @@
   var NAV_ALLOWED = { home: 'index.html', flyover: '3d-flyover.html' };
   function $(id) { return document.getElementById(id); }
   // 코스(2026-11-23): 허용 목록 안의 이름만 쓴다. 본문에는 srcdoc 에 넣을 때만 심고, 캐시된 본문 원문은 바꾸지 않는다.
-  var TRACKS = { main: '중간', eight: '쉬움' };
+  var TRACKS = { main: '보통', eight: '쉬움' };
   var TRACK_KEY = 'fvKartTrack.v1';
   function validTrack(t) { return typeof t === 'string' && Object.prototype.hasOwnProperty.call(TRACKS, t); }
   function trackOf(t) { return validTrack(t) ? t : 'main'; }
