@@ -79,6 +79,11 @@
     .rank-list .nk { flex: 1; min-width: 0; overflow-wrap: anywhere; }
     .rank-list .tm { flex: none; font-variant-numeric: tabular-nums; font-weight: 700; }
     .rank-list li.me { background: #fff3ec; }
+    .rank-course { margin: 0 0 4px; font-size: 0.85rem; font-weight: 700; color: var(--navy); }
+    .rank-tabs { display: flex; gap: 6px; margin: 8px 0 0; }
+    .rank-tab { flex: 1 1 0; min-width: 0; padding: 8px 6px; border: 1.5px solid #c8d0d8; border-radius: 8px; background: #fff; color: var(--navy);
+      font: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+    .rank-tab[aria-selected="true"] { background: var(--orange); border-color: var(--orange); color: #fff; }
     .rank-empty { padding: 10px 2px; color: #6b7785; }
         @media print { body > * { display: none !important; } body::after { content: '이 자료는 인쇄할 수 없습니다.'; display: block; padding: 40px; font-size: 18px; color: #000; } }
   </style>
@@ -105,6 +110,7 @@
   <div class="rank-card">
     <div id="rankAsk">
       <h2 id="rankTitle">기록을 랭킹에 올릴까요?</h2>
+      <p class="rank-course" id="rankCourse"></p>
       <div class="rank-time" id="rankTime">0:00.00</div>
       <p class="rank-help">입예협 단톡방에 등록된 카톡 닉네임 그대로 <b>동/타입/닉네임</b> 으로 적어 주세요.<br>예) <b>101동/55A/홍길동</b><br>인증된 회원 세대의 닉네임만 올라가고, 닉네임마다 가장 빠른 기록 하나만 남습니다.</p>
       <input class="rank-input" id="rankNick" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="101동/55A/닉네임" aria-label="동/타입/닉네임">
@@ -116,6 +122,10 @@
     </div>
     <div id="rankView" hidden>
       <h2>랭킹 상위 10</h2>
+      <div class="rank-tabs" role="tablist" aria-label="코스">
+        <button type="button" class="rank-tab" role="tab" id="rankTabEight" data-track="eight">쉬움</button>
+        <button type="button" class="rank-tab" role="tab" id="rankTabMain" data-track="main">중간</button>
+      </div>
       <p class="rank-msg ok" id="rankDone"></p>
       <ol class="rank-list" id="rankList"></ol>
       <div class="rank-btns">
@@ -133,6 +143,21 @@
   // 본문(iframe)이 알려 오는 이동 요청 중 허용하는 것만(메시지 안의 주소로는 이동하지 않는다)
   var NAV_ALLOWED = { home: 'index.html', flyover: '3d-flyover.html' };
   function $(id) { return document.getElementById(id); }
+  // 코스(2026-11-23): 허용 목록 안의 이름만 쓴다. 본문에는 srcdoc 에 넣을 때만 심고, 캐시된 본문 원문은 바꾸지 않는다.
+  var TRACKS = { main: '중간', eight: '쉬움' };
+  var TRACK_KEY = 'fvKartTrack.v1';
+  function validTrack(t) { return typeof t === 'string' && Object.prototype.hasOwnProperty.call(TRACKS, t); }
+  function trackOf(t) { return validTrack(t) ? t : 'main'; }
+  var curTrack = 'main';
+  try { curTrack = trackOf(localStorage.getItem(TRACK_KEY)); } catch (e) {}
+  var bodyHtml = '';  // 지금 띄운(심기 전) 본문
+  function withTrack(html) {
+    var tag = '<script>window.__KART_TRACK__=' + JSON.stringify(curTrack) + ';<\/script>';
+    var m = /<head(\s[^>]*)?>/i.exec(html);
+    if (m) return html.slice(0, m.index + m[0].length) + tag + html.slice(m.index + m[0].length);
+    var d = /^<!doctype[^>]*>/i.exec(html);
+    return d ? html.slice(0, d[0].length) + tag + html.slice(d[0].length) : tag + html;
+  }
   var seqNo = 0; // 늦게 도착한 응답을 버리기 위한 요청 번호
 
   function api(payload) {
@@ -190,7 +215,8 @@
   function focusFrame() { try { $('kartFrame').focus(); } catch (e) {} }
   function showBody(html) {
     $('kartFrame').addEventListener('load', function () { splashReady(); focusFrame(); }, { once: true }); // 본문 문서가 올라오면 표지를 걷고 포커스를 준다(클릭 없이 방향키)
-    $('kartFrame').srcdoc = html;      // 본문은 격리 iframe 의 srcdoc 에만 넣는다(캐시에서 꺼낸 것도 같은 경로)
+    bodyHtml = html;
+    $('kartFrame').srcdoc = withTrack(html);      // 본문은 격리 iframe 의 srcdoc 에만 넣는다(캐시에서 꺼낸 것도 같은 경로)
     $('stageNote').hidden = true;
   }
 
@@ -234,7 +260,7 @@
   }
 
   // ---- 최고 기록: 본문(출처 null)은 localStorage 를 못 쓰므로 껍데기가 대신 저장한다 ----
-  var BEST_KEY_RE = /^fvgp\.best\.v\d{1,3}$/;
+  var BEST_KEY_RE = /^fvgp\.best8?\.v\d{1,3}$/;  // main fvgp.best.v5, eight fvgp.best8.v1
   function readBest(key) {
     try { var v = parseInt(localStorage.getItem(key), 10); return (isFinite(v) && v >= 1 && v <= 3600000) ? v : null; } catch (e) { return null; }
   }
@@ -256,20 +282,27 @@
       if (typeof d.key !== 'string' || !BEST_KEY_RE.test(d.key)) return;
       try { frame.contentWindow.postMessage({ type: 'fvKartBest', key: d.key, ms: readBest(d.key) }, '*'); } catch (e3) {}
     } else if (d.type === 'fvKartFinish') {
-      if (typeof d.ms !== 'number' || d.ms % 1 !== 0 || d.ms < RANK_MS_MIN || d.ms > RANK_MS_MAX) return;
+      var ft = trackOf(d.track);
+      if (typeof d.ms !== 'number' || d.ms % 1 !== 0 || d.ms < RANK_MS_MIN[ft] || d.ms > RANK_MS_MAX) return;
       if (rankOpen()) return;                                            // 떠 있는 창은 그대로
-      rankAsk(d.ms);
+      rankAsk(d.ms, ft);
     } else if (d.type === 'fvKartRank') {                               // 시작·완주 화면의 랭킹 보기
       if (rankOpen()) return;
       $('rankBox').hidden = false;
-      rankSkip();
+      rankSkip(trackOf(d.track));
+    } else if (d.type === 'fvKartTrack') {                              // 코스 바꾸기: 기억하고 본문을 다시 띄운다
+      if (!validTrack(d.track) || d.track === curTrack) return;
+      curTrack = d.track;
+      try { localStorage.setItem(TRACK_KEY, curTrack); } catch (e4) {}
+      if (rankOpen()) rankClose();
+      if (bodyHtml) showBody(bodyHtml); else loadKart();
     }
   });
 
   // ---- 랭킹(2026-11-22): 회원 인증 01 웹앱(새 구글 시트 `카트랭킹` 탭)에 올린다 ----
   var RANK_URL = 'https://script.google.com/macros/s/AKfycby9vTNrinqu8z9Iuozw_029oIgZ3j2JnIjP5LWlznf6dtu3lPm9HS-KM_V_DdyvBJpU/exec';
   var RANK_NICK_KEY = 'fvKartRankNick.v1'; // 마지막에 쓴 닉네임(다음 완주 때 미리 채움)
-  var RANK_MS_MIN = 60000, RANK_MS_MAX = 3600000;
+  var RANK_MS_MIN = { main: 60000, eight: 120000 }, RANK_MS_MAX = 3600000; // 코스별 최소(서버 Kart.js N2_KART_TRACKS 와 같은 값)
   var RANK_ERR = {
     BAD_NICK: '동/타입/닉네임 꼴로 적어 주세요. 예) 101동/55A/홍길동',
     NOT_MEMBER: '인증된 회원 세대에서 그 닉네임을 찾지 못했습니다. 단톡방 닉네임과 동·타입을 그대로 적어 주세요.',
@@ -278,7 +311,7 @@
     BUSY: '잠시 뒤 다시 올려 주세요.',
     NOT_READY: '랭킹 준비 중입니다. 나중에 다시 올려 주세요.'
   };
-  var rankMs = 0, rankBusy = false, rankSeq = 0;
+  var rankMs = 0, rankBusy = false, rankSeq = 0, rankTrack = 'main', rankMine = '', rankMineTrack = '';
   function rankOpen() { return !$('rankBox').hidden; }
   function rankApi(payload) {
     return fetch(RANK_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload), credentials: 'omit', redirect: 'follow' })
@@ -308,14 +341,18 @@
       li.appendChild(a); li.appendChild(b); li.appendChild(c); ol.appendChild(li);
     }
   }
-  function rankShowView(done, top, mine) {
+  function rankShowView(done, top, mine, track) {
+    rankTrack = track;
     $('rankAsk').hidden = true; $('rankView').hidden = false;
+    $('rankTabMain').setAttribute('aria-selected', track === 'main' ? 'true' : 'false');
+    $('rankTabEight').setAttribute('aria-selected', track === 'eight' ? 'true' : 'false');
     $('rankDone').textContent = done || '';
     rankRender(top, mine);
     try { $('rankClose').focus(); } catch (e) {}
   }
-  function rankAsk(ms) {
-    rankMs = ms; rankBusy = false; rankSeq++;
+  function rankAsk(ms, track) {
+    rankMs = ms; rankBusy = false; rankSeq++; rankTrack = track;
+    $('rankCourse').textContent = '코스: ' + TRACKS[track];
     $('rankTime').textContent = fmtMs(ms);
     $('rankAsk').hidden = false; $('rankView').hidden = true;
     rankMsg('');
@@ -332,16 +369,18 @@
     rankBusy = true; var my = ++rankSeq;
     $('rankSend').disabled = true; $('rankSkip').disabled = true;
     rankMsg('올리는 중…', true);
-    rankApi({ op: 'kart_submit', nick: nick, ms: rankMs })
+    var sendTrack = rankTrack;
+    rankApi({ op: 'kart_submit', nick: nick, ms: rankMs, track: sendTrack })
       .then(function (r) {
         if (my !== rankSeq) return;
         rankBusy = false; $('rankSend').disabled = false; $('rankSkip').disabled = false;
         if (!r || !r.ok) { rankMsg(RANK_ERR[r && r.error] || '올리지 못했습니다. 잠시 뒤 다시 시도해 주세요.'); return; }
         try { localStorage.setItem(RANK_NICK_KEY, nick); } catch (e) {}
         var mine = r.item && typeof r.item.nick === 'string' ? r.item.nick : '';
-        var done = (r.changed ? '올렸습니다.' : '이 닉네임의 더 빠른 기록(' + fmtMs(r.best) + ')이 이미 있어 그대로 둡니다.')
+        var done = '[' + TRACKS[sendTrack] + '] ' + (r.changed ? '올렸습니다.' : '이 닉네임의 더 빠른 기록(' + fmtMs(r.best) + ')이 이미 있어 그대로 둡니다.')
           + (typeof r.rank === 'number' ? ' 지금 ' + r.rank + '위입니다.' : '');
-        rankShowView(done, r.top, mine);
+        rankMine = mine; rankMineTrack = sendTrack;
+        rankShowView(done, r.top, mine, sendTrack);
       })
       .catch(function () {
         if (my !== rankSeq) return;
@@ -350,21 +389,24 @@
       });
   }
   // 올리지 않아도 상위 10은 보여 준다
-  function rankSkip() {
+  function rankSkip(track) {
+    track = validTrack(track) ? track : rankTrack;
     var my = ++rankSeq; rankBusy = false;
-    rankShowView('', [], '');
+    rankShowView('', [], '', track);
     $('rankDone').textContent = '랭킹을 불러오는 중…';
-    rankApi({ op: 'kart_top' })
+    rankApi({ op: 'kart_top', track: track })
       .then(function (r) {
-        if (my !== rankSeq) return;
+        if (my !== rankSeq) return;          // 탭을 바꾸기 전 요청의 늦은 응답은 버린다
         if (!r || !r.ok) { $('rankDone').textContent = '랭킹을 불러오지 못했습니다.'; return; }
-        $('rankDone').textContent = ''; rankRender(r.top, '');
+        $('rankDone').textContent = ''; rankRender(r.top, track === rankMineTrack ? rankMine : '');
       })
       .catch(function () { if (my === rankSeq) $('rankDone').textContent = '랭킹을 불러오지 못했습니다.'; });
   }
   function rankClose() { rankSeq++; rankBusy = false; $('rankBox').hidden = true; focusFrame(); }
   $('rankSend').addEventListener('click', rankSend);
-  $('rankSkip').addEventListener('click', rankSkip);
+  $('rankSkip').addEventListener('click', function () { rankSkip(rankTrack); });
+  $('rankTabMain').addEventListener('click', function () { rankSkip('main'); });
+  $('rankTabEight').addEventListener('click', function () { rankSkip('eight'); });
   $('rankClose').addEventListener('click', rankClose);
   $('rankNick').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); rankSend(); } });
   $('rankBox').addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); rankClose(); } });
