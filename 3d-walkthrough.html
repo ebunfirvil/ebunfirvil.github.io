@@ -64,64 +64,23 @@
   <div class="bar">
     <a class="back" href="index.html"><i class="fas fa-arrow-left"></i> <span class="lbl">메인 페이지</span></a>
     <div class="who">3D 워크스루</div>
+    <a class="back" href="https://joy-papa.github.io/ebundangfirst/3d/" target="_blank" rel="noopener" title="새 창에서 열기"><i class="fas fa-up-right-from-square"></i> <span class="lbl">새 창</span></a>
     <button type="button" id="fsBtn" title="전체 화면"><i class="fas fa-expand"></i> <span class="lbl">전체 화면</span></button>
   </div>
   <div class="stage" id="stage">
-    <iframe id="walkFrame" title="3D 워크스루" sandbox="allow-scripts allow-pointer-lock" allow="fullscreen"></iframe>
-    <div class="stage-note" id="stageNote" hidden></div>
+    <!-- 2026-11-24: 본문은 제작자의 공개 페이지를 그대로 띄운다(분퍼빌놀이터와 같은 방식). 제작자가 고치면 바로 반영된다.
+         allow-top-navigation 을 주지 않아 안쪽 페이지가 이 창의 주소를 바꾸지는 못한다. 안쪽이 브라우저 보관(localStorage)을 쓰므로
+         allow-same-origin 은 필요하다(출처가 달라 우리 페이지에는 닿지 못함). 예전 방식(웹앱 docWalkOpen 이 실어 둔 본문)은 서버에 그대로 남아 있다. -->
+    <iframe id="walkFrame" title="3D 워크스루" src="https://joy-papa.github.io/ebundangfirst/3d/"
+      sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-modals"
+      allow="fullscreen" referrerpolicy="no-referrer"></iframe>
   </div>
 </div>
 
 <script>
 (function () {
   'use strict';
-  // documents.html과 같은 Apps Script 배포. 본문은 docWalkOpen(인증 없음)으로 받아 격리 iframe에만 띄운다.
-  var API_URL = 'https://script.google.com/macros/s/AKfycbxBJLSgegfKeO5DvLFMSJ01IBy1Kt4ayFZZ4uu_4bNUyrcbXS5RnbcrKJsm7EPc2pCSNw/exec';
   function $(id) { return document.getElementById(id); }
-  var walkSeq = 0; // 늦게 도착한 응답을 버리기 위한 요청 번호
-
-  function api(payload) {
-    return fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
-      .then(function (res) { return res.json(); });
-  }
-
-  function showNote(icon, text, retry) {
-    var note = $('stageNote');
-    note.textContent = '';
-    var ic = document.createElement('div'); ic.className = 'ic';
-    if (icon === 'spin') { var sp = document.createElement('div'); sp.className = 'spinner'; ic.appendChild(sp); }
-    else { var i = document.createElement('i'); i.className = 'fas ' + icon; ic.appendChild(i); }
-    note.appendChild(ic);
-    var p = document.createElement('div'); p.textContent = text; note.appendChild(p);
-    if (retry) {
-      var el = document.createElement('button'); el.type = 'button'; el.className = 'btn'; el.textContent = '다시 시도';
-      el.addEventListener('click', loadWalk);
-      note.appendChild(el);
-    }
-    note.hidden = false;
-  }
-
-  function loadWalk() {
-    var seq = ++walkSeq;
-    $('walkFrame').srcdoc = '';
-    showNote('spin', '불러오는 중…');
-    api({ action: 'docWalkOpen' })
-      .then(function (r) {
-        if (seq !== walkSeq) return;
-        if (r.ok && typeof r.html === 'string') {
-          $('walkFrame').srcdoc = r.html;
-          $('stageNote').hidden = true;
-        } else if (r.error === 'UNKNOWN_ACTION' || r.error === 'NOT_READY') {
-          showNote('fa-hourglass-half', '아직 준비 중입니다. 준비가 끝나면 이 페이지에서 볼 수 있습니다.');
-        } else {
-          showNote('fa-triangle-exclamation', '불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
-        }
-      })
-      .catch(function () {
-        if (seq !== walkSeq) return;
-        showNote('fa-triangle-exclamation', '서버에 연결하지 못했습니다. 네트워크를 확인한 뒤 다시 시도해 주세요.', true);
-      });
-  }
 
   function toggleFullscreen() {
     var el = $('viewer');
@@ -131,7 +90,6 @@
 
   $('fsBtn').addEventListener('click', toggleFullscreen);
   document.body.style.overflow = 'hidden';
-  loadWalk();
 })();
 </script>
 </body>
